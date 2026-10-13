@@ -1,0 +1,179 @@
+@{
+    ViewData["Title"] = "Quản lý phiếu xuất kho";
+}
+
+@section Styles {
+    <style>
+        .page-container { max-width: 1260px; margin: 0 auto; }
+        .wh-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+            padding: 1.25rem 1.4rem;
+            margin-bottom: 1.25rem;
+        }
+        .clean-table th {
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: #6b7280;
+            background: #fafafa;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 0.75rem 0.85rem;
+            font-weight: 600;
+        }
+        .clean-table td {
+            font-size: 0.86rem;
+            padding: 0.8rem 0.85rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f3f4f6;
+        }
+    </style>
+}
+
+<div class="page-container">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+        <div>
+            <h4 class="fw-bold mb-0 text-dark">Quản lý phiếu xuất kho</h4>
+            <div class="text-muted small mt-1">
+                Ghi nhận xuất hàng trả NCC, hàng lỗi, xuất điều chuyển. <strong class="text-danger">Không xuất thủ công cho đơn lẻ.</strong>
+            </div>
+        </div>
+        <button type="button" class="btn btn-dark btn-sm rounded-pill px-3 py-2 fw-semibold" onclick="toggleExportForm()">
+            <i class="fa-solid fa-arrow-up-right-from-square me-1"></i>Lập phiếu xuất mới
+        </button>
+    </div>
+
+    <!-- KHUNG TẠO PHIẾU XUẤT -->
+    <div class="wh-card mb-3 d-none border-2 border-dark" id="boxCreateExportForm">
+        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+            <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                <i class="fa-solid fa-file-export text-primary"></i> Lập phiếu xuất kho
+            </h6>
+            <button type="button" class="btn-close" onclick="toggleExportForm()"></button>
+        </div>
+
+        <div class="p-3 bg-light rounded-3 border mb-3">
+            <div class="row g-3">
+                <div class="col-12 col-md-3">
+                    <label class="form-label small fw-bold text-dark mb-1">Loại xuất (*):</label>
+                    <select class="form-select form-select-sm" id="inpExportType">
+                        <option value="ncc">Xuất trả NCC</option>
+                        <option value="defect">Xuất hàng lỗi về kho tổng</option>
+                        <option value="destroy">Xuất hủy</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-3">
+                    <label class="form-label small fw-bold text-dark mb-1">Đối tác/Kho nhận:</label>
+                    <input type="text" class="form-control form-control-sm" placeholder="VD: NCC Bảo Nam Silk" />
+                </div>
+                <div class="col-6 col-md-3">
+                    <label class="form-label small fw-bold text-dark mb-1">Ngày lập:</label>
+                    <input type="date" class="form-control form-control-sm" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="col-12">
+                    <label class="form-label small fw-bold text-dark mb-1">Ghi chú:</label>
+                    <input type="text" class="form-control form-control-sm" placeholder="Lý do xuất hàng..." />
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="small fw-bold text-dark">Danh sách hàng hóa xuất:</span>
+                <button type="button" class="btn btn-sm btn-outline-dark rounded-pill px-3" onclick="alert('Mở form chọn sản phẩm')">
+                    <i class="fa-solid fa-plus me-1"></i>Chọn sản phẩm
+                </button>
+            </div>
+            <div class="table-responsive border rounded">
+                <table class="table clean-table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Sản phẩm / SKU</th>
+                            <th>Màu & Size</th>
+                            <th class="text-center">Kho trừ</th>
+                            <th class="text-center">Số lượng xuất</th>
+                            <th>Ghi chú</th>
+                            <th class="text-center">Xóa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="fw-semibold">Áo Khoác Dạ Tweed Tay Lỡ</div>
+                                <div class="text-muted small">TWD-BLK-M</div>
+                            </td>
+                            <td>Đen / Size M</td>
+                            <td class="text-center">
+                                <span class="badge bg-danger-subtle text-danger border">Hàng lỗi</span>
+                            </td>
+                            <td class="text-center">
+                                <input type="number" class="form-control form-control-sm text-center mx-auto" style="width: 70px" value="1" min="1" />
+                            </td>
+                            <td>Lỗi rách vai, trả NCC</td>
+                            <td class="text-center text-danger"><i class="fa-solid fa-trash-can" style="cursor:pointer;"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="d-flex justify-content-end gap-2">
+            <button class="btn btn-outline-secondary rounded-pill px-3" onclick="toggleExportForm()">Hủy</button>
+            <button class="btn btn-dark rounded-pill px-4" onclick="submitExport()">Gửi duyệt & Trừ tồn</button>
+        </div>
+    </div>
+
+    <!-- DANH SÁCH LỊCH SỬ -->
+    <div class="wh-card">
+        <h6 class="fw-bold text-dark mb-3">Lịch sử phiếu xuất</h6>
+        <div class="table-responsive">
+            <table class="table clean-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Mã phiếu</th>
+                        <th>Loại xuất</th>
+                        <th>Đối tác/Kho</th>
+                        <th>Ngày xuất</th>
+                        <th>Số lượng</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end">Chi tiết</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="font-monospace fw-bold text-dark">PXK-2026-018</span></td>
+                        <td>Xuất hàng lỗi</td>
+                        <td>Kho tổng Bình Tân</td>
+                        <td>10/10/2026</td>
+                        <td><strong>3 sản phẩm</strong></td>
+                        <td><span class="badge bg-success-subtle text-success border">Đã xuất</span></td>
+                        <td class="text-end">
+                            <button type="button" class="btn btn-sm btn-outline-dark rounded-pill px-3">Xem</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleExportForm() {
+            var el = document.getElementById('boxCreateExportForm');
+            el.classList.toggle('d-none');
+        }
+        function submitExport() {
+            var type = document.getElementById('inpExportType').value;
+            if(type === 'defect') {
+                alert('Đã gửi phiếu xuất hàng lỗi. Lưu ý: Lượng trừ sẽ lấy từ quỹ HÀNG LỖI, không phải Tồn bán được.');
+            } else {
+                alert('Đã tạo phiếu xuất kho.');
+            }
+            toggleExportForm();
+        }
+    </script>
+}
+

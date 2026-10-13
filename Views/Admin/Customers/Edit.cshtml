@@ -1,0 +1,568 @@
+@{
+    ViewData["Title"] = "Chỉnh sửa thông tin khách hàng";
+    int custId = ViewBag.CustomerId ?? 1;
+
+    // Dữ liệu khách hàng theo mã ID
+    string code = "KH-0089";
+    string name = "Nguyễn Phương Thảo";
+    string initials = "PT";
+    string phone = "0903 124 567";
+    string email = "thao.nguyen@gmail.com";
+    string address = "124 Nguyễn Huệ, P. Bến Nghé, Q.1, TP.HCM";
+    string tier = "VIP Kim Cương";
+    string totalSpent = "38.450.000 ₫";
+    int ordersCount = 14;
+    int points = 1850;
+    string notes = "Ưa chuộng phong cách thanh lịch, sang trọng. Khách thân thiết từ năm 2024.";
+    string status = "active";
+    string birthday = "1995-10-18";
+    string gender = "female";
+
+    if (custId == 2)
+    {
+        code = "KH-0142";
+        name = "Trần Hoàng Linh";
+        initials = "HL";
+        phone = "0918 332 981";
+        email = "hoanglinh.tran@outlook.com";
+        address = "45 Lê Duẩn, P. Bến Nghé, Q.1, TP.HCM";
+        tier = "Thân thiết";
+        totalSpent = "14.200.000 ₫";
+        ordersCount = 6;
+        points = 620;
+        notes = "Thường mua trang phục công sở cao cấp.";
+        status = "active";
+        birthday = "1996-05-12";
+        gender = "female";
+    }
+    else if (custId == 3)
+    {
+        code = "KH-0210";
+        name = "Lê Minh Anh";
+        initials = "MA";
+        phone = "0987 654 321";
+        email = "minhanh.le@gmail.com";
+        address = "88 Nam Kỳ Khởi Nghĩa, Q.3, TP.HCM";
+        tier = "Thân thiết";
+        totalSpent = "9.800.000 ₫";
+        ordersCount = 4;
+        points = 480;
+        notes = "Khách chuộng chất liệu tự nhiên, nhẹ nhàng.";
+        status = "active";
+        birthday = "1998-11-20";
+        gender = "female";
+    }
+    else if (custId == 4)
+    {
+        code = "KH-0305";
+        name = "Vũ Thanh Tùng";
+        initials = "VT";
+        phone = "0933 881 224";
+        email = "tung.vu@company.vn";
+        address = "201 Hai Bà Trưng, Q.3, TP.HCM";
+        tier = "Khách mới";
+        totalSpent = "2.250.000 ₫";
+        ordersCount = 1;
+        points = 120;
+        notes = "Khách mua tặng quà sinh nhật người thân.";
+        status = "active";
+        birthday = "1992-03-08";
+        gender = "male";
+    }
+    else if (custId == 5)
+    {
+        code = "KH-0412";
+        name = "Đặng Thu Trang";
+        initials = "ĐT";
+        phone = "0909 999 111";
+        email = "trang.dang@temp.com";
+        address = "12 Nguyễn Trãi, Q.5, TP.HCM";
+        tier = "Khách mới";
+        totalSpent = "850.000 ₫";
+        ordersCount = 1;
+        points = 0;
+        notes = "Tài khoản yêu cầu đóng do không còn sử dụng số điện thoại này.";
+        status = "locked";
+        birthday = "1999-07-25";
+        gender = "female";
+    }
+}
+
+@section Styles {
+    <style>
+        .form-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.35rem 1.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .form-card-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 1.15rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .customer-avatar-lg {
+            width: 76px;
+            height: 76px;
+            border-radius: 50%;
+            background: #18181b;
+            color: #c5a880;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.55rem;
+            border: 2px solid #c5a880;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        }
+
+        .badge-vip-lg {
+            background: linear-gradient(135deg, rgba(197, 168, 128, 0.2) 0%, rgba(179, 147, 105, 0.1) 100%);
+            color: #8c6b3e;
+            border: 1px solid rgba(197, 168, 128, 0.5);
+            font-weight: 600;
+            font-size: 0.78rem;
+            padding: 4px 12px;
+            border-radius: 6px;
+        }
+
+        .required-star {
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        .metric-pill {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+        }
+    </style>
+}
+
+<div class="container-fluid p-0">
+
+    <!-- Thanh đầu trang: Quay lại & Nút Thao tác -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+        <div class="d-flex align-items-center gap-3">
+            <a asp-area="Admin" asp-controller="Customers" asp-action="Index" class="btn btn-outline-dark btn-sm rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" title="Quay lại danh sách khách hàng">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+            <div>
+                <div class="d-flex align-items-center gap-2">
+                    <h4 class="fw-bold mb-0 text-dark">Chỉnh sửa thông tin khách hàng</h4>
+                    <span class="badge bg-light text-dark border font-monospace" id="headerCustCode">@code</span>
+                </div>
+                <div class="text-muted small">Cập nhật hồ sơ cá nhân, phân hạng thành viên và địa chỉ nhận hàng</div>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-area="Admin" asp-controller="Customers" asp-action="Index" class="btn btn-light btn-sm px-3 text-secondary">
+                Hủy bỏ
+            </a>
+            <button type="button" class="btn @(status == "locked" ? "btn-outline-success" : "btn-outline-danger") btn-sm px-3 d-inline-flex align-items-center gap-2" id="btnToggleLockCustomer" onclick="toggleCustomerStatus()">
+                <i class="fa-solid @(status == "locked" ? "fa-lock-open" : "fa-user-lock")"></i>
+                <span id="txtToggleLock">@(status == "locked" ? "Mở khóa hồ sơ" : "Khóa hồ sơ")</span>
+            </button>
+            <button type="button" class="btn btn-dark btn-sm px-3 d-inline-flex align-items-center gap-2" onclick="saveCustomerData()">
+                <i class="fa-solid fa-check"></i>
+                <span>Lưu thay đổi</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Alert thông báo sau khi lưu -->
+    <div class="alert alert-success alert-dismissible fade show d-none" id="saveSuccessAlert" role="alert">
+        <i class="fa-solid fa-circle-check me-2"></i>
+        <strong>Thành công!</strong> Đã cập nhật toàn bộ thông tin hồ sơ khách hàng.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <form id="customerEditForm" onsubmit="event.preventDefault(); saveCustomerData();">
+        <!-- Hidden input lưu trữ trạng thái hồ sơ (được điều khiển qua nút trên thanh thao tác) -->
+        <input type="hidden" id="custAccountStatus" value="@status" />
+
+        <div class="row g-3">
+            <!-- CỘT TRÁI (8 CỘT): Thông tin cá nhân & Địa chỉ giao nhận -->
+            <div class="col-lg-8">
+
+                <!-- 1. Thông tin cá nhân & Liên hệ -->
+                <div class="form-card">
+                    <div class="form-card-title">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-user-gear text-secondary"></i>
+                            <span>Thông tin cá nhân & Liên hệ</span>
+                        </div>
+                        <span class="badge bg-light text-muted border fw-normal" style="font-size: 0.75rem;">Thông tin chính</span>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-dark">
+                                Họ và tên khách hàng <span class="required-star">*</span>
+                            </label>
+                            <input type="text" id="custFullName" class="form-control" placeholder="Nhập họ và tên..." value="@name" required oninput="updateAvatarInitials(this.value)" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-dark">
+                                Số điện thoại <span class="required-star">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted font-monospace"><i class="fa-solid fa-phone"></i></span>
+                                <input type="text" id="custPhone" class="form-control font-monospace" placeholder="09xxxxxxxx" value="@phone" required onblur="validatePhoneNumber(this.value)" />
+                            </div>
+                            <small class="text-danger d-none" id="custPhoneError">⚠️ Số điện thoại không hợp lệ hoặc đã thuộc khách hàng khác!</small>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-dark">Địa chỉ Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted"><i class="fa-solid fa-envelope"></i></span>
+                                <input type="email" id="custEmail" class="form-control" placeholder="email@example.com" value="@email" />
+                            </div>
+                            <small class="text-muted" style="font-size: 0.74rem;">Dùng để gửi hóa đơn điện tử và thư ưu đãi sinh nhật.</small>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-semibold text-dark">Ngày sinh</label>
+                            <input type="date" id="custBirthday" class="form-control" value="@birthday" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-semibold text-dark">Giới tính</label>
+                            <select id="custGender" class="form-select">
+                                <option value="female" selected="@(gender == "female")">Nữ</option>
+                                <option value="male" selected="@(gender == "male")">Nam</option>
+                                <option value="other" selected="@(gender == "other")">Khác</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-dark">Nghề nghiệp / Đơn vị công tác</label>
+                            <input type="text" id="custOccupation" class="form-control" placeholder="Ví dụ: Giám đốc Marketing" value="Quản lý dự án truyền thông" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-dark">Mã giới thiệu / Nhân viên phụ trách CSKH</label>
+                            <select id="custStaffInCharge" class="form-select">
+                                <option value="staff1" selected>NV01 - Lê Thu Hằng (Quầy POS 01)</option>
+                                <option value="staff2">NV02 - Trần Bảo Trâm (CSKH Online)</option>
+                                <option value="none">Không chỉ định</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="form-label small fw-semibold text-dark">Ghi chú chăm sóc khách hàng</label>
+                        <textarea id="custNote" class="form-control" rows="2" placeholder="Ghi chú sở thích, thói quen mua sắm hoặc yêu cầu CSKH...">@notes</textarea>
+                    </div>
+                </div>
+
+                <!-- 2. Địa chỉ nhận hàng & Giao vận -->
+                <div class="form-card">
+                    <div class="form-card-title">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-location-dot text-secondary"></i>
+                            <span>Địa chỉ nhận hàng & Giao vận</span>
+                        </div>
+                        <span class="badge bg-light text-dark border fw-normal" style="font-size: 0.75rem;">Mặc định</span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-dark">
+                            Địa chỉ chi tiết (Số nhà, tên đường, tòa nhà) <span class="required-star">*</span>
+                        </label>
+                        <input type="text" id="custAddressDetail" class="form-control" placeholder="Ví dụ: 124 Nguyễn Huệ, Tòa nhà Bitexco..." value="@address" required />
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold text-dark">Tỉnh / Thành phố</label>
+                            <select id="custCity" class="form-select" onchange="updateDistricts()">
+                                <option value="hcm" selected>TP. Hồ Chí Minh</option>
+                                <option value="hn">Hà Nội</option>
+                                <option value="dn">Đà Nẵng</option>
+                                <option value="other">Khác</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold text-dark">Quận / Huyện</label>
+                            <select id="custDistrict" class="form-select">
+                                <option value="q1" selected>Quận 1</option>
+                                <option value="q3">Quận 3</option>
+                                <option value="q7">Quận 7</option>
+                                <option value="bt">Bình Thạnh</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold text-dark">Phường / Xã</label>
+                            <input type="text" id="custWard" class="form-control" placeholder="Phường/Xã..." value="Phường Bến Nghé" />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="form-label small fw-semibold text-dark">Ghi chú giao hàng đặc biệt</label>
+                        <input type="text" id="custDeliveryNote" class="form-control" placeholder="Ví dụ: Giao giờ hành chính, gọi điện trước 15 phút..." value="Giao giờ hành chính lên tầng 8 tòa nhà văn phòng, gọi trước 15 phút." />
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- CỘT PHẢI (4 CỘT): Thẻ hội viên VIP, Điểm tích lũy & Chi tiêu -->
+            <div class="col-lg-4">
+
+                <!-- Thẻ hội viên VIP & Điểm tích lũy -->
+                <div class="form-card text-center pb-4">
+                    <div class="customer-avatar-lg mx-auto mb-3" id="previewCustAvatar">@initials</div>
+                    <h5 class="fw-bold text-dark mb-1" id="previewCustName">@name</h5>
+                    <div class="mb-3">
+                        <span class="badge-vip-lg" id="previewCustTier">
+                            <i class="fa-solid fa-crown me-1 text-warning"></i>@tier
+                        </span>
+                    </div>
+
+                    <div class="text-start border-top pt-3">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-dark">Hạng thành viên</label>
+                            <select id="custTierSelect" class="form-select form-select-sm" onchange="updateTierBadge(this.value)">
+                                <option value="VIP Kim Cương" selected="@(tier.Contains("Kim Cương"))">VIP Kim Cương (Chiết khấu 15%)</option>
+                                <option value="VIP Vàng" selected="@(tier.Contains("Vàng"))">VIP Vàng (Chiết khấu 10%)</option>
+                                <option value="Thân thiết" selected="@(tier.Contains("Thân thiết"))">Thân thiết (Chiết khấu 5%)</option>
+                                <option value="Khách mới" selected="@(tier.Contains("Mới") || tier.Contains("Khách mới"))">Khách hàng mới (Tích lũy)</option>
+                            </select>
+                        </div>
+
+                        <!-- Điểm thưởng & Chi tiêu -->
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <div class="metric-pill">
+                                    <small class="text-muted d-block" style="font-size: 0.72rem;">Điểm thưởng</small>
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <strong class="text-dark font-monospace" id="custPointsVal">@points.ToString("N0", new System.Globalization.CultureInfo("vi-VN"))</strong>
+                                        <button type="button" class="btn btn-outline-dark btn-sm py-0 px-1" style="font-size: 0.7rem;" onclick="openAdjustPointsModal()" title="Điều chỉnh điểm">
+                                            <i class="fa-solid fa-pencil"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="metric-pill">
+                                    <small class="text-muted d-block" style="font-size: 0.72rem;">Số đơn đã mua</small>
+                                    <strong class="text-dark font-monospace">@ordersCount đơn</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-2 bg-light rounded border mb-2">
+                            <small class="text-muted d-block" style="font-size: 0.72rem;">Tổng chi tiêu tích lũy (Toàn thời gian):</small>
+                            <div class="d-flex align-items-baseline justify-content-between">
+                                <strong class="text-dark font-serif fs-5">@totalSpent</strong>
+                                <span class="badge bg-secondary-subtle text-secondary" style="font-size: 0.68rem;">Khóa đối soát</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </form>
+
+</div>
+
+<!-- MODAL: Điều chỉnh điểm thưởng khách hàng -->
+<div class="modal fade" id="adjustPointsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content rounded-3 border-0 shadow">
+            <div class="modal-header border-bottom p-3">
+                <h6 class="modal-title fw-bold text-dark">Điều chỉnh điểm thưởng</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-3">
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-dark">Điểm hiện tại</label>
+                    <input type="text" class="form-control form-control-sm font-monospace bg-light" id="modalCurrentPoints" value="@points.ToString("N0", new System.Globalization.CultureInfo("vi-VN"))" readonly />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-dark">Số điểm cộng / trừ</label>
+                    <input type="number" id="pointAdjustmentInput" class="form-control form-control-sm font-monospace" placeholder="+100 hoặc -50" />
+                    <small class="text-muted" style="font-size: 0.72rem;">Nhập số dương để cộng, số âm để trừ.</small>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label small fw-semibold text-dark">Lý do điều chỉnh</label>
+                    <textarea id="pointAdjustmentReason" class="form-control form-control-sm" rows="2" placeholder="Ví dụ: Bù điểm sự kiện khai trương..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer border-top p-2">
+                <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-dark btn-sm px-3" onclick="applyPointsAdjustment()">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var isLocked = @(status == "locked" ? "true" : "false");
+        var existingPhones = ['0903124567', '0918332981', '0987654321', '0933881224', '0909999111'];
+        var currentPhone = '@phone.Replace(" ", "")';
+        var currentPoints = @points;
+
+        // Tự động sinh avatar từ họ và tên
+        function updateAvatarInitials(name) {
+            var trimmed = name.trim();
+            document.getElementById('previewCustName').innerText = trimmed || 'Khách hàng';
+            if (!trimmed) {
+                document.getElementById('previewCustAvatar').innerText = 'KH';
+                return;
+            }
+            var parts = trimmed.split(/\s+/);
+            var initials = '';
+            if (parts.length === 1) {
+                initials = parts[0].substring(0, 2).toUpperCase();
+            } else {
+                initials = (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+            }
+            document.getElementById('previewCustAvatar').innerText = initials;
+        }
+
+        // Cập nhật badge hạng thành viên
+        function updateTierBadge(tier) {
+            var badgeEl = document.getElementById('previewCustTier');
+            if (tier.indexOf('Kim Cương') !== -1) {
+                badgeEl.className = 'badge-vip-lg';
+                badgeEl.innerHTML = '<i class="fa-solid fa-crown me-1 text-warning"></i>VIP Kim Cương';
+            } else if (tier.indexOf('Vàng') !== -1) {
+                badgeEl.className = 'badge-vip-lg';
+                badgeEl.innerHTML = '<i class="fa-solid fa-crown me-1 text-warning"></i>VIP Vàng';
+            } else if (tier.indexOf('Thân thiết') !== -1) {
+                badgeEl.className = 'badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1';
+                badgeEl.innerHTML = '<i class="fa-solid fa-star me-1 text-primary"></i>Thân thiết';
+            } else {
+                badgeEl.className = 'badge bg-light text-muted border px-2 py-1';
+                badgeEl.innerHTML = 'Khách mới';
+            }
+        }
+
+        // Kiểm tra hợp lệ số điện thoại
+        function validatePhoneNumber(phone) {
+            var cleanPhone = phone.replace(/\s+/g, '');
+            var errEl = document.getElementById('custPhoneError');
+            if (cleanPhone !== currentPhone && existingPhones.includes(cleanPhone)) {
+                errEl.classList.remove('d-none');
+                return false;
+            } else {
+                errEl.classList.add('d-none');
+                return true;
+            }
+        }
+
+        // Khóa / Mở khóa hồ sơ (Điều khiển nút trên thanh header & hidden input)
+        function toggleCustomerStatus() {
+            var statusHidden = document.getElementById('custAccountStatus');
+            var btnToggle = document.getElementById('btnToggleLockCustomer');
+
+            if (!isLocked) {
+                if (confirm('Xác nhận KHÓA hồ sơ khách hàng này?\n\nKhách hàng bị khóa sẽ không thể tích điểm hoặc giao dịch tại quầy, nhưng toàn bộ lịch sử hóa đơn kế toán vẫn được bảo lưu an toàn.')) {
+                    isLocked = true;
+                    if (statusHidden) statusHidden.value = 'locked';
+                    btnToggle.className = 'btn btn-outline-success btn-sm px-3 d-inline-flex align-items-center gap-2';
+                    btnToggle.innerHTML = '<i class="fa-solid fa-lock-open"></i><span>Mở khóa hồ sơ</span>';
+                }
+            } else {
+                if (confirm('MỞ KHÓA hồ sơ cho khách hàng này?')) {
+                    isLocked = false;
+                    if (statusHidden) statusHidden.value = 'active';
+                    btnToggle.className = 'btn btn-outline-danger btn-sm px-3 d-inline-flex align-items-center gap-2';
+                    btnToggle.innerHTML = '<i class="fa-solid fa-user-lock"></i><span>Khóa hồ sơ</span>';
+                }
+            }
+        }
+
+        // Modal điều chỉnh điểm
+        function openAdjustPointsModal() {
+            document.getElementById('modalCurrentPoints').value = currentPoints.toLocaleString('vi-VN');
+            document.getElementById('pointAdjustmentInput').value = '';
+            document.getElementById('pointAdjustmentReason').value = '';
+            var modal = new bootstrap.Modal(document.getElementById('adjustPointsModal'));
+            modal.show();
+        }
+
+        function applyPointsAdjustment() {
+            var input = document.getElementById('pointAdjustmentInput');
+            var val = parseInt(input.value);
+            if (isNaN(val) || val === 0) {
+                alert('Vui lòng nhập số điểm thay đổi hợp lệ (khác 0)!');
+                return;
+            }
+            var reason = document.getElementById('pointAdjustmentReason').value.trim();
+            if (!reason) {
+                alert('Vui lòng nhập lý do điều chỉnh điểm thưởng!');
+                return;
+            }
+
+            currentPoints = currentPoints + val;
+            if (currentPoints < 0) currentPoints = 0;
+            document.getElementById('custPointsVal').innerText = currentPoints.toLocaleString('vi-VN');
+
+            alert('Đã cập nhật điểm thành công! Điểm mới: ' + currentPoints.toLocaleString('vi-VN') + ' điểm.');
+            bootstrap.Modal.getInstance(document.getElementById('adjustPointsModal')).hide();
+        }
+
+        // Lưu dữ liệu khách hàng
+        function saveCustomerData() {
+            var name = document.getElementById('custFullName').value.trim();
+            var phone = document.getElementById('custPhone').value.trim();
+            var address = document.getElementById('custAddressDetail').value.trim();
+
+            if (!name) {
+                alert('Vui lòng nhập Họ và tên khách hàng!');
+                document.getElementById('custFullName').focus();
+                return;
+            }
+            if (!phone) {
+                alert('Vui lòng nhập Số điện thoại khách hàng!');
+                document.getElementById('custPhone').focus();
+                return;
+            }
+            if (!address) {
+                alert('Vui lòng nhập Địa chỉ chi tiết nhận hàng!');
+                document.getElementById('custAddressDetail').focus();
+                return;
+            }
+
+            // Hiển thị thông báo lưu thành công
+            var alertEl = document.getElementById('saveSuccessAlert');
+            alertEl.classList.remove('d-none');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            setTimeout(function() {
+                if (confirm('Lưu thông tin thành công! Bạn có muốn quay lại danh sách khách hàng không?')) {
+                    window.location.href = '@Url.Action("Index", "Customers", new { area = "Admin" })';
+                }
+            }, 600);
+        }
+
+        function updateDistricts() {
+            var city = document.getElementById('custCity').value;
+            var districtSelect = document.getElementById('custDistrict');
+            districtSelect.innerHTML = '';
+            if (city === 'hcm') {
+                districtSelect.innerHTML = '<option value="q1" selected>Quận 1</option><option value="q3">Quận 3</option><option value="q7">Quận 7</option><option value="bt">Bình Thạnh</option><option value="tpthuduc">TP. Thủ Đức</option>';
+            } else if (city === 'hn') {
+                districtSelect.innerHTML = '<option value="hk" selected>Quận Hoàn Kiếm</option><option value="bd">Quận Ba Đình</option><option value="cgt">Quận Cầu Giấy</option><option value="hbt">Quận Hai Bà Trưng</option>';
+            } else {
+                districtSelect.innerHTML = '<option value="central" selected>Quận Hải Châu</option><option value="st">Quận Sơn Trà</option>';
+            }
+        }
+    </script>
+}
+

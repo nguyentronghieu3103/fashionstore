@@ -1,0 +1,325 @@
+@{
+    ViewData["Title"] = "Chi Tiết Sản Phẩm - LIGHT LIFE";
+}
+
+<link rel="stylesheet" href="~/css/lightlife-detail.css" asp-append-version="true" />
+
+<div class="ll-container ll-detail-container">
+    <!-- 1. BREADCRUMB -->
+    <nav class="ll-breadcrumb" aria-label="Đường dẫn trang">
+        <a href="/" class="ll-breadcrumb-link">Trang chủ</a>
+        <i class="fa-solid fa-angle-right ll-breadcrumb-separator"></i>
+        <a href="/Products" class="ll-breadcrumb-link">Sản phẩm</a>
+        <i class="fa-solid fa-angle-right ll-breadcrumb-separator"></i>
+        <a href="/Products" class="ll-breadcrumb-link" id="llBreadcrumbCategory">Thời Trang Nữ</a>
+        <i class="fa-solid fa-angle-right ll-breadcrumb-separator"></i>
+        <span class="ll-breadcrumb-current" id="llBreadcrumbTitle">Áo Blazer Nữ Cổ Điển Dáng Suông</span>
+    </nav>
+
+    <!-- 2. BỐ CỤC CHÍNH 2 CỘT (Gallery 55% + Thông tin mua 45%) -->
+    <div class="ll-detail-grid">
+        <!-- CỘT TRÁI: GALLERY ẢNH (55%) -->
+        <section class="ll-gallery-wrap" aria-label="Hình ảnh sản phẩm">
+            <!-- Khung ảnh chính (Tỷ lệ 4:5) -->
+            <div class="ll-main-img-box" id="llMainImgBox" onclick="openLightbox()">
+                <span class="ll-badge-tag">Bộ Sưu Tập 2026</span>
+                <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=1000&auto=format&fit=crop" 
+                     alt="Áo Blazer Nữ Cổ Điển Dáng Suông" 
+                     id="llMainImg" 
+                     class="ll-main-img" />
+                <button type="button" class="ll-zoom-btn" title="Phóng to ảnh" aria-label="Phóng to ảnh">
+                    <i class="fa-solid fa-magnifying-glass-plus"></i>
+                </button>
+            </div>
+
+            <!-- Dải ảnh thu nhỏ (Thumbnails) -->
+            <div class="ll-thumbnails-strip" id="llThumbnailsStrip" aria-label="Danh sách ảnh thu nhỏ">
+                <!-- Render qua JS -->
+            </div>
+        </section>
+
+        <!-- CỘT PHẢI: THÔNG TIN MUA SẮM (45%) -->
+        <section class="ll-info-wrap" aria-label="Thông tin đặt mua">
+            <span class="ll-product-category-eyebrow" id="llCategoryEyebrow">Thời Trang Nữ</span>
+            <h1 class="ll-detail-title" id="llDetailTitle">Áo Blazer Nữ Cổ Điển Dáng Suông</h1>
+
+            <div class="ll-detail-price-box">
+                <span class="ll-detail-price" id="llDetailPrice">650.000 đ</span>
+                <span class="ll-detail-stock-status">
+                    <i class="fa-solid fa-circle-check"></i> Còn hàng
+                </span>
+            </div>
+
+            <p class="ll-detail-short-desc" id="llDetailDesc">
+                Thiết kế blazer phom suông tối giản với kỹ thuật may cao cấp, ve áo thanh lịch và đệm vai tự nhiên. Dễ dàng kết hợp cùng áo sơ mi, áo thun hoặc quần tây cho vẻ ngoài đĩnh đạc và cuốn hút.
+            </p>
+
+            <!-- KHỐI CHỌN BIẾN THỂ -->
+            <div class="ll-picker-section">
+                <!-- 1. Chọn Màu Sắc -->
+                <div class="ll-picker-group">
+                    <div class="ll-picker-header">
+                        <span class="ll-picker-label">
+                            Màu sắc: <strong class="ll-picker-current-val" id="llSelectedColorName">Chưa chọn</strong>
+                        </span>
+                    </div>
+                    <div class="ll-detail-swatches" id="llColorSwatches">
+                        <!-- Render swatch nút bấm qua JS -->
+                    </div>
+                    <span class="ll-picker-error" id="llColorError">Vui lòng chọn màu sắc trước khi thêm vào giỏ!</span>
+                </div>
+
+                <!-- 2. Chọn Kích Cỡ & Modal hướng dẫn -->
+                <div class="ll-picker-group">
+                    <div class="ll-picker-header">
+                        <span class="ll-picker-label">
+                            Kích cỡ: <strong class="ll-picker-current-val" id="llSelectedSizeName">Chưa chọn</strong>
+                        </span>
+                        <button type="button" class="ll-size-guide-btn" onclick="openSizeGuideModal()">
+                            <i class="fa-solid fa-ruler-combined"></i> Hướng dẫn chọn size
+                        </button>
+                    </div>
+                    <div class="ll-detail-sizes" id="llSizesWrap">
+                        <!-- Render size chips qua JS (size hết hàng bị disable) -->
+                    </div>
+                    <span class="ll-picker-error" id="llSizeError">Vui lòng chọn kích cỡ trước khi thêm vào giỏ!</span>
+                </div>
+
+                <!-- 3. Chọn Số Lượng -->
+                <div class="ll-picker-group">
+                    <span class="ll-picker-label">Số lượng:</span>
+                    <div class="ll-quantity-stepper">
+                        <button type="button" class="ll-stepper-btn" id="llQtyMinus" disabled aria-label="Giảm số lượng">−</button>
+                        <input type="text" id="llQuantityInput" class="ll-stepper-input" value="1" readonly aria-label="Số lượng đặt mua" />
+                        <button type="button" class="ll-stepper-btn" id="llQtyPlus" aria-label="Tăng số lượng">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CỤM NÚT HÀNH ĐỘNG -->
+            <div class="ll-detail-actions">
+                <!-- Nút Thêm vào giỏ (Không yêu cầu đăng nhập) -->
+                <button type="button" class="ll-btn ll-btn-add-cart" onclick="handleAddToCart()">
+                    <i class="fa-solid fa-bag-shopping"></i> Thêm vào giỏ
+                </button>
+                <!-- Nút Mua ngay (Vào luồng Checkout; chưa login chuyển đăng nhập) -->
+                <button type="button" class="ll-btn ll-btn-buy-now" onclick="handleBuyNow()">
+                    <i class="fa-solid fa-bolt"></i> Mua ngay
+                </button>
+            </div>
+
+            <!-- Lưu ý hệ thống minh bạch -->
+            <div class="ll-cart-notice-note">
+                <i class="fa-solid fa-circle-info" style="color: var(--color-brand); margin-top: 3px;"></i>
+                <span>Giỏ hàng chưa giữ chỗ hàng hóa. Hệ thống backend sẽ xác nhận lại số lượng tồn kho và giá niêm yết chính thức khi quý khách tiến hành đặt hàng.</span>
+            </div>
+        </section>
+    </div>
+
+    <!-- 3. TABS THÔNG TIN CHI TIẾT (Mô tả, Chất liệu, Bảo quản, Chính sách) -->
+    <section class="ll-detail-tabs-section" aria-label="Thông tin chi tiết sản phẩm">
+        <div class="ll-tabs-nav" role="tablist">
+            <button type="button" class="ll-tab-btn active" data-tab="tab-desc" role="tab">Mô Tả Sản Phẩm</button>
+            <button type="button" class="ll-tab-btn" data-tab="tab-material" role="tab">Chất Liệu & Form Dáng</button>
+            <button type="button" class="ll-tab-btn" data-tab="tab-care" role="tab">Hướng Dẫn Bảo Quản</button>
+            <button type="button" class="ll-tab-btn" data-tab="tab-policies" role="tab">Chính Sách & Giao Nhận</button>
+        </div>
+
+        <!-- Tab 1: Mô tả -->
+        <div class="ll-tab-content active" id="tab-desc" role="tabpanel">
+            <p>
+                Dòng sản phẩm <strong>Áo Blazer Cổ Điển Light Life 2026</strong> được thiết kế theo trường phái thời trang đương đại, giao thoa giữa nét thanh lịch công sở và tính linh hoạt thường nhật. Đường cắt may tinh chuẩn giúp tôn dáng mà vẫn đem lại cảm giác tự do, phóng khoáng trong từng cử động.
+            </p>
+            <p>
+                Sản phẩm sở hữu hàng khuy bọc vải cao cấp, túi áo may tỉ mỉ có nắp gập và xẻ tà sau tạo phom đứng chuẩn mực. Thích hợp cho cả môi trường làm việc chuyên nghiệp, các buổi hội thảo hay những buổi dạo phố cuối tuần.
+            </p>
+        </div>
+
+        <!-- Tab 2: Chất liệu -->
+        <div class="ll-tab-content" id="tab-material" role="tabpanel">
+            <dl class="ll-spec-list">
+                <dt class="ll-spec-dt">Chất liệu chính:</dt>
+                <dd class="ll-spec-dd" id="llTabMaterial">70% Polyester, 28% Rayon mềm mịn, 2% Spandex co giãn nhẹ.</dd>
+                <dt class="ll-spec-dt">Lớp lót trong:</dt>
+                <dd class="ll-spec-dd">Lụa Habutai cao cấp thoáng khí, chống tích điện.</dd>
+                <dt class="ll-spec-dt">Độ co giãn:</dt>
+                <dd class="ll-spec-dd">Co giãn nhẹ 2 chiều, giữ form áo không nhăn nhàu.</dd>
+                <dt class="ll-spec-dt">Xuất xứ vải:</dt>
+                <dd class="ll-spec-dd">Nhập khẩu kiểm định đạt tiêu chuẩn an toàn cho da.</dd>
+            </dl>
+        </div>
+
+        <!-- Tab 3: Bảo quản -->
+        <div class="ll-tab-content" id="tab-care" role="tabpanel">
+            <p id="llTabCare">
+                Giặt khô hoặc giặt tay với nước lạnh. Không vắt xoắn mạnh. Là ủi ở nhiệt độ trung bình dưới 110°C, ưu tiên bàn ủi hơi nước.
+            </p>
+            <ul style="padding-left: 20px; margin-top: 8px;">
+                <li>Nên treo bằng móc áo bản rộng có đệm vai để giữ phom áo luôn đứng dáng.</li>
+                <li>Tránh phơi trực tiếp dưới ánh nắng gắt nhiệt độ cao để bảo vệ độ bền màu vải.</li>
+                <li>Không sử dụng hóa chất tẩy rửa mạnh hoặc thuốc tẩy clo.</li>
+            </ul>
+        </div>
+
+        <!-- Tab 4: Chính sách -->
+        <div class="ll-tab-content" id="tab-policies" role="tabpanel">
+            <p id="llTabPolicies">
+                Miễn phí giao hàng cho đơn từ 500.000 đ. Đổi size / mẫu trong 7 ngày nếu nguyên tem mác. Kiểm tra hàng trước khi thanh toán (COD).
+            </p>
+            <ul style="padding-left: 20px; margin-top: 8px;">
+                <li><strong>Thời gian giao hàng:</strong> 1-2 ngày đối với nội thành TP.HCM & Hà Nội; 2-4 ngày đối với các tỉnh thành khác.</li>
+                <li><strong>Điều kiện đổi hàng:</strong> Sản phẩm còn nguyên tem, nhãn mác, chưa qua sử dụng, giặt tẩy hoặc chỉnh sửa.</li>
+                <li><strong>Hỗ trợ đổi tận nơi:</strong> Nhân viên giao hàng sẽ mang size mới tới đổi trực tiếp tận nhà quý khách.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 4. SẢN PHẨM LIÊN QUAN (Related Products) -->
+    <section class="ll-section" style="padding-top: 0;" aria-label="Sản phẩm gợi ý">
+        <div class="ll-section-header">
+            <div>
+                <span class="ll-section-eyebrow">Phối Đồ Hoàn Hảo</span>
+                <h2 class="ll-section-title">Sản Phẩm Cùng Bộ Sưu Tập</h2>
+            </div>
+            <a href="/Products" class="ll-link-all">Xem tất cả <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+        <div class="ll-products-grid" id="llRelatedGrid">
+            <!-- Render qua JS -->
+        </div>
+    </section>
+</div>
+
+<!-- ==========================================================================
+     MODAL 1: HƯỚNG DẪN CHỌN SIZE
+     ========================================================================== -->
+<div class="ll-modal-backdrop" id="llSizeGuideModal" role="dialog" aria-modal="true" aria-labelledby="sizeGuideTitle">
+    <div class="ll-modal-card">
+        <div class="ll-modal-header">
+            <h3 class="ll-modal-title" id="sizeGuideTitle">Bảng Quy Đổi Kích Cỡ Chuẩn (Size Chart)</h3>
+            <button type="button" class="ll-modal-close" onclick="closeSizeGuideModal()" aria-label="Đóng bảng size">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="ll-modal-body">
+            <p style="font-size: 14px; color: var(--color-text-sub); margin-top: 0;">
+                Thông số kích thước được đo chuẩn theo vóc dáng người Việt. Nếu quý khách phân vân giữa hai size, Light Life khuyến nghị chọn size lớn hơn để có trải nghiệm thoải mái nhất.
+            </p>
+            <div style="overflow-x: auto;">
+                <table class="ll-size-table">
+                    <thead>
+                        <tr>
+                            <th>Size</th>
+                            <th>Chiều cao (cm)</th>
+                            <th>Cân nặng (kg)</th>
+                            <th>Vòng 1 (cm)</th>
+                            <th>Vòng 2 (cm)</th>
+                            <th>Rộng vai (cm)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>S</strong></td>
+                            <td>150 - 158</td>
+                            <td>42 - 48</td>
+                            <td>80 - 84</td>
+                            <td>62 - 66</td>
+                            <td>36 - 37</td>
+                        </tr>
+                        <tr>
+                            <td><strong>M</strong></td>
+                            <td>156 - 164</td>
+                            <td>49 - 54</td>
+                            <td>85 - 88</td>
+                            <td>67 - 71</td>
+                            <td>38 - 39</td>
+                        </tr>
+                        <tr>
+                            <td><strong>L</strong></td>
+                            <td>162 - 168</td>
+                            <td>55 - 60</td>
+                            <td>89 - 93</td>
+                            <td>72 - 76</td>
+                            <td>40 - 41</td>
+                        </tr>
+                        <tr>
+                            <td><strong>XL</strong></td>
+                            <td>165 - 172</td>
+                            <td>61 - 67</td>
+                            <td>94 - 98</td>
+                            <td>77 - 82</td>
+                            <td>42 - 43</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="font-size: 13px; color: var(--color-text-sub); margin-top: 14px; margin-bottom: 0;">
+                * Cần tư vấn chi tiết hơn? Gọi ngay hotline <strong>1900 6868</strong> để được chuyên viên đo form hỗ trợ.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================================================
+     MODAL 2: THÔNG BÁO THÊM GIỎ HÀNG THÀNH CÔNG
+     ========================================================================== -->
+<div class="ll-modal-backdrop" id="llAddedModal" role="dialog" aria-modal="true" aria-labelledby="addedModalTitle">
+    <div class="ll-modal-card ll-added-modal-card">
+        <div class="ll-modal-header">
+            <h3 class="ll-modal-title" id="addedModalTitle" style="color: var(--color-success); display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-circle-check"></i> Đã thêm vào giỏ hàng!
+            </h3>
+            <button type="button" class="ll-modal-close" onclick="closeAddedModal()" aria-label="Đóng thông báo">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="ll-modal-body">
+            <p id="llAddedDetailsText" style="font-size: 15px; font-weight: 600; color: var(--color-text-main); margin-top: 0; margin-bottom: 12px;"></p>
+            <p style="font-size: 13px; color: var(--color-text-sub); margin: 0;">
+                Sản phẩm đã được cập nhật vào phiên giỏ hàng của bạn. Bạn muốn chuyển tới trang giỏ hàng ngay hay tiếp tục xem các sản phẩm khác?
+            </p>
+            <div class="ll-added-actions">
+                <button type="button" class="ll-btn ll-btn-secondary" onclick="closeAddedModal()">
+                    Tiếp tục mua
+                </button>
+                <a href="/Cart" class="ll-btn ll-btn-primary">
+                    Xem giỏ hàng <i class="fa-solid fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================================================
+     LIGHTBOX PHÓNG TO ẢNH LỚN
+     ========================================================================== -->
+<div class="ll-lightbox-backdrop" id="llLightbox" onclick="closeLightbox()">
+    <button type="button" class="ll-lightbox-close" onclick="closeLightbox()" aria-label="Đóng xem ảnh lớn">
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+    <img src="" alt="Ảnh sản phẩm phóng to" class="ll-lightbox-img" id="llLightboxImg" onclick="event.stopPropagation();" />
+</div>
+
+<!-- ==========================================================================
+     STICKY BOTTOM BAR (MOBILE ONLY - KHÔNG CHE NỘI DUNG NHỜ PADDING ĐÁY)
+     ========================================================================== -->
+<div class="ll-mobile-sticky-bar" aria-label="Thanh mua hàng nhanh trên di động">
+    <div class="ll-sticky-bar-inner">
+        <div>
+            <span style="font-size: 11px; color: var(--color-text-sub); display: block;">Giá bán:</span>
+            <strong style="color: var(--color-brand); font-size: 17px;">650.000 đ</strong>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <button type="button" class="ll-btn ll-btn-secondary ll-btn-sm" onclick="handleAddToCart()">
+                <i class="fa-solid fa-bag-shopping"></i> Thêm giỏ
+            </button>
+            <button type="button" class="ll-btn ll-btn-primary ll-btn-sm" onclick="handleBuyNow()">
+                Mua ngay
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/lightlife-detail.js" asp-append-version="true"></script>
+}
+

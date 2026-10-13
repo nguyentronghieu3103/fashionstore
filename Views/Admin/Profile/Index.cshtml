@@ -1,0 +1,257 @@
+@{
+    ViewData["Title"] = "C02 • Hồ sơ cá nhân Admin";
+}
+
+@section Styles {
+    <style>
+        .profile-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .profile-avatar-lg {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #111827;
+            color: #ffffff;
+            font-size: 1.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #f3f4f6;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #374151;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .role-badge-admin {
+            background-color: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 3px 9px;
+            border-radius: 6px;
+        }
+
+        .status-badge-active {
+            background-color: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 3px 9px;
+            border-radius: 6px;
+        }
+    </style>
+}
+
+<div class="container-fluid p-0">
+
+    <!-- Header & Hero Profile -->
+    <div class="profile-card mb-3">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="profile-avatar-lg" id="avatarDisplay">
+                    AD
+                </div>
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge bg-dark text-white px-2 py-1 font-monospace" style="font-size: 0.72rem;">C02</span>
+                        <h4 class="fw-bold mb-0 text-dark" id="heroName">Admin Quản Trị</h4>
+                        <span class="role-badge-admin">Admin</span>
+                        <span class="status-badge-active">Hoạt động</span>
+                    </div>
+                    <div class="text-muted small">
+                        <span class="font-monospace text-dark fw-semibold" id="heroCode">AD-01</span> · 
+                        <span id="heroEmail">admin@lightlife.vn</span> · 
+                        <span>Cửa hàng Light Life</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-dark btn-sm px-3">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Quay lại Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nội dung hồ sơ & Bảo mật -->
+    <div class="row g-3">
+        
+        <!-- Cột trái: Thông tin cá nhân -->
+        <div class="col-lg-6">
+            <div class="profile-card h-100">
+                <div class="section-title">
+                    <span><i class="fa-solid fa-user me-1 text-primary"></i> 1. Thông tin cá nhân</span>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold text-dark mb-1">Mã quản trị viên:</label>
+                        <input type="text" class="form-control form-control-sm font-monospace bg-light" id="profileCode" value="AD-01" readonly />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold text-dark mb-1">Vai trò hệ thống:</label>
+                        <input type="text" class="form-control form-control-sm bg-light fw-bold text-danger" value="Quản trị viên tối cao (Admin)" readonly />
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label small fw-semibold text-dark mb-1">Họ và tên:</label>
+                        <input type="text" class="form-control form-control-sm" id="profileFullName" value="Admin Quản Trị" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold text-dark mb-1">Email đăng nhập:</label>
+                        <input type="email" class="form-control form-control-sm font-monospace" id="profileEmail" value="admin@lightlife.vn" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold text-dark mb-1">Số điện thoại:</label>
+                        <input type="text" class="form-control form-control-sm font-monospace" id="profilePhone" value="0909.999.888" />
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label small fw-semibold text-dark mb-1">Phạm vi phụ trách:</label>
+                        <input type="text" class="form-control form-control-sm bg-light" value="Toàn bộ hệ thống cửa hàng & kho" readonly />
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end pt-4 mt-3 border-top">
+                    <button type="button" class="btn btn-dark btn-sm px-4 fw-bold" onclick="saveProfileInfo()">
+                        <i class="fa-solid fa-floppy-disk me-1"></i> Lưu thông tin
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cột phải: Đổi mật khẩu & Phiên đăng nhập -->
+        <div class="col-lg-6">
+            
+            <!-- Đổi mật khẩu -->
+            <div class="profile-card mb-3">
+                <div class="section-title">
+                    <span><i class="fa-solid fa-key me-1 text-primary"></i> 2. Đổi mật khẩu</span>
+                </div>
+
+                <div class="mb-2">
+                    <label class="form-label small fw-semibold text-dark mb-1">Mật khẩu hiện tại:</label>
+                    <input type="password" class="form-control form-control-sm font-monospace" id="oldPassword" placeholder="Nhập mật khẩu hiện tại..." />
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold text-dark mb-1">Mật khẩu mới:</label>
+                        <input type="password" class="form-control form-control-sm font-monospace" id="newPassword" placeholder="Nhập mật khẩu mới..." />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold text-dark mb-1">Xác nhận mật khẩu mới:</label>
+                        <input type="password" class="form-control form-control-sm font-monospace" id="confirmPassword" placeholder="Nhập lại mật khẩu mới..." />
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-outline-dark btn-sm px-4 fw-bold" onclick="changePasswordAction()">
+                        <i class="fa-solid fa-lock me-1"></i> Cập nhật mật khẩu
+                    </button>
+                </div>
+            </div>
+
+            <!-- Phiên đăng nhập & Thiết bị -->
+            <div class="profile-card mb-0">
+                <div class="section-title">
+                    <span><i class="fa-solid fa-laptop me-1 text-primary"></i> 3. Phiên đăng nhập hiện tại</span>
+                </div>
+
+                <div class="p-3 bg-light rounded border mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <strong class="text-dark small">Laptop Quản trị (Chrome 128 - Windows)</strong>
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">Thiết bị này</span>
+                    </div>
+                    <div class="text-muted font-monospace" style="font-size: 0.75rem;">
+                        IP: 192.168.1.1 · Đăng nhập lần cuối: 07:30 (Hôm nay)
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-outline-danger btn-sm px-3" onclick="revokeOtherSessions()">
+                        <i class="fa-solid fa-arrow-right-from-bracket me-1"></i> Đăng xuất các thiết bị khác
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        function saveProfileInfo() {
+            var fullName = document.getElementById('profileFullName').value.trim();
+            var email = document.getElementById('profileEmail').value.trim();
+            var phone = document.getElementById('profilePhone').value.trim();
+
+            if (!fullName || !email) {
+                alert('Vui lòng nhập đầy đủ Họ tên và Email!');
+                return;
+            }
+
+            document.getElementById('heroName').innerText = fullName;
+            document.getElementById('heroEmail').innerText = email;
+
+            alert('Đã lưu thông tin hồ sơ Admin thành công!');
+        }
+
+        function changePasswordAction() {
+            var oldPass = document.getElementById('oldPassword').value.trim();
+            var newPass = document.getElementById('newPassword').value.trim();
+            var confirmPass = document.getElementById('confirmPassword').value.trim();
+
+            if (!oldPass) {
+                alert('Vui lòng nhập mật khẩu hiện tại!');
+                document.getElementById('oldPassword').focus();
+                return;
+            }
+
+            if (!newPass || !confirmPass) {
+                alert('Vui lòng nhập mật khẩu mới và xác nhận mật khẩu!');
+                return;
+            }
+
+            if (newPass !== confirmPass) {
+                alert('Mật khẩu mới và xác nhận mật khẩu không khớp!');
+                document.getElementById('confirmPassword').focus();
+                return;
+            }
+
+            document.getElementById('oldPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+
+            alert('Đã cập nhật mật khẩu thành công!');
+        }
+
+        function revokeOtherSessions() {
+            if (!confirm('Bạn có chắc muốn đăng xuất tài khoản Admin khỏi tất cả các thiết bị khác?')) return;
+            alert('Đã thu hồi phiên và đăng xuất khỏi các thiết bị khác thành công!');
+        }
+    </script>
+}
+

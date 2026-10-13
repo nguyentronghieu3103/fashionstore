@@ -1,0 +1,434 @@
+@{
+    ViewData["Title"] = "Trang chủ - LIGHT LIFE Fashion Studio";
+}
+
+<!-- ==========================================================================
+     KHUNG 2: HERO GIỚI THIỆU BỘ SƯU TẬP (Kế thừa nhận diện & bố cục Home)
+     ========================================================================== -->
+<section class="ll-hero">
+    <div class="ll-container">
+        <div class="ll-hero-grid">
+            <!-- Nội dung giới thiệu bên trái -->
+            <div>
+                <span class="ll-hero-badge">Bộ Sưu Tập Mới 2026</span>
+                <h1 class="ll-hero-title">Phong Cách Thời Trang Tinh Tế & Hiện Đại</h1>
+                <p class="ll-hero-desc">
+                    Khám phá các thiết kế mới nhất với chất liệu cao cấp, đường may tỉ mỉ và phong cách dẫn đầu xu hướng. Tự tin khẳng định khí chất trong mọi khoảnh khắc thường nhật.
+                </p>
+                <div class="ll-hero-actions">
+                    <!-- Nối hành vi: Khám phá ngay → Danh sách sản phẩm -->
+                    <a href="/Products" class="ll-btn ll-btn-primary">
+                        <i class="fa-solid fa-compass"></i> Khám phá ngay
+                    </a>
+                    <!-- Nối hành vi phụ: Xem hàng mới về -->
+                    <a href="/Products?sort=newest" class="ll-btn ll-btn-secondary">
+                        <i class="fa-solid fa-sparkles"></i> Hàng mới về
+                    </a>
+                </div>
+            </div>
+
+            <!-- Banner hình ảnh bên phải (Bo góc 8px, bóng nhẹ) -->
+            <div>
+                <div class="ll-hero-banner-card">
+                    <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1000&auto=format&fit=crop" 
+                         alt="Bộ sưu tập thời trang Light Life 2026" 
+                         class="ll-hero-img" />
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==========================================================================
+     KHUNG 3: DANH MỤC THỜI TRANG (Nam / Nữ / Phụ kiện)
+     ========================================================================== -->
+<section class="ll-section">
+    <div class="ll-container">
+        <div class="ll-section-header">
+            <div class="ll-section-title-wrap">
+                <span class="ll-section-eyebrow">Khám Phá Theo Nhóm Hàng</span>
+                <h2 class="ll-section-title">Danh Mục Yêu Thích</h2>
+            </div>
+        </div>
+
+        <div class="ll-categories-grid">
+            <!-- Danh mục 1: Thời Trang Nữ (Nối hành vi: lọc danh mục Nữ) -->
+            <a href="/Products?category=nu" class="ll-category-card" title="Xem thời trang nữ">
+                <img src="https://images.unsplash.com/photo-1550639525-c97d455acf70?q=80&w=800&auto=format&fit=crop" 
+                     alt="Thời Trang Nữ" 
+                     class="ll-category-img" 
+                     loading="lazy" />
+                <div class="ll-category-overlay">
+                    <h3 class="ll-category-name">Thời Trang Nữ</h3>
+                    <span class="ll-category-sub">Khám phá bộ sưu tập <i class="fa-solid fa-arrow-right"></i></span>
+                </div>
+            </a>
+
+            <!-- Danh mục 2: Thời Trang Nam (Nối hành vi: lọc danh mục Nam) -->
+            <a href="/Products?category=nam" class="ll-category-card" title="Xem thời trang nam">
+                <img src="https://images.unsplash.com/photo-1617137968427-85924c800a22?q=80&w=800&auto=format&fit=crop" 
+                     alt="Thời Trang Nam" 
+                     class="ll-category-img" 
+                     loading="lazy" />
+                <div class="ll-category-overlay">
+                    <h3 class="ll-category-name">Thời Trang Nam</h3>
+                    <span class="ll-category-sub">Khám phá bộ sưu tập <i class="fa-solid fa-arrow-right"></i></span>
+                </div>
+            </a>
+
+            <!-- Danh mục 3: Phụ Kiện (Nối hành vi: lọc danh mục Phụ kiện) -->
+            <a href="/Products?category=phukien" class="ll-category-card" title="Xem phụ kiện">
+                <img src="https://images.unsplash.com/photo-1591561954557-26941169b49e?q=80&w=800&auto=format&fit=crop" 
+                     alt="Phụ Kiện Thời Trang" 
+                     class="ll-category-img" 
+                     loading="lazy" />
+                <div class="ll-category-overlay">
+                    <h3 class="ll-category-name">Phụ Kiện</h3>
+                    <span class="ll-category-sub">Khám phá bộ sưu tập <i class="fa-solid fa-arrow-right"></i></span>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ==========================================================================
+     KHUNG 4: HÀNG MỚI VỀ (Sản phẩm mới với tỷ lệ ảnh 4:5, link Xem tất cả màu #6F2438)
+     ========================================================================== -->
+<section class="ll-section" style="padding-top: 0;">
+    <div class="ll-container">
+        <div class="ll-section-header">
+            <div class="ll-section-title-wrap">
+                <span class="ll-section-eyebrow">Thiết Kế Mới Nhất</span>
+                <h2 class="ll-section-title">Hàng Mới Về</h2>
+            </div>
+            <!-- Link Xem tất cả đồng bộ màu thương hiệu #6F2438 -->
+            <a href="/Products?sort=newest" class="ll-link-all">
+                Xem tất cả <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <!-- Lưới sản phẩm (Tỷ lệ ảnh 4:5, hiển thị giá VND, thêm vào giỏ min 44px) -->
+        <div class="ll-products-grid" id="llNewArrivalsGrid">
+            <!-- 1. Blazer Nữ -->
+            <article class="ll-product-card" data-product-id="101">
+                <a href="/Products/Detail/101" class="ll-product-img-box" title="Áo Blazer Nữ Cổ Điển Dáng Suông">
+                    <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=800&auto=format&fit=crop" 
+                         alt="Áo Blazer Nữ Cổ Điển Dáng Suông" 
+                         class="ll-product-img" 
+                         loading="lazy" />
+                    <span class="ll-product-tag">Mới Về</span>
+                </a>
+                <div class="ll-product-body">
+                    <span class="ll-product-category">Thời Trang Nữ</span>
+                    <h3 class="ll-product-title">
+                        <a href="/Products/Detail/101" title="Áo Blazer Nữ Cổ Điển Dáng Suông">Áo Blazer Nữ Cổ Điển Dáng Suông</a>
+                    </h3>
+                    <div class="ll-product-footer">
+                        <span class="ll-product-price">650.000 đ</span>
+                        <div class="ll-product-rating">
+                            <i class="fa-solid fa-star"></i>
+                            <span>4.9 (38)</span>
+                        </div>
+                    </div>
+                    <div class="ll-card-action-bar">
+                        <button type="button" class="ll-btn ll-btn-secondary" style="width: 100%; min-height: 44px;" 
+                                onclick="LightLifeCart.addItem(101, 'Áo Blazer Nữ Cổ Điển Dáng Suông')">
+                            <i class="fa-solid fa-bag-shopping"></i> Thêm vào giỏ
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 2. Sơ Mi Nam Oxford -->
+            <article class="ll-product-card" data-product-id="102">
+                <a href="/Products/Detail/102" class="ll-product-img-box" title="Áo Sơ Mi Nam Oxford Trắng Thanh Lịch">
+                    <img src="https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?q=80&w=800&auto=format&fit=crop" 
+                         alt="Áo Sơ Mi Nam Oxford Trắng Thanh Lịch" 
+                         class="ll-product-img" 
+                         loading="lazy" />
+                    <span class="ll-product-tag">Mới Về</span>
+                </a>
+                <div class="ll-product-body">
+                    <span class="ll-product-category">Thời Trang Nam</span>
+                    <h3 class="ll-product-title">
+                        <a href="/Products/Detail/102" title="Áo Sơ Mi Nam Oxford Trắng Thanh Lịch">Áo Sơ Mi Nam Oxford Trắng Thanh Lịch</a>
+                    </h3>
+                    <div class="ll-product-footer">
+                        <span class="ll-product-price">420.000 đ</span>
+                        <div class="ll-product-rating">
+                            <i class="fa-solid fa-star"></i>
+                            <span>4.8 (52)</span>
+                        </div>
+                    </div>
+                    <div class="ll-card-action-bar">
+                        <button type="button" class="ll-btn ll-btn-secondary" style="width: 100%; min-height: 44px;" 
+                                onclick="LightLifeCart.addItem(102, 'Áo Sơ Mi Nam Oxford Trắng Thanh Lịch')">
+                            <i class="fa-solid fa-bag-shopping"></i> Thêm vào giỏ
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 3. Đầm Lụa Dáng Dài -->
+            <article class="ll-product-card" data-product-id="103">
+                <a href="/Products/Detail/103" class="ll-product-img-box" title="Đầm Lụa Dáng Dài Dự Tiệc Cao Cấp">
+                    <img src="https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?q=80&w=800&auto=format&fit=crop" 
+                         alt="Đầm Lụa Dáng Dài Dự Tiệc Cao Cấp" 
+                         class="ll-product-img" 
+                         loading="lazy" />
+                    <span class="ll-product-tag">Mới Về</span>
+                </a>
+                <div class="ll-product-body">
+                    <span class="ll-product-category">Thời Trang Nữ</span>
+                    <h3 class="ll-product-title">
+                        <a href="/Products/Detail/103" title="Đầm Lụa Dáng Dài Dự Tiệc Cao Cấp">Đầm Lụa Dáng Dài Dự Tiệc Cao Cấp</a>
+                    </h3>
+                    <div class="ll-product-footer">
+                        <span class="ll-product-price">890.000 đ</span>
+                        <div class="ll-product-rating">
+                            <i class="fa-solid fa-star"></i>
+                            <span>5.0 (29)</span>
+                        </div>
+                    </div>
+                    <div class="ll-card-action-bar">
+                        <button type="button" class="ll-btn ll-btn-secondary" style="width: 100%; min-height: 44px;" 
+                                onclick="LightLifeCart.addItem(103, 'Đầm Lụa Dáng Dài Dự Tiệc Cao Cấp')">
+                            <i class="fa-solid fa-bag-shopping"></i> Thêm vào giỏ
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 4. Quần Tây Nam -->
+            <article class="ll-product-card" data-product-id="104">
+                <a href="/Products/Detail/104" class="ll-product-img-box" title="Quần Tây Nam Dáng Suông Tinh Tế">
+                    <img src="https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?q=80&w=800&auto=format&fit=crop" 
+                         alt="Quần Tây Nam Dáng Suông Tinh Tế" 
+                         class="ll-product-img" 
+                         loading="lazy" />
+                    <span class="ll-product-tag">Mới Về</span>
+                </a>
+                <div class="ll-product-body">
+                    <span class="ll-product-category">Thời Trang Nam</span>
+                    <h3 class="ll-product-title">
+                        <a href="/Products/Detail/104" title="Quần Tây Nam Dáng Suông Tinh Tế">Quần Tây Nam Dáng Suông Tinh Tế</a>
+                    </h3>
+                    <div class="ll-product-footer">
+                        <span class="ll-product-price">520.000 đ</span>
+                        <div class="ll-product-rating">
+                            <i class="fa-solid fa-star"></i>
+                            <span>4.7 (44)</span>
+                        </div>
+                    </div>
+                    <div class="ll-card-action-bar">
+                        <button type="button" class="ll-btn ll-btn-secondary" style="width: 100%; min-height: 44px;" 
+                                onclick="LightLifeCart.addItem(104, 'Quần Tây Nam Dáng Suông Tinh Tế')">
+                            <i class="fa-solid fa-bag-shopping"></i> Thêm vào giỏ
+                        </button>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+
+<!-- ==========================================================================
+     KHUNG 5: SẢN PHẨM BÁN CHẠY (Best Sellers)
+     ========================================================================== -->
+<section class="ll-section" style="background-color: #F1ECE3; border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);">
+    <div class="ll-container">
+        <div class="ll-section-header">
+            <div class="ll-section-title-wrap">
+                <span class="ll-section-eyebrow">Được Yêu Thích Nhất</span>
+                <h2 class="ll-section-title">Sản Phẩm Bán Chạy</h2>
+            </div>
+            <!-- Link Xem tất cả đồng bộ màu thương hiệu #6F2438 -->
+            <a href="/Products?filter=bestseller" class="ll-link-all">
+                Xem tất cả <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="ll-products-grid" id="llBestSellersGrid">
+            <!-- 1. Áo Polo Nam -->
+            <article class="ll-product-card" data-product-id="201">
+                <a href="/Products/Detail/201" class="ll-product-img-box" title="Áo Polo Nam Dệt Kim Cao Cấp">
+                    <img src="https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?q=80&w=800&auto=format&fit=crop" 
+                         alt="Áo Polo Nam Dệt Kim Cao Cấp" 
+                         class="ll-product-img" 
+                         loading="lazy" />
+                    <span class="ll-product-tag" style="background-color: var(--color-gold); color: #201C1A;">Bán Chạy</span>
+                </a>
+                <div class="ll-product-body">
+                    <span class="ll-product-category">Thời Trang Nam</span>
+                    <h3 class="ll-product-title">
+                        <a href="/Products/Detail/201" title="Áo Polo Nam Dệt Kim Cao Cấp">Áo Polo Nam Dệt Kim Cao Cấp</a>
+                    </h3>
+                    <div class="ll-product-footer">
+                        <span class="ll-product-price">380.000 đ</span>
+                        <div class="ll-product-rating">
+                            <i class="fa-solid fa-star"></i>
+                            <span>4.9 (168)</span>
+                        </div>
+                    </div>
+                    <div class="ll-card-action-bar">
+                        <button type="button" class="ll-btn ll-btn-secondary" style="width: 100%; min-height: 44px;" 
+                                onclick="LightLifeCart.addItem(201, 'Áo Polo Nam Dệt Kim Cao Cấp')">
+                            <i class="fa-solid fa-bag-shopping"></i> Thêm vào giỏ
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 2. Set Váy Dạ Tweed -->
+            <article class="ll-product-card" data-product-id="202">
+                <a href="/Products/Detail/202" class="ll-product-img-box" title="Set Váy Dạ Tweed Thu Đông Sang Trọng">
+                    <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&auto=format&fit=crop" 
+                         alt="Set Váy Dạ Tweed Thu Đông Sang Trọng" 
+                         class="ll-product-img" 
+                         loading="lazy" />
+                    <span class="ll-product-tag" style="background-color: var(--color-gold); color: #201C1A;">Bán Chạy</span>
+                </a>
+                <div class="ll-product-body">
+                    <span class="ll-product-category">Thời Trang Nữ</span>
+                    <h3 class="ll-product-title">
+                        <a href="/Products/Detail/202" title="Set Váy Dạ Tweed Thu Đông Sang Trọng">Set Váy Dạ Tweed Thu Đông Sang Trọng</a>
+                    </h3>
+                    <div class="ll-product-footer">
+                        <span class="ll-product-price">950.000 đ</span>
+                        <div class="ll-product-rating">
+                            <i class="fa-solid fa-star"></i>
+                            <span>5.0 (210)</span>
+                        </div>
+                    </div>
+                    <div class="ll-card-action-bar">
+                        <button type="button" class="ll-btn ll-btn-secondary" style="width: 100%; min-height: 44px;" 
+                                onclick="LightLifeCart.addItem(202, 'Set Váy Dạ Tweed Thu Đông Sang Trọng')">
+                            <i class="fa-solid fa-bag-shopping"></i> Thêm vào giỏ
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 3. Quần Jean Vintage -->
+            <article class="ll-product-card" data-product-id="203">
+                <a href="/Products/Detail/203" class="ll-product-img-box" title="Quần Jean Nữ Ống Đứng Vintage">
+                    <img src="https://images.unsplash.com/photo-1576995853123-5a10305d93c0?q=80&w=800&auto=format&fit=crop" 
+                         alt="Quần Jean Nữ Ống Đứng Vintage" 
+                         class="ll-product-img" 
+                         loading="lazy" />
+                    <span class="ll-product-tag" style="background-color: var(--color-gold); color: #201C1A;">Bán Chạy</span>
+                </a>
+                <div class="ll-product-body">
+                    <span class="ll-product-category">Thời Trang Nữ</span>
+                    <h3 class="ll-product-title">
+                        <a href="/Products/Detail/203" title="Quần Jean Nữ Ống Đứng Vintage">Quần Jean Nữ Ống Đứng Vintage</a>
+                    </h3>
+                    <div class="ll-product-footer">
+                        <span class="ll-product-price">450.000 đ</span>
+                        <div class="ll-product-rating">
+                            <i class="fa-solid fa-star"></i>
+                            <span>4.8 (195)</span>
+                        </div>
+                    </div>
+                    <div class="ll-card-action-bar">
+                        <button type="button" class="ll-btn ll-btn-secondary" style="width: 100%; min-height: 44px;" 
+                                onclick="LightLifeCart.addItem(203, 'Quần Jean Nữ Ống Đứng Vintage')">
+                            <i class="fa-solid fa-bag-shopping"></i> Thêm vào giỏ
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 4. Túi Xách Da Minimalist -->
+            <article class="ll-product-card" data-product-id="204">
+                <a href="/Products/Detail/204" class="ll-product-img-box" title="Túi Xách Da Minimalist Cao Cấp">
+                    <img src="https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=800&auto=format&fit=crop" 
+                         alt="Túi Xách Da Minimalist Cao Cấp" 
+                         class="ll-product-img" 
+                         loading="lazy" />
+                    <span class="ll-product-tag" style="background-color: var(--color-gold); color: #201C1A;">Bán Chạy</span>
+                </a>
+                <div class="ll-product-body">
+                    <span class="ll-product-category">Phụ Kiện</span>
+                    <h3 class="ll-product-title">
+                        <a href="/Products/Detail/204" title="Túi Xách Da Minimalist Cao Cấp">Túi Xách Da Minimalist Cao Cấp</a>
+                    </h3>
+                    <div class="ll-product-footer">
+                        <span class="ll-product-price">680.000 đ</span>
+                        <div class="ll-product-rating">
+                            <i class="fa-solid fa-star"></i>
+                            <span>4.9 (142)</span>
+                        </div>
+                    </div>
+                    <div class="ll-card-action-bar">
+                        <button type="button" class="ll-btn ll-btn-secondary" style="width: 100%; min-height: 44px;" 
+                                onclick="LightLifeCart.addItem(204, 'Túi Xách Da Minimalist Cao Cấp')">
+                            <i class="fa-solid fa-bag-shopping"></i> Thêm vào giỏ
+                        </button>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+
+<!-- ==========================================================================
+     KHUNG 6: THÔNG TIN CHÍNH SÁCH (Kế thừa từ Home hiện tại)
+     ========================================================================== -->
+<section class="ll-section" id="policies">
+    <div class="ll-container">
+        <div class="ll-section-header" style="justify-content: center; text-align: center; margin-bottom: 40px;">
+            <div class="ll-section-title-wrap">
+                <span class="ll-section-eyebrow">Cam Kết Khách Hàng</span>
+                <h2 class="ll-section-title">Chính Sách & Dịch Vụ Của Light Life</h2>
+            </div>
+        </div>
+
+        <div class="ll-policies-grid">
+            <!-- Chính sách 1: Giao hàng toàn quốc -->
+            <div class="ll-policy-card">
+                <div class="ll-policy-icon-box">
+                    <i class="fa-solid fa-truck-fast"></i>
+                </div>
+                <h3 class="ll-policy-title">Giao Hàng Toàn Quốc</h3>
+                <p class="ll-policy-desc">
+                    Miễn phí giao hàng cho đơn từ 500.000 đ. Nhận hàng kiểm tra thanh toán COD hoặc chuyển khoản.
+                </p>
+            </div>
+
+            <!-- Chính sách 2: Đổi trả 7 ngày -->
+            <div class="ll-policy-card">
+                <div class="ll-policy-icon-box">
+                    <i class="fa-solid fa-arrow-rotate-left"></i>
+                </div>
+                <h3 class="ll-policy-title">Đổi Trả Trong 7 Ngày</h3>
+                <p class="ll-policy-desc">
+                    Hỗ trợ đổi size hoặc đổi mẫu linh hoạt và tiện lợi nếu sản phẩm còn nguyên tem mác.
+                </p>
+            </div>
+
+            <!-- Chính sách 3: Cam kết chất lượng -->
+            <div class="ll-policy-card">
+                <div class="ll-policy-icon-box">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h3 class="ll-policy-title">Cam Kết Chất Lượng 100%</h3>
+                <p class="ll-policy-desc">
+                    Chất liệu vải tinh tuyển cao cấp với tiêu chuẩn may tỉ mỉ, phom dáng chuẩn mực người Việt.
+                </p>
+            </div>
+
+            <!-- Chính sách 4: Tư vấn & Hỗ trợ -->
+            <div class="ll-policy-card">
+                <div class="ll-policy-icon-box">
+                    <i class="fa-solid fa-headset"></i>
+                </div>
+                <h3 class="ll-policy-title">Tư Vấn Tận Tâm 24/7</h3>
+                <p class="ll-policy-desc">
+                    Hotline 1900 6868 luôn sẵn sàng hỗ trợ chọn size, tư vấn phối đồ và theo dõi hành trình đơn hàng.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+

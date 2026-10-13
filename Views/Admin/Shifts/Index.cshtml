@@ -1,0 +1,1027 @@
+@{
+    ViewData["Title"] = "Phân ca & Soát ca làm việc";
+}
+
+@section Styles {
+    <style>
+        .nav-tabs-custom {
+            border-bottom: 2px solid #e5e7eb;
+            gap: 8px;
+        }
+
+        .nav-tabs-custom .nav-link {
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: #6b7280;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: -2px;
+            border-radius: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+        }
+
+        .nav-tabs-custom .nav-link:hover {
+            color: #111827;
+            border-bottom-color: #d1d5db;
+        }
+
+        .nav-tabs-custom .nav-link.active {
+            color: #111827;
+            border-bottom-color: #111827;
+            background: transparent;
+        }
+
+        .shift-badge-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 4px 9px;
+            border-radius: 6px;
+        }
+
+        .shift-badge-closed {
+            background-color: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 4px 9px;
+            border-radius: 6px;
+        }
+
+        .shift-badge-open {
+            background-color: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 4px 9px;
+            border-radius: 6px;
+        }
+
+        .shift-table thead th {
+            background: #f9fafb;
+            color: #4b5563;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.85rem 1.25rem;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        .shift-table tbody td {
+            padding: 1rem 1.25rem;
+            vertical-align: middle;
+            font-size: 0.88rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .shift-table tbody tr:hover {
+            background-color: #f9fafb;
+        }
+
+        .filter-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+        }
+
+        .section-box {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 1.15rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #374151;
+            margin-bottom: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .diff-tag-match {
+            color: #059669;
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 2px 7px;
+            border-radius: 4px;
+        }
+
+        .diff-tag-over {
+            color: #d97706;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 2px 7px;
+            border-radius: 4px;
+        }
+
+        .diff-tag-under {
+            color: #dc2626;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 2px 7px;
+            border-radius: 4px;
+        }
+
+        .card-plan {
+            transition: all 0.2s ease;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            background: #ffffff;
+        }
+
+        .card-plan:hover {
+            border-color: #d1d5db;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .staff-avatar-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .staff-picker-item {
+            cursor: pointer;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            transition: all 0.15s ease;
+        }
+
+        .staff-picker-item:hover {
+            background-color: #f9fafb;
+            border-color: #111827;
+        }
+    </style>
+}
+
+<div class="container-fluid p-0">
+
+    <!-- 1. Header Trang: Phân ca & Soát ca -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+        <div>
+            <div class="d-flex align-items-center gap-2">
+                <h4 class="fw-bold mb-1 text-dark">Phân ca & Soát ca làm việc</h4>
+                <span class="badge bg-light text-dark border px-2 py-1">
+                    <i class="fa-solid fa-store me-1 text-primary"></i>Cửa hàng Light Life
+                </span>
+            </div>
+            <div class="text-muted small">
+                Phân công ca làm cho nhân viên, đổi người, hủy ca & Kiểm tra duyệt chốt khi nhân viên out ca.
+            </div>
+        </div>
+        <div>
+            <button class="btn btn-outline-dark btn-sm px-3" onclick="exportData()">
+                <i class="fa-solid fa-file-export me-1"></i> Xuất dữ liệu
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. Tabs chuyển đổi: 1. Phân ca | 2. Soát ca & Duyệt out ca -->
+    <ul class="nav nav-tabs nav-tabs-custom mb-3" id="shiftMainTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-assign-btn" data-bs-toggle="tab" data-bs-target="#tab-assign-content" type="button" role="tab" aria-controls="tab-assign-content" aria-selected="true">
+                <i class="fa-solid fa-user-clock"></i>
+                <span>Phân công ca làm</span>
+                <span class="badge bg-secondary rounded-pill ms-1" id="badgeAssignCount">3 ca hôm nay</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-audit-btn" data-bs-toggle="tab" data-bs-target="#tab-audit-content" type="button" role="tab" aria-controls="tab-audit-content" aria-selected="false">
+                <i class="fa-solid fa-clipboard-check"></i>
+                <span>Soát ca & Duyệt out ca</span>
+                <span class="badge bg-danger rounded-pill ms-1" id="badgePendingCount">1 chờ duyệt</span>
+            </button>
+        </li>
+    </ul>
+
+    <!-- Nội dung 2 tab -->
+    <div class="tab-content" id="shiftMainTabsContent">
+
+        <!-- ==================== TAB 1: PHÂN CÔNG CA LÀM VIỆC ==================== -->
+        <div class="tab-pane fade show active" id="tab-assign-content" role="tabpanel" aria-labelledby="tab-assign-btn">
+            
+            <!-- Bộ chọn ngày & Thao tác nhanh -->
+            <div class="filter-card mb-3">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="text-muted small fw-semibold">Chọn ngày xếp ca:</span>
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn btn-dark" id="btnDateToday" onclick="selectAssignDate('today')">Hôm nay (08/10)</button>
+                            <button type="button" class="btn btn-outline-secondary" id="btnDateTomorrow" onclick="selectAssignDate('tomorrow')">Ngày mai (09/10)</button>
+                        </div>
+                        <input type="date" class="form-control form-control-sm" id="assignDatePicker" value="2026-10-08" onchange="onCustomDateChange(this.value)" style="width: 145px;" />
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-light text-dark border px-2 py-1">
+                            <i class="fa-solid fa-circle-info text-primary me-1"></i>
+                            Bấm <strong>"Đổi người"</strong> hoặc <strong>"Hủy ca"</strong> để thay đổi nhân sự trực quầy
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Danh sách các ca làm việc trong ngày -->
+            <div class="row g-3 mb-4" id="assignShiftCardsContainer">
+                <!-- Render bởi JS -->
+            </div>
+        <!-- ==================== TAB 2: SOÁT CA & DUYỆT OUT CA ==================== -->
+        <div class="tab-pane fade" id="tab-audit-content" role="tabpanel" aria-labelledby="tab-audit-btn">
+            
+            <!-- Thanh trạng thái nhanh -->
+            <div class="row g-3 mb-3">
+                <div class="col-sm-4">
+                    <div class="p-3 bg-white border border-warning rounded-3 d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-warning small fw-bold d-block">Chờ duyệt out ca (Cần xử lý)</span>
+                            <span class="h5 fw-bold text-dark mb-0 font-monospace" id="statPendingCount">1 ca</span>
+                        </div>
+                        <span class="p-2 bg-warning bg-opacity-10 text-warning rounded"><i class="fa-solid fa-hourglass-half"></i></span>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="p-3 bg-white border rounded-3 d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-primary small fw-semibold d-block">Đang làm việc (Chưa out ca)</span>
+                            <span class="h5 fw-bold text-dark mb-0 font-monospace" id="statOpenCount">1 ca</span>
+                        </div>
+                        <span class="p-2 bg-primary bg-opacity-10 text-primary rounded"><i class="fa-solid fa-arrows-rotate"></i></span>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="p-3 bg-white border rounded-3 d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-success small fw-semibold d-block">Đã duyệt chốt ca</span>
+                            <span class="h5 fw-bold text-dark mb-0 font-monospace" id="statClosedCount">2 ca</span>
+                        </div>
+                        <span class="p-2 bg-success bg-opacity-10 text-success rounded"><i class="fa-solid fa-circle-check"></i></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bộ lọc soát ca -->
+            <div class="filter-card mb-3">
+                <div class="row g-2 align-items-center">
+                    <div class="col-md-6">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                            <input type="text" id="auditSearchInput" class="form-control border-start-0 ps-1" placeholder="Tìm theo mã ca, tên thu ngân bàn giao..." onkeyup="filterAuditShifts()" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="auditStatusFilter" class="form-select form-select-sm" onchange="filterAuditShifts()">
+                            <option value="">Tất cả trạng thái</option>
+                            <option value="pending" selected>Chờ duyệt out ca (Ưu tiên)</option>
+                            <option value="open">Đang làm việc</option>
+                            <option value="closed">Đã duyệt chốt ca</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 text-md-end">
+                        <button type="button" class="btn btn-light btn-sm text-secondary w-100" onclick="resetAuditFilter()">
+                            <i class="fa-solid fa-rotate-left me-1"></i> Đặt lại bộ lọc
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bảng đối soát và duyệt ca -->
+            <div class="card border border-1 rounded-3 overflow-hidden shadow-none mb-3">
+                <div class="table-responsive">
+                    <table class="table shift-table mb-0 align-middle">
+                        <thead>
+                            <tr>
+                                <th>Mã ca & Khung giờ</th>
+                                <th>Nhân viên bàn giao</th>
+                                <th class="text-end">Tiền mặt dự kiến (HT)</th>
+                                <th class="text-end">Tiền thực đếm nộp</th>
+                                <th class="text-center">Chênh lệch</th>
+                                <th>Trạng thái out ca</th>
+                                <th class="text-end">Hành động Admin</th>
+                            </tr>
+                        </thead>
+                        <tbody id="auditTableBody">
+                            <!-- Render bằng JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="text-end text-muted small">
+                Đang hiển thị <strong class="text-dark" id="visibleAuditCount">4</strong> ca làm việc
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ==================== MODAL 1: CHỌN / ĐỔI NHÂN VIÊN PHÂN CA ==================== -->
+<div class="modal fade" id="assignModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content rounded-3 border-0 shadow">
+            <div class="modal-header border-bottom p-3">
+                <div>
+                    <h5 class="modal-title fw-bold text-dark mb-0" id="assignModalTitle">Phân công nhân viên vào ca</h5>
+                    <small class="text-muted" id="assignModalSubtitle">Ca Sáng (08:00 - 15:30) · Quầy chính</small>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-3">
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-dark">Tìm kiếm nhân viên:</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-white text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <input type="text" id="staffSearchInput" class="form-control" placeholder="Nhập tên hoặc mã nhân viên..." onkeyup="filterStaffList()" />
+                    </div>
+                </div>
+
+                <label class="form-label small fw-semibold text-dark mb-2">Chọn nhân viên thay thế / gán ca:</label>
+                <div class="d-flex flex-column gap-2" id="staffPickerList" style="max-height: 280px; overflow-y: auto;">
+                    <!-- Danh sách nhân viên render bởi JS -->
+                </div>
+            </div>
+            <div class="modal-footer border-top p-2 bg-light d-flex justify-content-between">
+                <small class="text-muted"><i class="fa-solid fa-hand-pointer me-1"></i>Nhấp vào nhân viên để chọn ngay</small>
+                <button type="button" class="btn btn-secondary btn-sm px-3" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODAL 2: KIỂM TRA & DUYỆT OUT CA (ADMIN) ==================== -->
+<div class="modal fade" id="shiftAuditModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-3 border-0 shadow">
+            
+            <div class="modal-header border-bottom p-3">
+                <div>
+                    <div class="d-flex align-items-center gap-2">
+                        <h5 class="modal-title fw-bold text-dark mb-0" id="mShiftCode">CA-1008-01</h5>
+                        <span id="mShiftStatusBadge" class="shift-badge-pending">Chờ duyệt out ca</span>
+                    </div>
+                    <small class="text-muted">
+                        Thu ngân out ca: <strong class="text-dark" id="mCashierName">Lê Hoàng Lan</strong> · Khung giờ: <span id="mShiftTime">08:00 - 15:30 (08/10/2026)</span>
+                    </small>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-3 bg-light">
+                
+                <!-- 1. Tiền mặt hệ thống tính -->
+                <div class="section-box">
+                    <div class="section-title">
+                        <span><i class="fa-solid fa-calculator me-1 text-primary"></i> 1. Tiền mặt hệ thống ghi nhận (Dự kiến)</span>
+                    </div>
+                    
+                    <div class="row g-2 p-2 bg-light rounded border small mb-2">
+                        <div class="col-6 col-md-3">
+                            <span class="text-muted d-block">Tiền mặt đầu ca:</span>
+                            <strong class="text-dark font-monospace" id="mInitialCash">2.000.000 ₫</strong>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <span class="text-muted d-block">(+) Tiền mặt bán hàng:</span>
+                            <strong class="text-success font-monospace" id="mCashSales">+11.850.000 ₫</strong>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <span class="text-muted d-block">(-) Tiền hoàn trả:</span>
+                            <strong class="text-danger font-monospace" id="mCashRefund">-850.000 ₫</strong>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <span class="text-muted d-block">(-) Chi phí tại quầy:</span>
+                            <strong class="text-muted font-monospace" id="mExpense">-150.000 ₫</strong>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center p-2 rounded bg-white border">
+                        <strong class="text-dark small">TỔNG TIỀN MẶT DỰ KIẾN KẾT CA:</strong>
+                        <span class="h5 fw-bold text-primary mb-0 font-monospace" id="mExpectedCash">12.850.000 ₫</span>
+                    </div>
+                </div>
+
+                <!-- 2. Tiền thực đếm nhân viên nộp khi out ca -->
+                <div class="section-box">
+                    <div class="section-title">
+                        <span><i class="fa-solid fa-money-bill-transfer me-1 text-primary"></i> 2. Tiền thực tế nộp & Đối soát chênh lệch</span>
+                    </div>
+
+                    <div class="row g-3 align-items-center mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-dark mb-1">Tiền nhân viên nộp lúc Out ca:</label>
+                            <input type="text" class="form-control form-control-sm font-monospace fw-bold text-dark bg-white" id="mActualCashInput" readonly />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-dark mb-1">Kết quả chênh lệch tiền mặt:</label>
+                            <div class="p-2 rounded border bg-white" id="mDiffDisplay">
+                                <span class="diff-tag-over">+20.000 ₫ (Thừa)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="form-label small fw-semibold text-dark mb-1">Ghi chú của nhân viên khi out ca:</label>
+                        <div class="p-2 bg-light rounded border small text-dark" id="mCashierExplain">
+                            "Khách hàng mua đơn HD-1042 thanh toán tiền mặt 870.000 ₫ và không lấy tiền thối 20.000 ₫."
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Quản lý kiểm tra & Duyệt chốt ca -->
+                <div class="section-box border-primary border-opacity-25 mb-0">
+                    <div class="section-title text-primary">
+                        <span><i class="fa-solid fa-gavel me-1"></i> 3. Kiểm tra & Duyệt chốt ca của Admin</span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small text-muted mb-1">Ghi chú duyệt của Admin (Tùy chọn):</label>
+                        <textarea class="form-control form-control-sm" id="mAdminNote" rows="2" placeholder="Ghi chú xác nhận số tiền nộp két..."></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-success btn-sm px-4 fw-bold" id="mBtnApproveShift" onclick="confirmApproveShift()">
+                            <i class="fa-solid fa-circle-check me-1"></i> Duyệt chốt ca
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer border-top p-3 d-flex justify-content-end">
+                <button type="button" class="btn btn-light btn-sm px-3" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Danh sách nhân viên trong cửa hàng
+        var staffList = [
+            { id: "NV01", name: "Lê Hoàng Lan", role: "Thu ngân chính", phone: "0901.234.567", color: "#3b82f6" },
+            { id: "NV02", name: "Vũ Minh Hiếu", role: "Thu ngân ca chiều", phone: "0912.345.678", color: "#8b5cf6" },
+            { id: "NV03", name: "Đỗ Thị Yến", role: "Thu ngân ca tối", phone: "0988.765.432", color: "#ec4899" },
+            { id: "NV04", name: "Trần Tuấn Kiệt", role: "Nhân viên bán hàng", phone: "0934.567.890", color: "#10b981" },
+            { id: "NV05", name: "Phạm Thúy Nga", role: "Nhân viên bán hàng", phone: "0976.543.210", color: "#f59e0b" }
+        ];
+
+        // Dữ liệu ca làm việc (Phân ca & Soát ca)
+        var shiftPlans = [
+            {
+                code: "CA-1008-01",
+                name: "Ca Sáng",
+                timeRange: "08:00 - 15:30",
+                date: "2026-10-08",
+                dateType: "today",
+                counter: "Quầy chính",
+                staffId: "NV01",
+                staffName: "Lê Hoàng Lan",
+                status: "pending", // pending: Chờ duyệt out ca
+                initial: "2.000.000 ₫",
+                sales: "+11.850.000 ₫",
+                refund: "-850.000 ₫",
+                expense: "-150.000 ₫",
+                expected: "12.850.000 ₫",
+                expectedRaw: 12850000,
+                actual: "12.870.000 ₫",
+                actualRaw: 12870000,
+                diffText: "+20.000 ₫ (Thừa)",
+                diffType: "over",
+                explain: "Khách hàng mua đơn HD-1042 thanh toán tiền mặt 870.000 ₫ và không lấy tiền thối 20.000 ₫.",
+                adminNote: ""
+            },
+            {
+                code: "CA-1008-02",
+                name: "Ca Chiều",
+                timeRange: "15:30 - 22:00",
+                date: "2026-10-08",
+                dateType: "today",
+                counter: "Quầy chính",
+                staffId: "NV02",
+                staffName: "Vũ Minh Hiếu",
+                status: "open", // open: Đang làm việc, chưa out ca
+                initial: "2.000.000 ₫",
+                sales: "+6.400.000 ₫",
+                refund: "0 ₫",
+                expense: "0 ₫",
+                expected: "8.400.000 ₫",
+                expectedRaw: 8400000,
+                actual: "--",
+                actualRaw: 0,
+                diffText: "Đang phát sinh...",
+                diffType: "open",
+                explain: "Ca làm việc đang diễn ra, nhân viên chưa gửi out ca.",
+                adminNote: ""
+            },
+            {
+                code: "CA-1008-03",
+                name: "Ca Phụ Tối",
+                timeRange: "18:00 - 22:00",
+                date: "2026-10-08",
+                dateType: "today",
+                counter: "Quầy phụ 2",
+                staffId: null, // Chưa phân công
+                staffName: null,
+                status: "unassigned",
+                initial: "1.000.000 ₫",
+                sales: "0 ₫",
+                refund: "0 ₫",
+                expense: "0 ₫",
+                expected: "1.000.000 ₫",
+                expectedRaw: 1000000,
+                actual: "--",
+                actualRaw: 0,
+                diffText: "--",
+                diffType: "none",
+                explain: "",
+                adminNote: ""
+            },
+            {
+                code: "CA-1007-01",
+                name: "Ca Sáng",
+                timeRange: "08:00 - 15:30",
+                date: "2026-10-07",
+                dateType: "yesterday",
+                counter: "Quầy chính",
+                staffId: "NV01",
+                staffName: "Lê Hoàng Lan",
+                status: "closed", // Đã duyệt chốt ca
+                initial: "2.000.000 ₫",
+                sales: "+12.200.000 ₫",
+                refund: "0 ₫",
+                expense: "0 ₫",
+                expected: "14.200.000 ₫",
+                expectedRaw: 14200000,
+                actual: "14.200.000 ₫",
+                actualRaw: 14200000,
+                diffText: "Khớp tiền (0 ₫)",
+                diffType: "match",
+                explain: "Số tiền thực đếm khớp hoàn toàn 100% với hệ thống.",
+                adminNote: "Admin đã kiểm tra và duyệt chốt ca thành công."
+            },
+            {
+                code: "CA-1007-02",
+                name: "Ca Chiều",
+                timeRange: "15:30 - 22:00",
+                date: "2026-10-07",
+                dateType: "yesterday",
+                counter: "Quầy chính",
+                staffId: "NV03",
+                staffName: "Đỗ Thị Yến",
+                status: "closed",
+                initial: "2.000.000 ₫",
+                sales: "+16.620.000 ₫",
+                refund: "-200.000 ₫",
+                expense: "0 ₫",
+                expected: "18.420.000 ₫",
+                expectedRaw: 18420000,
+                actual: "18.370.000 ₫",
+                actualRaw: 18370000,
+                diffText: "-50.000 ₫ (Thiếu)",
+                diffType: "under",
+                explain: "Thu ngân nghi ngờ trả nhầm tiền thối cho khách lúc cao điểm 19:30.",
+                adminNote: "Đã kiểm tra đối chiếu và duyệt chốt ca."
+            }
+        ];
+
+        var selectedAssignDate = "today";
+        var currentAssignTargetCode = null;
+        var currentAuditShift = null;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            renderAssignCards();
+            renderAuditTable();
+            updateTopBadges();
+        });
+
+        function updateTopBadges() {
+            var todayShifts = shiftPlans.filter(function (s) { return s.dateType === 'today'; });
+            document.getElementById('badgeAssignCount').innerText = todayShifts.length + ' ca hôm nay';
+
+            var pendingShifts = shiftPlans.filter(function (s) { return s.status === 'pending'; });
+            document.getElementById('badgePendingCount').innerText = pendingShifts.length + ' chờ duyệt';
+            document.getElementById('statPendingCount').innerText = pendingShifts.length + ' ca';
+
+            var openShifts = shiftPlans.filter(function (s) { return s.status === 'open'; });
+            document.getElementById('statOpenCount').innerText = openShifts.length + ' ca';
+
+            var closedShifts = shiftPlans.filter(function (s) { return s.status === 'closed'; });
+            document.getElementById('statClosedCount').innerText = closedShifts.length + ' ca';
+        }
+
+        /* ==========================================================================
+           PHẦN 1: PHÂN CÔNG CA LÀM VIỆC (Gán ca, Đổi người, Hủy ca)
+           ========================================================================== */
+        function selectAssignDate(type) {
+            selectedAssignDate = type;
+            document.getElementById('btnDateToday').className = type === 'today' ? 'btn btn-dark' : 'btn btn-outline-secondary';
+            document.getElementById('btnDateTomorrow').className = type === 'tomorrow' ? 'btn btn-dark' : 'btn btn-outline-secondary';
+            if (type === 'today') {
+                document.getElementById('assignDatePicker').value = '2026-10-08';
+            } else {
+                document.getElementById('assignDatePicker').value = '2026-10-09';
+            }
+            renderAssignCards();
+        }
+
+        function onCustomDateChange(val) {
+            if (val === '2026-10-08') {
+                selectAssignDate('today');
+            } else if (val === '2026-10-09') {
+                selectAssignDate('tomorrow');
+            } else {
+                document.getElementById('btnDateToday').className = 'btn btn-outline-secondary';
+                document.getElementById('btnDateTomorrow').className = 'btn btn-outline-secondary';
+                selectedAssignDate = val;
+                renderAssignCards();
+            }
+        }
+
+        function renderAssignCards() {
+            var container = document.getElementById('assignShiftCardsContainer');
+            var list = shiftPlans.filter(function (s) {
+                if (selectedAssignDate === 'today') return s.dateType === 'today';
+                if (selectedAssignDate === 'tomorrow') return s.date === '2026-10-09';
+                return s.date === selectedAssignDate;
+            });
+
+            if (list.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center py-5 bg-white rounded-3 border">
+                        <i class="fa-solid fa-calendar-xmark text-muted fs-2 mb-2"></i>
+                        <p class="text-muted mb-0">Chưa có ca làm việc nào được tạo cho ngày này.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            var html = '';
+            list.forEach(function (shift) {
+                var isAssigned = !!shift.staffName;
+                var staffInfo = staffList.find(function (st) { return st.id === shift.staffId; });
+                var avatarColor = staffInfo ? staffInfo.color : '#6b7280';
+                var initials = shift.staffName ? shift.staffName.split(' ').slice(-1)[0][0] : '?';
+
+                html += `
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card-plan p-3 h-100 d-flex flex-column justify-content-between">
+                            <div>
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <div class="font-monospace fw-bold text-dark">${shift.code}</div>
+                                        <h6 class="fw-bold text-dark mb-0">${shift.name} (${shift.timeRange})</h6>
+                                        <small class="text-muted"><i class="fa-solid fa-store me-1"></i>${shift.counter}</small>
+                                    </div>
+                                    ${isAssigned ? 
+                                        `<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1">Đã phân công</span>` :
+                                        `<span class="badge bg-secondary bg-opacity-10 text-secondary border px-2 py-1">Còn trống</span>`
+                                    }
+                                </div>
+
+                                <div class="p-3 rounded-3 border bg-light my-3">
+                                    ${isAssigned ? `
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="staff-avatar-circle text-white" style="background-color: ${avatarColor};">
+                                                ${initials}
+                                            </div>
+                                            <div class="overflow-hidden">
+                                                <div class="fw-bold text-dark text-truncate">${shift.staffName}</div>
+                                                <div class="small text-muted">${staffInfo ? staffInfo.role : 'Thu ngân'}</div>
+                                                <small class="text-muted font-monospace"><i class="fa-solid fa-phone me-1"></i>${staffInfo ? staffInfo.phone : 'N/A'}</small>
+                                            </div>
+                                        </div>
+                                    ` : `
+                                        <div class="text-center py-2 text-muted">
+                                            <i class="fa-solid fa-user-slash fs-4 d-block mb-1 text-secondary opacity-50"></i>
+                                            <span class="small">Chưa có nhân viên phụ trách ca này</span>
+                                        </div>
+                                    `}
+                                </div>
+                            </div>
+
+                            <!-- Thao tác phân ca / đổi người / hủy ca -->
+                            <div class="pt-2 border-top d-flex gap-2 justify-content-end">
+                                ${isAssigned ? `
+                                    <button class="btn btn-outline-danger btn-sm px-2" title="Hủy phân công ca này" onclick="cancelShiftAssignment('${shift.code}')">
+                                        <i class="fa-solid fa-user-xmark me-1"></i> Hủy ca
+                                    </button>
+                                    <button class="btn btn-outline-dark btn-sm px-3" title="Đổi sang nhân viên khác" onclick="openAssignModal('${shift.code}', true)">
+                                        <i class="fa-solid fa-rotate me-1 text-primary"></i> Đổi người
+                                    </button>
+                                ` : `
+                                    <button class="btn btn-dark btn-sm px-3 w-100" onclick="openAssignModal('${shift.code}', false)">
+                                        <i class="fa-solid fa-user-plus me-1 text-warning"></i> Chọn nhân viên phân ca
+                                    </button>
+                                `}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function openAssignModal(shiftCode, isChange) {
+            currentAssignTargetCode = shiftCode;
+            var shift = shiftPlans.find(function (s) { return s.code === shiftCode; });
+            if (!shift) return;
+
+            document.getElementById('assignModalTitle').innerText = isChange ? 'Đổi nhân viên ca ' + shift.code : 'Phân công ca ' + shift.code;
+            document.getElementById('assignModalSubtitle').innerText = shift.name + ' (' + shift.timeRange + ') · ' + shift.counter;
+            document.getElementById('staffSearchInput').value = '';
+
+            renderStaffPickerList('');
+            new bootstrap.Modal(document.getElementById('assignModal')).show();
+        }
+
+        function renderStaffPickerList(keyword) {
+            var container = document.getElementById('staffPickerList');
+            var kw = (keyword || '').toLowerCase().trim();
+            var shift = shiftPlans.find(function (s) { return s.code === currentAssignTargetCode; });
+
+            var filtered = staffList.filter(function (st) {
+                return st.name.toLowerCase().includes(kw) || st.id.toLowerCase().includes(kw) || st.role.toLowerCase().includes(kw);
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="text-center text-muted py-3 small">Không tìm thấy nhân viên phù hợp.</div>';
+                return;
+            }
+
+            var html = '';
+            filtered.forEach(function (st) {
+                var isCurrent = shift && shift.staffId === st.id;
+                var initials = st.name.split(' ').slice(-1)[0][0];
+
+                html += `
+                    <div class="staff-picker-item d-flex align-items-center justify-content-between ${isCurrent ? 'bg-light border-dark' : ''}" onclick="selectStaffForShift('${st.id}')">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="staff-avatar-circle text-white" style="width: 32px; height: 32px; font-size: 0.8rem; background-color: ${st.color};">
+                                ${initials}
+                            </div>
+                            <div>
+                                <div class="fw-semibold text-dark small">${st.name} <span class="text-muted font-monospace">(${st.id})</span></div>
+                                <div class="text-muted" style="font-size: 0.75rem;">${st.role} · ${st.phone}</div>
+                            </div>
+                        </div>
+                        <div>
+                            ${isCurrent ? 
+                                `<span class="badge bg-dark text-white font-monospace" style="font-size: 0.7rem;">Đang trong ca</span>` :
+                                `<button type="button" class="btn btn-outline-dark btn-sm py-0 px-2" style="font-size: 0.75rem;">Chọn</button>`
+                            }
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function filterStaffList() {
+            var kw = document.getElementById('staffSearchInput').value;
+            renderStaffPickerList(kw);
+        }
+
+        function selectStaffForShift(staffId) {
+            var shift = shiftPlans.find(function (s) { return s.code === currentAssignTargetCode; });
+            var staff = staffList.find(function (st) { return st.id === staffId; });
+            if (!shift || !staff) return;
+
+            var oldStaff = shift.staffName;
+            shift.staffId = staff.id;
+            shift.staffName = staff.name;
+
+            if (shift.status === 'unassigned') {
+                shift.status = 'open';
+            }
+
+            bootstrap.Modal.getInstance(document.getElementById('assignModal')).hide();
+            renderAssignCards();
+            renderAuditTable();
+            updateTopBadges();
+
+            if (oldStaff) {
+                alert('Đã đổi người thành công ca ' + shift.code + ':\nTừ: ' + oldStaff + ' ➜ Sang: ' + staff.name);
+            } else {
+                alert('Đã phân công thành công nhân viên: ' + staff.name + ' vào ' + shift.code);
+            }
+        }
+
+        function cancelShiftAssignment(shiftCode) {
+            var shift = shiftPlans.find(function (s) { return s.code === shiftCode; });
+            if (!shift) return;
+
+            if (!confirm('Bạn có chắc chắn muốn HỦY PHÂN CÔNG nhân viên ' + shift.staffName + ' khỏi ca ' + shift.code + '?\nCa này sẽ chuyển về trạng thái TRỐNG để gán người khác.')) return;
+
+            shift.staffId = null;
+            shift.staffName = null;
+            shift.status = 'unassigned';
+
+            renderAssignCards();
+            renderAuditTable();
+            updateTopBadges();
+            alert('Đã hủy phân công ca ' + shift.code + '. Ca đang trống chờ phân người mới.');
+        }
+
+        /* ==========================================================================
+           PHẦN 2: SOÁT CA & DUYỆT OUT CA (ADMIN)
+           ========================================================================== */
+        function renderAuditTable() {
+            var tbody = document.getElementById('auditTableBody');
+            var kw = (document.getElementById('auditSearchInput') ? document.getElementById('auditSearchInput').value : '').toLowerCase().trim();
+            var stFilter = document.getElementById('auditStatusFilter') ? document.getElementById('auditStatusFilter').value : '';
+
+            var visibleCount = 0;
+            var html = '';
+
+            // Ưu tiên pending (Chờ duyệt out ca) lên đầu
+            var sortedList = shiftPlans.slice().sort(function(a, b) {
+                var order = { "pending": 1, "open": 2, "closed": 3, "unassigned": 4 };
+                return (order[a.status] || 99) - (order[b.status] || 99);
+            });
+
+            sortedList.forEach(function (shift) {
+                if (shift.status === 'unassigned') return;
+
+                var matchKw = (kw === '' || shift.code.toLowerCase().includes(kw) || (shift.staffName && shift.staffName.toLowerCase().includes(kw)));
+                var matchSt = (stFilter === '' || shift.status === stFilter);
+
+                if (!matchKw || !matchSt) return;
+
+                visibleCount++;
+
+                var statusBadge = '';
+                var actionBtn = '';
+
+                if (shift.status === 'pending') {
+                    statusBadge = '<span class="shift-badge-pending"><i class="fa-solid fa-clock me-1"></i>Chờ duyệt out ca</span>';
+                    actionBtn = `
+                        <button type="button" class="btn btn-dark btn-sm px-3 fw-bold" onclick="openShiftAuditModal('${shift.code}')">
+                            <i class="fa-solid fa-clipboard-check me-1 text-warning"></i> Kiểm tra & Duyệt
+                        </button>
+                    `;
+                } else if (shift.status === 'open') {
+                    statusBadge = '<span class="shift-badge-open"><i class="fa-solid fa-arrows-rotate me-1"></i>Đang làm việc</span>';
+                    actionBtn = `
+                        <button type="button" class="btn btn-outline-secondary btn-sm px-3" onclick="openShiftAuditModal('${shift.code}')">
+                            <i class="fa-solid fa-eye me-1"></i> Xem thông tin
+                        </button>
+                    `;
+                } else if (shift.status === 'closed') {
+                    statusBadge = '<span class="shift-badge-closed"><i class="fa-solid fa-circle-check me-1"></i>Đã chốt ca</span>';
+                    actionBtn = `
+                        <button type="button" class="btn btn-outline-secondary btn-sm px-3" onclick="openShiftAuditModal('${shift.code}')">
+                            <i class="fa-solid fa-eye me-1"></i> Xem chi tiết
+                        </button>
+                    `;
+                }
+
+                var diffBadge = '<span class="text-muted small">--</span>';
+                if (shift.diffType === 'match') diffBadge = `<span class="diff-tag-match">${shift.diffText}</span>`;
+                else if (shift.diffType === 'over') diffBadge = `<span class="diff-tag-over">${shift.diffText}</span>`;
+                else if (shift.diffType === 'under') diffBadge = `<span class="diff-tag-under">${shift.diffText}</span>`;
+
+                html += `
+                    <tr id="row-${shift.code}">
+                        <td>
+                            <div class="font-monospace fw-bold text-dark">${shift.code}</div>
+                            <small class="text-muted">${shift.name} (${shift.timeRange}) · ${shift.date}</small>
+                        </td>
+                        <td>
+                            <div class="fw-semibold text-dark">${shift.staffName || 'Chưa phân công'}</div>
+                            <small class="text-muted">${shift.counter}</small>
+                        </td>
+                        <td class="text-end font-monospace">${shift.expected}</td>
+                        <td class="text-end fw-bold font-monospace text-dark">${shift.actual}</td>
+                        <td class="text-center">${diffBadge}</td>
+                        <td>${statusBadge}</td>
+                        <td class="text-end">${actionBtn}</td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html || '<tr><td colspan="7" class="text-center text-muted py-4">Không tìm thấy ca làm việc nào phù hợp.</td></tr>';
+            var countEl = document.getElementById('visibleAuditCount');
+            if (countEl) countEl.innerText = visibleCount;
+        }
+
+        function filterAuditShifts() {
+            renderAuditTable();
+        }
+
+        function resetAuditFilter() {
+            document.getElementById('auditSearchInput').value = '';
+            document.getElementById('auditStatusFilter').value = '';
+            renderAuditTable();
+        }
+
+        function openShiftAuditModal(code) {
+            currentAuditShift = shiftPlans.find(function (s) { return s.code === code; });
+            if (!currentAuditShift) return;
+
+            document.getElementById('mShiftCode').innerText = currentAuditShift.code;
+            document.getElementById('mCashierName').innerText = currentAuditShift.staffName || 'Chưa có';
+            document.getElementById('mShiftTime').innerText = currentAuditShift.timeRange + ' (' + currentAuditShift.date + ')';
+
+            var b = document.getElementById('mShiftStatusBadge');
+            if (currentAuditShift.status === 'pending') {
+                b.className = 'shift-badge-pending';
+                b.innerHTML = '<i class="fa-solid fa-clock me-1"></i>Chờ duyệt out ca';
+            } else if (currentAuditShift.status === 'closed') {
+                b.className = 'shift-badge-closed';
+                b.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i>Đã chốt ca';
+            } else if (currentAuditShift.status === 'open') {
+                b.className = 'shift-badge-open';
+                b.innerHTML = '<i class="fa-solid fa-arrows-rotate me-1"></i>Đang làm việc';
+            }
+
+            document.getElementById('mInitialCash').innerText = currentAuditShift.initial;
+            document.getElementById('mCashSales').innerText = currentAuditShift.sales;
+            document.getElementById('mCashRefund').innerText = currentAuditShift.refund;
+            document.getElementById('mExpense').innerText = currentAuditShift.expense;
+            document.getElementById('mExpectedCash').innerText = currentAuditShift.expected;
+
+            document.getElementById('mActualCashInput').value = currentAuditShift.actual;
+
+            var diffEl = document.getElementById('mDiffDisplay');
+            if (currentAuditShift.diffType === 'match') {
+                diffEl.innerHTML = '<span class="diff-tag-match">' + currentAuditShift.diffText + '</span>';
+            } else if (currentAuditShift.diffType === 'over') {
+                diffEl.innerHTML = '<span class="diff-tag-over">' + currentAuditShift.diffText + '</span>';
+            } else if (currentAuditShift.diffType === 'under') {
+                diffEl.innerHTML = '<span class="diff-tag-under">' + currentAuditShift.diffText + '</span>';
+            } else {
+                diffEl.innerHTML = '<span class="text-muted small">' + currentAuditShift.diffText + '</span>';
+            }
+
+            document.getElementById('mCashierExplain').innerText = currentAuditShift.explain || 'Không có ghi chú.';
+            document.getElementById('mAdminNote').value = currentAuditShift.adminNote || '';
+
+            var btnApprove = document.getElementById('mBtnApproveShift');
+            if (currentAuditShift.status === 'closed') {
+                btnApprove.disabled = true;
+                btnApprove.className = 'btn btn-secondary btn-sm px-4';
+                btnApprove.innerHTML = '<i class="fa-solid fa-check-double me-1"></i> Ca đã duyệt chốt';
+            } else if (currentAuditShift.status === 'open') {
+                btnApprove.disabled = true;
+                btnApprove.className = 'btn btn-outline-primary btn-sm px-4';
+                btnApprove.innerHTML = '<i class="fa-solid fa-clock me-1"></i> Chưa có yêu cầu Out ca';
+            } else {
+                btnApprove.disabled = false;
+                btnApprove.className = 'btn btn-success btn-sm px-4 fw-bold';
+                btnApprove.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> Duyệt chốt ca';
+            }
+
+            new bootstrap.Modal(document.getElementById('shiftAuditModal')).show();
+        }
+
+        function confirmApproveShift() {
+            if (!currentAuditShift) return;
+
+            var note = document.getElementById('mAdminNote').value.trim() || 'Admin đã kiểm tra tiền mặt và đồng ý duyệt chốt ca.';
+            if (!confirm('XÁC NHẬN DUYỆT CHỐT CA ' + currentAuditShift.code + '?\n\n- Thu ngân out ca: ' + currentAuditShift.staffName + '\n- Số tiền nộp: ' + currentAuditShift.actual)) return;
+
+            currentAuditShift.status = 'closed';
+            currentAuditShift.adminNote = note;
+
+            bootstrap.Modal.getInstance(document.getElementById('shiftAuditModal')).hide();
+            renderAuditTable();
+            updateTopBadges();
+            alert('🎉 Đã duyệt chốt ca ' + currentAuditShift.code + ' thành công!');
+        }
+
+        function exportData() {
+            alert('Đang trích xuất dữ liệu phân ca và lịch sử soát ca làm việc ra định dạng Excel...');
+        }
+    </script>
+}
+

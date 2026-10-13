@@ -1,0 +1,864 @@
+@{
+    ViewData["Title"] = "Duyệt yêu cầu đổi trả";
+}
+
+@section Styles {
+    <style>
+        .approval-badge-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .approval-badge-approved {
+            background-color: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .approval-badge-success {
+            background-color: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .approval-badge-rejected {
+            background-color: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .approval-badge-warning {
+            background-color: #fffbeb;
+            color: #b45309;
+            border: 1px solid #fde68a;
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .returns-table thead th {
+            background: #fafafa;
+            color: #6b7280;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.85rem 1.25rem;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        .returns-table tbody td {
+            padding: 1rem 1.25rem;
+            vertical-align: middle;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .returns-table tbody tr:hover {
+            background-color: #fafafa;
+        }
+
+        .filter-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+        }
+
+        .section-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-heading {
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #374151;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .evidence-thumb {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .evidence-thumb:hover {
+            opacity: 0.85;
+        }
+    </style>
+}
+
+<div class="container-fluid p-0">
+
+    <!-- 1. Tiêu đề gọn gàng -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+        <div>
+            <h4 class="fw-bold mb-1 text-dark">Duyệt yêu cầu đổi trả</h4>
+            <div class="text-muted small">
+                Xem xét, phê duyệt yêu cầu đổi trả hàng và quản lý hoàn tất tiền, nhập kho.
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-dark btn-sm px-3" onclick="alert('Đang trích xuất dữ liệu đổi trả...')">
+                <i class="fa-solid fa-file-export me-1"></i> Xuất danh sách
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. Bộ lọc tìm kiếm đơn giản -->
+    <div class="filter-card mb-4">
+        <div class="row g-2 align-items-center">
+            <!-- Tìm kiếm -->
+            <div class="col-md-5">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" id="returnSearchInput" class="form-control border-start-0 ps-1" placeholder="Tìm theo mã yêu cầu, mã hóa đơn, khách hàng..." onkeyup="filterReturns()" />
+                </div>
+            </div>
+
+            <!-- Lọc loại yêu cầu -->
+            <div class="col-md-3">
+                <select id="returnTypeFilter" class="form-select form-select-sm" onchange="filterReturns()">
+                    <option value="">Tất cả loại yêu cầu</option>
+                    <option value="refund">Trả hàng hoàn tiền</option>
+                    <option value="exchange">Đổi sản phẩm</option>
+                </select>
+            </div>
+
+            <!-- Lọc trạng thái -->
+            <div class="col-md-2">
+                <select id="returnStatusFilter" class="form-select form-select-sm" onchange="filterReturns()">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="pending">Chờ duyệt</option>
+                    <option value="processing">Đang xử lý</option>
+                    <option value="completed">Đã hoàn tất</option>
+                    <option value="supplement">Yêu cầu bổ sung</option>
+                    <option value="rejected">Từ chối</option>
+                </select>
+            </div>
+
+            <!-- Đặt lại -->
+            <div class="col-md-2 text-md-end">
+                <button type="button" class="btn btn-light btn-sm text-secondary w-100" onclick="resetFilter()">
+                    <i class="fa-solid fa-rotate-left me-1"></i> Đặt lại
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Bảng danh sách: Đúng 5 cột theo yêu cầu (Mã yêu cầu, Mã hóa đơn, Loại yêu cầu, Trạng thái, Thao tác) -->
+    <div class="card border border-1 rounded-3 overflow-hidden shadow-none mb-4">
+        <div class="table-responsive">
+            <table class="table returns-table mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th>Mã yêu cầu</th>
+                        <th>Mã hóa đơn</th>
+                        <th>Loại yêu cầu</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="returnTableBody">
+                    <!-- Yêu cầu 1: Chờ duyệt -->
+                    <tr data-status="pending" data-type="refund" id="row-YC-2026-0089">
+                        <td>
+                            <div class="font-monospace fw-bold text-dark">YC-2026-0089</div>
+                            <small class="text-muted">08/10/2026 07:30</small>
+                        </td>
+                        <td>
+                            <span class="font-monospace fw-semibold text-primary">HD-2026-1042</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Trả hàng hoàn tiền</span>
+                        </td>
+                        <td>
+                            <span class="approval-badge-pending status-badge"><i class="fa-solid fa-clock me-1"></i>Chờ duyệt</span>
+                        </td>
+                        <td class="text-end">
+                            <button type="button" class="btn btn-dark btn-sm px-3" onclick="openDetail('YC-2026-0089')">
+                                <i class="fa-solid fa-eye me-1"></i> Xem & Duyệt
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Yêu cầu 2: Đang xử lý (Đổi hàng) -->
+                    <tr data-status="processing" data-type="exchange" id="row-YC-2026-0085">
+                        <td>
+                            <div class="font-monospace fw-bold text-dark">YC-2026-0085</div>
+                            <small class="text-muted">07/10/2026 14:15</small>
+                        </td>
+                        <td>
+                            <span class="font-monospace fw-semibold text-primary">HD-2026-1018</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Đổi sản phẩm</span>
+                        </td>
+                        <td>
+                            <span class="approval-badge-approved status-badge"><i class="fa-solid fa-arrows-rotate me-1"></i>Đang xử lý</span>
+                        </td>
+                        <td class="text-end">
+                            <button type="button" class="btn btn-dark btn-sm px-3" onclick="openDetail('YC-2026-0085')">
+                                <i class="fa-solid fa-eye me-1"></i> Xem & Duyệt
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Yêu cầu 3: Đang xử lý (Trả hàng chờ tiền) -->
+                    <tr data-status="processing" data-type="refund" id="row-YC-2026-0082">
+                        <td>
+                            <div class="font-monospace fw-bold text-dark">YC-2026-0082</div>
+                            <small class="text-muted">07/10/2026 09:20</small>
+                        </td>
+                        <td>
+                            <span class="font-monospace fw-semibold text-primary">HD-2026-0994</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Trả hàng hoàn tiền</span>
+                        </td>
+                        <td>
+                            <span class="approval-badge-approved status-badge"><i class="fa-solid fa-arrows-rotate me-1"></i>Đang xử lý</span>
+                        </td>
+                        <td class="text-end">
+                            <button type="button" class="btn btn-dark btn-sm px-3" onclick="openDetail('YC-2026-0082')">
+                                <i class="fa-solid fa-eye me-1"></i> Xem & Duyệt
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Yêu cầu 4: Đã hoàn tất -->
+                    <tr data-status="completed" data-type="exchange" id="row-YC-2026-0078">
+                        <td>
+                            <div class="font-monospace fw-bold text-dark">YC-2026-0078</div>
+                            <small class="text-muted">05/10/2026 16:40</small>
+                        </td>
+                        <td>
+                            <span class="font-monospace fw-semibold text-primary">HD-2026-0965</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Đổi sản phẩm</span>
+                        </td>
+                        <td>
+                            <span class="approval-badge-success status-badge"><i class="fa-solid fa-circle-check me-1"></i>Đã hoàn tất</span>
+                        </td>
+                        <td class="text-end">
+                            <button type="button" class="btn btn-outline-dark btn-sm px-3" onclick="openDetail('YC-2026-0078')">
+                                <i class="fa-solid fa-eye me-1"></i> Xem & Duyệt
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Số lượng hiển thị -->
+    <div class="text-end text-muted small">
+        Đang hiển thị <strong class="text-dark" id="visibleCount">4</strong> yêu cầu đổi trả
+    </div>
+
+</div>
+
+<!-- MODAL CHI TIẾT KHI BẤM "XEM & DUYỆT" -->
+<div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-3 border-0 shadow">
+            
+            <!-- Header Modal -->
+            <div class="modal-header border-bottom p-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div>
+                        <div class="d-flex align-items-center gap-2">
+                            <h5 class="modal-title fw-bold text-dark mb-0" id="mReqCode">YC-2026-0089</h5>
+                            <span id="mStatusBadge" class="approval-badge-pending">Chờ duyệt</span>
+                            <span class="badge bg-light text-dark border" id="mReqType">Trả hàng hoàn tiền</span>
+                        </div>
+                        <small class="text-muted">
+                            Hóa đơn: <strong class="text-primary font-monospace" id="mInvoiceCode">HD-2026-1042</strong> · Khách: <strong class="text-dark" id="mCustomer">Nguyễn Bích Phương (0912 884 551)</strong> · Tạo bởi: <span id="mCreator">Lê Hoàng Lan</span>
+                        </small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Body Modal: Chi tiết lý do, trả cái gì, hoàn bao nhiêu, công việc cần làm, quyết định admin -->
+            <div class="modal-body p-3 bg-light">
+                
+                <!-- 1. Lý do đổi trả & Bằng chứng -->
+                <div class="section-card">
+                    <div class="section-heading">
+                        <span><i class="fa-solid fa-circle-info me-1 text-primary"></i> 1. Lý do đổi trả & Tình trạng hàng</span>
+                        <span class="text-muted fw-normal" style="text-transform: none; font-size: 0.76rem;" id="mDaysValid">Mua cách 2 ngày (Hợp lệ trong 7 ngày)</span>
+                    </div>
+                    <div class="p-2 bg-light rounded border small text-dark mb-3" id="mReason">
+                        "Đầm dạ Tweed màu kem be bị lỗi bung sợi chỉ ở nách áo bên trái ngay khi mở hộp thử đồ, còn nguyên tem mác chống giả."
+                    </div>
+                    <div>
+                        <small class="text-muted d-block mb-1 fw-semibold">Ảnh chụp bằng chứng sản phẩm:</small>
+                        <div class="d-flex gap-2" id="mEvidenceImgs">
+                            <!-- Render bằng JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Trả cái gì & Đổi cái gì -->
+                <div class="section-card">
+                    <div class="section-heading">
+                        <span><i class="fa-solid fa-box-open me-1 text-primary"></i> 2. Sản phẩm trả & đổi</span>
+                    </div>
+                    <div class="table-responsive border rounded mb-0">
+                        <table class="table table-sm mb-0 align-middle" style="font-size: 0.85rem;">
+                            <thead class="bg-light text-muted">
+                                <tr>
+                                    <th>Phân loại</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th class="text-center">Số lượng</th>
+                                    <th class="text-end">Đơn giá thực tính</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mProductTable">
+                                <!-- Render bằng JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 3. Hoàn bao nhiêu / Số tiền thanh toán -->
+                <div class="section-card">
+                    <div class="section-heading">
+                        <span><i class="fa-solid fa-money-bill-wave me-1 text-primary"></i> 3. Số tiền hoàn / thanh toán</span>
+                    </div>
+                    <div class="p-3 bg-light rounded border">
+                        <div class="d-flex justify-content-between align-items-center mb-1 small">
+                            <span class="text-muted">Giá trị hàng trả lại:</span>
+                            <span class="fw-semibold text-danger" id="mRefundVal">-850.000 ₫</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2 small">
+                            <span class="text-muted">Giá trị hàng đổi mới (nếu có):</span>
+                            <span class="fw-semibold text-dark" id="mExchangeVal">0 ₫</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                            <strong class="text-dark" id="mBalanceLabel">SỐ TIỀN CẦN HOÀN LẠI CHO KHÁCH:</strong>
+                            <span class="h5 fw-bold text-danger mb-0 font-monospace" id="mFinalAmount">850.000 ₫</span>
+                        </div>
+                        <div class="mt-2 pt-2 border-top small text-muted">
+                            <i class="fa-solid fa-credit-card me-1"></i>
+                            Hình thức: <strong class="text-dark" id="mRefundMethod">Chuyển khoản Vietcombank - 0071001234567 (Nguyen Bich Phuong)</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Công việc chi tiết cần làm (Nhận hàng & Tiền) -->
+                <div class="section-card">
+                    <div class="section-heading">
+                        <span><i class="fa-solid fa-list-check me-1 text-primary"></i> 4. Công việc chi tiết cần làm</span>
+                    </div>
+                    <div class="row g-2">
+                        <!-- Việc 1: Nhận hàng -->
+                        <div class="col-md-6">
+                            <div class="p-2 border rounded bg-light h-100">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="small fw-semibold text-dark"><i class="fa-solid fa-box text-secondary me-1"></i> A. Nhận hàng vào kho:</span>
+                                    <span id="mGoodsStatus" class="badge bg-secondary-subtle text-secondary">Chưa nhận</span>
+                                </div>
+                                <div class="small text-muted mb-2">Chọn kho lưu trữ phù hợp:</div>
+                                <div class="d-flex gap-1 mb-2">
+                                    <select class="form-select form-select-sm" id="mWarehouseSelect">
+                                        <option value="Kho hàng lỗi">Kho hàng lỗi / Chờ bảo hành</option>
+                                        <option value="Kho bán lẻ">Kho bán lẻ (Hàng còn nguyên)</option>
+                                    </select>
+                                    <button type="button" class="btn btn-outline-dark btn-sm text-nowrap" id="mBtnGoods" onclick="execGoodsReceive()">
+                                        Nhận kho
+                                    </button>
+                                </div>
+                                <div id="mGoodsDoneNotice" class="small text-success d-none">
+                                    <i class="fa-solid fa-check me-1"></i> Đã nhập hàng vào kho thành công.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Việc 2: Hoàn tiền -->
+                        <div class="col-md-6">
+                            <div class="p-2 border rounded bg-light h-100">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="small fw-semibold text-dark"><i class="fa-solid fa-wallet text-secondary me-1"></i> B. Tiến độ tiền:</span>
+                                    <span id="mMoneyStatus" class="badge bg-secondary-subtle text-secondary">Chưa hoàn</span>
+                                </div>
+                                <div class="small text-muted mb-2">Thực hiện chuyển tiền hoặc xác nhận thu:</div>
+                                <div class="d-flex gap-1 mb-2">
+                                    <button type="button" class="btn btn-outline-success btn-sm flex-grow-1" id="mBtnMoney" onclick="execMoneyRefund(true)">
+                                        <i class="fa-solid fa-check me-1"></i> Đã hoàn tất tiền
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="execMoneyRefund(false)" title="Báo chuyển khoản lỗi để kiểm tra lại">
+                                        <i class="fa-solid fa-triangle-exclamation"></i> Lỗi STK
+                                    </button>
+                                </div>
+                                <div id="mMoneyDoneNotice" class="small text-success d-none">
+                                    <i class="fa-solid fa-check me-1"></i> Đã hoàn tất tiền thực tế.
+                                </div>
+                                <div id="mMoneyErrNotice" class="small text-danger d-none">
+                                    <i class="fa-solid fa-triangle-exclamation me-1"></i> Chuyển khoản thất bại. Giữ trạng thái chờ hoàn để kiểm tra lại STK.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Quyết định Admin -->
+                <div class="section-card border-primary border-opacity-25 mb-0">
+                    <div class="section-heading text-primary">
+                        <span><i class="fa-solid fa-gavel me-1"></i> 5. Quyết định của Admin</span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small text-muted mb-1">Ghi chú hoặc lý do quyết định:</label>
+                        <textarea class="form-control form-control-sm" id="mDecisionNote" rows="2" placeholder="Nhập lý do duyệt, từ chối hoặc nội dung cần bổ sung..."></textarea>
+                    </div>
+
+                    <!-- Các nút quyết định -->
+                    <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center" id="mDecisionActions">
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-success btn-sm px-3" onclick="makeDecision('approve')">
+                                <i class="fa-solid fa-circle-check me-1"></i> Duyệt yêu cầu
+                            </button>
+                            <button type="button" class="btn btn-outline-warning btn-sm text-dark px-3" onclick="makeDecision('supplement')">
+                                <i class="fa-solid fa-circle-question me-1"></i> Yêu cầu bổ sung
+                            </button>
+                            <button type="button" class="btn btn-outline-danger btn-sm px-3" onclick="makeDecision('reject')">
+                                <i class="fa-solid fa-circle-xmark me-1"></i> Từ chối
+                            </button>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-primary btn-sm px-3" id="mBtnComplete" onclick="completeAll()">
+                                <i class="fa-solid fa-flag-checkered me-1"></i> Đóng & Hoàn tất yêu cầu
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer Modal -->
+            <div class="modal-footer border-top p-3 d-flex justify-content-end">
+                <button type="button" class="btn btn-light btn-sm px-3" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xem ảnh lớn -->
+<div class="modal fade" id="imgModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-body p-0 text-center position-relative">
+                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-2" data-bs-dismiss="modal"></button>
+                <img id="imgBig" src="" alt="Ảnh lớn" class="img-fluid rounded shadow" style="max-height: 80vh;" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Dữ liệu mẫu thực tế
+        var itemsData = {
+            "YC-2026-0089": {
+                code: "YC-2026-0089",
+                invoiceCode: "HD-2026-1042",
+                customer: "Nguyễn Bích Phương (0912 884 551)",
+                creator: "Lê Hoàng Lan (CSKH)",
+                type: "refund",
+                typeName: "Trả hàng hoàn tiền",
+                status: "pending",
+                daysValid: "Mua cách 2 ngày (Hợp lệ trong 7 ngày)",
+                reason: "Đầm dạ Tweed màu kem be bị lỗi bung sợi chỉ ở nách áo bên trái ngay khi mở hộp thử đồ, còn nguyên tem mác chống giả.",
+                images: [
+                    "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80",
+                    "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=600&q=80"
+                ],
+                products: [
+                    { type: "return", name: "Đầm Tweed Cổ Vuông Đính Cúc Ngọc", spec: "Màu Kem Be · Size M", qty: 1, actualPrice: "850.000 ₫" }
+                ],
+                refundVal: "-850.000 ₫",
+                exchangeVal: "0 ₫",
+                finalAmount: "850.000 ₫",
+                isCustomerRefund: true,
+                refundMethod: "Chuyển khoản Vietcombank - 0071001234567 (Nguyen Bich Phuong)",
+                goodsReceived: false,
+                moneyDone: false,
+                moneyError: false,
+                decisionNote: ""
+            },
+            "YC-2026-0085": {
+                code: "YC-2026-0085",
+                invoiceCode: "HD-2026-1018",
+                customer: "Trần Thu Trang (0983 221 445)",
+                creator: "Vũ Minh Hiếu (Thu ngân)",
+                type: "exchange",
+                typeName: "Đổi sản phẩm",
+                status: "processing",
+                daysValid: "Mua cách 4 ngày (Hợp lệ trong 7 ngày)",
+                reason: "Khách mặc đầm lụa satin bị rộng vai, muốn đổi sang Áo sơ mi lụa cổ nơ giá thấp hơn, hoàn lại tiền chênh lệch.",
+                images: [
+                    "https://images.unsplash.com/photo-1550614000-4895a10e1bfd?w=600&q=80"
+                ],
+                products: [
+                    { type: "return", name: "Đầm Lụa Satin Dáng Suông Phối Đai", spec: "Màu Xanh · Size L", qty: 1, actualPrice: "1.100.000 ₫" },
+                    { type: "exchange", name: "Áo Sơ Mi Lụa Cổ Nơ Thanh Lịch", spec: "Màu Trắng · Size M", qty: 1, actualPrice: "950.000 ₫" }
+                ],
+                refundVal: "-1.100.000 ₫",
+                exchangeVal: "950.000 ₫",
+                finalAmount: "150.000 ₫",
+                isCustomerRefund: true,
+                refundMethod: "Chuyển khoản Techcombank - 1903344556677",
+                goodsReceived: true,
+                moneyDone: false,
+                moneyError: true,
+                decisionNote: "Đã duyệt đổi mẫu và hoàn 150.000 ₫ tiền chênh lệch."
+            },
+            "YC-2026-0082": {
+                code: "YC-2026-0082",
+                invoiceCode: "HD-2026-0994",
+                customer: "Lê Tuấn Khang (0909 332 119)",
+                creator: "Lê Hoàng Lan (CSKH)",
+                type: "refund",
+                typeName: "Trả hàng hoàn tiền",
+                status: "processing",
+                daysValid: "Mua cách 5 ngày (Hợp lệ trong 7 ngày)",
+                reason: "Áo vest blazer bị phai màu cục bộ sau khi nhận hàng, yêu cầu trả hàng hoàn tiền 100%.",
+                images: [
+                    "https://images.unsplash.com/photo-1548883354-7622d03aca27?w=600&q=80"
+                ],
+                products: [
+                    { type: "return", name: "Áo Blazer Dạ Tweed Nữ Form Rộng", spec: "Màu Nâu Tây · Size XL", qty: 1, actualPrice: "1.420.000 ₫" }
+                ],
+                refundVal: "-1.420.000 ₫",
+                exchangeVal: "0 ₫",
+                finalAmount: "1.420.000 ₫",
+                isCustomerRefund: true,
+                refundMethod: "Chuyển khoản MBBank - 0909332119 (Le Tuan Khang)",
+                goodsReceived: true,
+                moneyDone: false,
+                moneyError: false,
+                decisionNote: "Chấp thuận trả hàng lỗi, nhập kho lỗi và hoàn tiền theo giá thực mua."
+            },
+            "YC-2026-0078": {
+                code: "YC-2026-0078",
+                invoiceCode: "HD-2026-0965",
+                customer: "Hoàng Mai Anh (0938 110 998)",
+                creator: "Đỗ Thị Yến (Thu ngân)",
+                type: "exchange",
+                typeName: "Đổi sản phẩm",
+                status: "completed",
+                daysValid: "Mua cách 6 ngày (Hợp lệ trong 7 ngày)",
+                reason: "Khách thử vừa nhưng muốn đổi sang mẫu đầm đính cúc ngọc cao cấp hơn, đồng ý phụ thu 200.000 ₫.",
+                images: [
+                    "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80"
+                ],
+                products: [
+                    { type: "return", name: "Chân Váy Chữ A Dạ Tweed", spec: "Màu Đen · Size S", qty: 1, actualPrice: "650.000 ₫" },
+                    { type: "exchange", name: "Đầm Tweed Cổ Vuông Đính Cúc Ngọc", spec: "Màu Kem Be · Size M", qty: 1, actualPrice: "850.000 ₫" }
+                ],
+                refundVal: "-650.000 ₫",
+                exchangeVal: "850.000 ₫",
+                finalAmount: "200.000 ₫",
+                isCustomerRefund: false,
+                refundMethod: "Thu tiền mặt trực tiếp tại quầy",
+                goodsReceived: true,
+                moneyDone: true,
+                moneyError: false,
+                decisionNote: "Đồng ý đổi sang mẫu cao cấp hơn, phụ thu 200.000 ₫."
+            }
+        };
+
+        var currentItem = null;
+
+        // Mở Modal Xem & Duyệt
+        function openDetail(code) {
+            currentItem = itemsData[code];
+            if (!currentItem) return;
+
+            document.getElementById('mReqCode').innerText = currentItem.code;
+            document.getElementById('mReqType').innerText = currentItem.typeName;
+            document.getElementById('mInvoiceCode').innerText = currentItem.invoiceCode;
+            document.getElementById('mCustomer').innerText = currentItem.customer;
+            document.getElementById('mCreator').innerText = currentItem.creator;
+            document.getElementById('mDaysValid').innerText = currentItem.daysValid;
+            document.getElementById('mReason').innerText = '"' + currentItem.reason + '"';
+
+            // Trạng thái badge
+            renderModalStatusBadge(currentItem.status);
+
+            // Bằng chứng ảnh
+            var imgContainer = document.getElementById('mEvidenceImgs');
+            imgContainer.innerHTML = '';
+            currentItem.images.forEach(function(imgSrc) {
+                var img = document.createElement('img');
+                img.src = imgSrc;
+                img.className = 'evidence-thumb';
+                img.onclick = function() {
+                    document.getElementById('imgBig').src = imgSrc;
+                    new bootstrap.Modal(document.getElementById('imgModal')).show();
+                };
+                imgContainer.appendChild(img);
+            });
+
+            // Danh sách sản phẩm trả & đổi
+            var tbody = document.getElementById('mProductTable');
+            tbody.innerHTML = '';
+            currentItem.products.forEach(function(p) {
+                var isRet = p.type === 'return';
+                var tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><span class="badge ${isRet ? 'bg-danger-subtle text-danger' : 'bg-primary-subtle text-primary'}">${isRet ? 'Trả lại' : 'Đổi mới'}</span></td>
+                    <td><strong>${p.name}</strong> <span class="text-muted small">(${p.spec})</span></td>
+                    <td class="text-center">${p.qty}</td>
+                    <td class="text-end fw-bold ${isRet ? 'text-danger' : 'text-primary'}">${p.actualPrice}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Số tiền hoàn / thanh toán
+            document.getElementById('mRefundVal').innerText = currentItem.refundVal;
+            document.getElementById('mExchangeVal').innerText = currentItem.exchangeVal;
+            document.getElementById('mFinalAmount').innerText = currentItem.finalAmount;
+            if (currentItem.isCustomerRefund) {
+                document.getElementById('mBalanceLabel').innerText = 'SỐ TIỀN CẦN HOÀN LẠI CHO KHÁCH:';
+                document.getElementById('mFinalAmount').className = 'h5 fw-bold text-danger mb-0 font-monospace';
+            } else {
+                document.getElementById('mBalanceLabel').innerText = 'SỐ TIỀN CẦN THU THÊM TỪ KHÁCH:';
+                document.getElementById('mFinalAmount').className = 'h5 fw-bold text-success mb-0 font-monospace';
+            }
+            document.getElementById('mRefundMethod').innerText = currentItem.refundMethod;
+
+            // Công việc chi tiết & Quyết định
+            document.getElementById('mDecisionNote').value = currentItem.decisionNote || '';
+            updateWorkView();
+
+            new bootstrap.Modal(document.getElementById('detailModal')).show();
+        }
+
+        function renderModalStatusBadge(st) {
+            var b = document.getElementById('mStatusBadge');
+            if (st === 'pending') {
+                b.className = 'approval-badge-pending';
+                b.innerHTML = '<i class="fa-solid fa-clock me-1"></i>Chờ duyệt';
+            } else if (st === 'processing') {
+                b.className = 'approval-badge-approved';
+                b.innerHTML = '<i class="fa-solid fa-arrows-rotate me-1"></i>Đang xử lý';
+            } else if (st === 'completed') {
+                b.className = 'approval-badge-success';
+                b.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i>Đã hoàn tất';
+            } else if (st === 'rejected') {
+                b.className = 'approval-badge-rejected';
+                b.innerHTML = '<i class="fa-solid fa-circle-xmark me-1"></i>Từ chối';
+            } else if (st === 'supplement') {
+                b.className = 'approval-badge-warning';
+                b.innerHTML = '<i class="fa-solid fa-circle-question me-1"></i>Yêu cầu bổ sung';
+            }
+        }
+
+        function updateWorkView() {
+            var gBadge = document.getElementById('mGoodsStatus');
+            var gNotice = document.getElementById('mGoodsDoneNotice');
+            var gBtn = document.getElementById('mBtnGoods');
+            if (currentItem.goodsReceived) {
+                gBadge.className = 'badge bg-success-subtle text-success';
+                gBadge.innerHTML = '<i class="fa-solid fa-check me-1"></i>Đã nhận kho';
+                gNotice.classList.remove('d-none');
+                gBtn.disabled = true;
+            } else {
+                gBadge.className = 'badge bg-secondary-subtle text-secondary';
+                gBadge.innerText = 'Chưa nhận';
+                gNotice.classList.add('d-none');
+                gBtn.disabled = (currentItem.status === 'pending' || currentItem.status === 'rejected');
+            }
+
+            var mBadge = document.getElementById('mMoneyStatus');
+            var mDone = document.getElementById('mMoneyDoneNotice');
+            var mErr = document.getElementById('mMoneyErrNotice');
+            var mBtn = document.getElementById('mBtnMoney');
+
+            if (currentItem.moneyError) {
+                mBadge.className = 'badge bg-danger-subtle text-danger';
+                mBadge.innerHTML = '<i class="fa-solid fa-circle-exclamation me-1"></i>Lỗi STK';
+                mErr.classList.remove('d-none');
+                mDone.classList.add('d-none');
+            } else if (currentItem.moneyDone) {
+                mBadge.className = 'badge bg-success-subtle text-success';
+                mBadge.innerHTML = '<i class="fa-solid fa-check me-1"></i>Đã xong tiền';
+                mDone.classList.remove('d-none');
+                mErr.classList.add('d-none');
+            } else {
+                mBadge.className = 'badge bg-secondary-subtle text-secondary';
+                mBadge.innerText = 'Chưa hoàn';
+                mDone.classList.add('d-none');
+                mErr.classList.add('d-none');
+            }
+
+            var btnComplete = document.getElementById('mBtnComplete');
+            if (currentItem.status === 'completed') {
+                btnComplete.disabled = true;
+                btnComplete.innerHTML = '<i class="fa-solid fa-check-double me-1"></i> Đã hoàn tất yêu cầu';
+            } else {
+                btnComplete.disabled = false;
+                btnComplete.innerHTML = '<i class="fa-solid fa-flag-checkered me-1"></i> Đóng & Hoàn tất yêu cầu';
+            }
+        }
+
+        // Quyết định của Admin
+        function makeDecision(decision) {
+            var note = document.getElementById('mDecisionNote').value.trim();
+
+            if (decision === 'approve') {
+                if (!confirm('Xác nhận DUYỆT yêu cầu đổi trả ' + currentItem.code + '?')) return;
+                currentItem.status = 'processing';
+                currentItem.decisionNote = note || 'Admin đã duyệt yêu cầu.';
+                alert('Đã duyệt yêu cầu!');
+            } else if (decision === 'reject') {
+                if (!note) {
+                    alert('Vui lòng nhập lý do từ chối!');
+                    return;
+                }
+                if (!confirm('Xác nhận TỪ CHỐI yêu cầu ' + currentItem.code + '?')) return;
+                currentItem.status = 'rejected';
+                currentItem.decisionNote = note;
+                alert('Đã từ chối yêu cầu.');
+            } else if (decision === 'supplement') {
+                if (!note) {
+                    alert('Vui lòng nhập thông tin cần bổ sung!');
+                    return;
+                }
+                currentItem.status = 'supplement';
+                currentItem.decisionNote = note;
+                alert('Đã gửi yêu cầu bổ sung thông tin.');
+            }
+
+            syncRow(currentItem);
+            renderModalStatusBadge(currentItem.status);
+            updateWorkView();
+        }
+
+        // Thực hiện nhận hàng
+        function execGoodsReceive() {
+            var wh = document.getElementById('mWarehouseSelect').value;
+            if (confirm('Xác nhận ĐÃ NHẬN HÀNG THỰC TẾ vào ' + wh + '?')) {
+                currentItem.goodsReceived = true;
+                alert('Đã ghi nhận nhận hàng vào ' + wh + '!');
+                updateWorkView();
+            }
+        }
+
+        // Thực hiện hoàn tiền
+        function execMoneyRefund(success) {
+            if (success) {
+                if (confirm('Xác nhận ĐÃ HOÀN TẤT TIỀN ' + currentItem.finalAmount + '?')) {
+                    currentItem.moneyDone = true;
+                    currentItem.moneyError = false;
+                    alert('Đã ghi nhận hoàn tất tiền thành công!');
+                    updateWorkView();
+                }
+            } else {
+                alert('Đã ghi nhận lỗi chuyển khoản. Trạng thái giữ "Chờ hoàn" để kiểm tra lại STK.');
+                currentItem.moneyError = true;
+                currentItem.moneyDone = false;
+                updateWorkView();
+            }
+        }
+
+        // Hoàn tất yêu cầu
+        function completeAll() {
+            if (!confirm('Xác nhận HOÀN TẤT TOÀN BỘ yêu cầu ' + currentItem.code + '?')) return;
+            currentItem.status = 'completed';
+            alert('Yêu cầu đổi trả ' + currentItem.code + ' đã được hoàn tất thành công!');
+            syncRow(currentItem);
+            bootstrap.Modal.getInstance(document.getElementById('detailModal')).hide();
+        }
+
+        function syncRow(item) {
+            var row = document.getElementById('row-' + item.code);
+            if (!row) return;
+
+            row.setAttribute('data-status', item.status);
+            var statusTd = row.children[3];
+
+            if (item.status === 'pending') {
+                statusTd.innerHTML = '<span class="approval-badge-pending status-badge"><i class="fa-solid fa-clock me-1"></i>Chờ duyệt</span>';
+            } else if (item.status === 'processing') {
+                statusTd.innerHTML = '<span class="approval-badge-approved status-badge"><i class="fa-solid fa-arrows-rotate me-1"></i>Đang xử lý</span>';
+            } else if (item.status === 'completed') {
+                statusTd.innerHTML = '<span class="approval-badge-success status-badge"><i class="fa-solid fa-circle-check me-1"></i>Đã hoàn tất</span>';
+            } else if (item.status === 'rejected') {
+                statusTd.innerHTML = '<span class="approval-badge-rejected status-badge"><i class="fa-solid fa-circle-xmark me-1"></i>Từ chối</span>';
+            } else if (item.status === 'supplement') {
+                statusTd.innerHTML = '<span class="approval-badge-warning status-badge"><i class="fa-solid fa-circle-question me-1"></i>Yêu cầu bổ sung</span>';
+            }
+        }
+
+        // Lọc bảng
+        function filterReturns() {
+            var kw = document.getElementById('returnSearchInput').value.toLowerCase().trim();
+            var tp = document.getElementById('returnTypeFilter').value;
+            var st = document.getElementById('returnStatusFilter').value;
+
+            var rows = document.querySelectorAll('#returnTableBody tr');
+            var visible = 0;
+
+            rows.forEach(function(row) {
+                var rowSt = row.getAttribute('data-status') || '';
+                var rowTp = row.getAttribute('data-type') || '';
+                var text = row.innerText.toLowerCase();
+
+                var matchKw = (kw === '' || text.includes(kw));
+                var matchTp = (tp === '' || rowTp === tp);
+                var matchSt = (st === '' || rowSt === st);
+
+                if (matchKw && matchTp && matchSt) {
+                    row.style.display = '';
+                    visible++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            document.getElementById('visibleCount').innerText = visible;
+        }
+
+        function resetFilter() {
+            document.getElementById('returnSearchInput').value = '';
+            document.getElementById('returnTypeFilter').value = '';
+            document.getElementById('returnStatusFilter').value = '';
+            filterReturns();
+        }
+    </script>
+}
+

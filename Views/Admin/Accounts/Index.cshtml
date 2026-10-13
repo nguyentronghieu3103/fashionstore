@@ -1,0 +1,837 @@
+@{
+    ViewData["Title"] = "A10 • Tài khoản & Vai trò";
+}
+
+@section Styles {
+    <style>
+        .account-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .account-item-row {
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .account-item-row:hover {
+            background-color: #f9fafb;
+        }
+
+        .account-item-row.active {
+            background-color: #f3f4f6;
+            border-left-color: #111827;
+        }
+
+        .role-badge-admin {
+            background-color: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .role-badge-staff {
+            background-color: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .role-badge-customer {
+            background-color: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #e5e7eb;
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .status-badge-active {
+            background-color: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+            font-weight: 600;
+            font-size: 0.72rem;
+            padding: 2px 7px;
+            border-radius: 4px;
+        }
+
+        .status-badge-locked {
+            background-color: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            font-weight: 600;
+            font-size: 0.72rem;
+            padding: 2px 7px;
+            border-radius: 4px;
+        }
+
+        .role-radio-box {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 0.85rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .role-radio-box:hover {
+            border-color: #9ca3af;
+            background-color: #fafafa;
+        }
+
+        .role-radio-box.selected {
+            border-color: #111827;
+            background-color: #f9fafb;
+            box-shadow: 0 0 0 1px #111827;
+        }
+
+        .avatar-circle-sm {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .section-header-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #374151;
+            margin-bottom: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+    </style>
+}
+
+<div class="container-fluid p-0">
+
+    <!-- 1. Header Trang: A10 • Tài khoản, vai trò và phân quyền -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-dark text-white px-2 py-1 font-monospace">A10</span>
+            <h4 class="fw-bold mb-0 text-dark">Tài khoản & Vai trò</h4>
+        </div>
+        <div>
+            <button class="btn btn-dark btn-sm px-3 fw-bold" onclick="openCreateAccount()">
+                <i class="fa-solid fa-user-plus me-1 text-warning"></i> + Tạo tài khoản nhân viên
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. Bố cục Master - Detail (Trái: Danh sách / Phải: Khung hồ sơ, Khung role, Khung bảo mật) -->
+    <div class="row g-3">
+        
+        <!-- ==================== CỘT TRÁI: DANH SÁCH TÀI KHOẢN ==================== -->
+        <div class="col-lg-5">
+            <div class="account-card p-3 h-100">
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="fw-bold text-dark small text-uppercase">Danh sách tài khoản (<span id="totalAccountCount">5</span>)</span>
+                    <span class="badge bg-light text-muted border">Light Life</span>
+                </div>
+
+                <!-- Tìm kiếm & Lọc vai trò -->
+                <div class="row g-2 mb-3">
+                    <div class="col-7">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-white text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                            <input type="text" id="accSearchInput" class="form-control border-start-0 ps-1" placeholder="Tìm theo tên, email, mã..." onkeyup="filterAccountList()" />
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <select id="accRoleFilter" class="form-select form-select-sm" onchange="filterAccountList()">
+                            <option value="">Tất cả vai trò</option>
+                            <option value="Staff">Nhân viên</option>
+                            <option value="Customer">Khách hàng</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Danh sách tài khoản -->
+                <div class="border rounded-3 overflow-hidden bg-white" style="max-height: 580px; overflow-y: auto;">
+                    <div class="list-group list-group-flush" id="accountListContainer">
+                        <!-- Render bởi JavaScript -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ==================== CỘT PHẢI: CHI TIẾT TÀI KHOẢN ==================== -->
+        <div class="col-lg-7">
+            <div class="account-card p-3">
+
+                <!-- Tiêu đề chi tiết & Hành động nhanh -->
+                <div class="d-flex flex-wrap justify-content-between align-items-center pb-3 mb-3 border-bottom gap-2">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="avatar-circle-sm text-white" id="dAvatarCircle" style="background-color: #3b82f6; width: 44px; height: 44px; font-size: 1rem;">
+                            HL
+                        </div>
+                        <div>
+                            <div class="d-flex align-items-center gap-2">
+                                <h5 class="fw-bold text-dark mb-0" id="dFullName">Lê Hoàng Lan</h5>
+                                <span id="dRoleBadge" class="role-badge-staff">Nhân viên</span>
+                                <span id="dStatusBadge" class="status-badge-active">Hoạt động</span>
+                            </div>
+                            <small class="text-muted font-monospace" id="dCode">NV-01</small>
+                            <span class="text-muted small"> · </span>
+                            <small class="text-muted" id="dEmail">lan.le@lightlife.vn</small>
+                        </div>
+                    </div>
+
+                    <!-- Nút Khóa / Mở khóa tài khoản -->
+                    <div id="dActionBtnGroup">
+                        <button type="button" class="btn btn-outline-danger btn-sm px-3" id="btnToggleLock" onclick="toggleAccountLock()">
+                            <i class="fa-solid fa-lock me-1"></i> Khóa tài khoản
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 1. KHUNG HỒ SƠ -->
+                <div class="mb-4">
+                    <div class="section-header-title">
+                        <span><i class="fa-solid fa-address-card me-1 text-primary"></i> 1. Hồ sơ thông tin</span>
+                    </div>
+
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold text-dark mb-1">Mã tài khoản:</label>
+                            <input type="text" class="form-control form-control-sm font-monospace bg-light" id="fCode" readonly />
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label small fw-semibold text-dark mb-1">Họ và tên:</label>
+                            <input type="text" class="form-control form-control-sm" id="fFullName" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-dark mb-1">Email / Tên đăng nhập:</label>
+                            <input type="email" class="form-control form-control-sm font-monospace" id="fEmail" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-dark mb-1">Số điện thoại:</label>
+                            <input type="text" class="form-control form-control-sm font-monospace" id="fPhone" />
+                        </div>
+
+                        <div class="col-md-6" id="fCounterContainer">
+                            <label class="form-label small fw-semibold text-dark mb-1">Quầy / Khu vực:</label>
+                            <select class="form-select form-select-sm" id="fCounter">
+                                <option value="Quầy chính">Quầy thu ngân chính</option>
+                                <option value="Quầy phụ 2">Quầy phụ 2</option>
+                                <option value="Kho hàng">Khu vực kho hàng</option>
+                                <option value="Không cố định">Linh hoạt toàn cửa hàng</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-dark mb-1">Trạng thái:</label>
+                            <select class="form-select form-select-sm" id="fStatus">
+                                <option value="active">Đang hoạt động</option>
+                                <option value="locked">Tạm thời khóa</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. KHUNG ROLE: CHỈ 2 GIÁ TRỊ (NHÂN VIÊN & KHÁCH HÀNG) -->
+                <div class="mb-4">
+                    <div class="section-header-title">
+                        <span><i class="fa-solid fa-user-gear me-1 text-primary"></i> 2. Vai trò (Role)</span>
+                    </div>
+
+                    <!-- Thông báo cố định nếu là Admin -->
+                    <div id="adminNoticeBlock" class="p-2 mb-2 bg-light border border-danger border-opacity-25 rounded small text-danger d-none">
+                        <i class="fa-solid fa-shield-halved me-1"></i> Tài khoản Admin cố định của hệ thống.
+                    </div>
+
+                    <!-- 2 Lựa chọn Role: Nhân viên và Khách hàng -->
+                    <div class="row g-2" id="roleSelectorRow">
+                        
+                        <!-- Lựa chọn 1: Nhân viên -->
+                        <div class="col-md-6">
+                            <div class="role-radio-box selected" id="roleBoxStaff" onclick="selectRole('Staff')">
+                                <div class="d-flex align-items-center gap-2">
+                                    <input class="form-check-input mt-0" type="radio" name="accountRole" id="radioRoleStaff" value="Staff" checked />
+                                    <label class="form-check-label fw-bold text-dark mb-0 cursor-pointer" for="radioRoleStaff">
+                                        <i class="fa-solid fa-user-tag text-primary me-1"></i> Nhân viên
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lựa chọn 2: Khách hàng -->
+                        <div class="col-md-6">
+                            <div class="role-radio-box" id="roleBoxCustomer" onclick="selectRole('Customer')">
+                                <div class="d-flex align-items-center gap-2">
+                                    <input class="form-check-input mt-0" type="radio" name="accountRole" id="radioRoleCustomer" value="Customer" />
+                                    <label class="form-check-label fw-bold text-dark mb-0 cursor-pointer" for="radioRoleCustomer">
+                                        <i class="fa-solid fa-bag-shopping text-secondary me-1"></i> Khách hàng
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- 3. KHUNG BẢO MẬT & PHIÊN ĐĂNG NHẬP -->
+                <div class="mb-4">
+                    <div class="section-header-title">
+                        <span><i class="fa-solid fa-shield-halved me-1 text-primary"></i> 3. Bảo mật & Phiên hoạt động</span>
+                    </div>
+
+                    <div class="row g-2 align-items-center p-2 bg-light rounded border mb-2">
+                        <div class="col-md-8">
+                            <input type="password" class="form-control form-control-sm font-monospace" id="fNewPassword" placeholder="Nhập mật khẩu mới..." />
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <button type="button" class="btn btn-outline-dark btn-sm w-100" onclick="resetPasswordAction()">
+                                <i class="fa-solid fa-key me-1"></i> Cập nhật mật khẩu
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Phiên hoạt động -->
+                    <div class="d-flex justify-content-between align-items-center p-2 rounded border bg-white small">
+                        <div>
+                            <strong class="text-dark d-block" id="dActiveSession">Máy POS Quầy chính (Chrome 128 - Windows)</strong>
+                            <div class="text-muted font-monospace" style="font-size: 0.72rem;" id="dSessionIp">IP: 192.168.1.45 · Đăng nhập lúc: 08:00 (Hôm nay)</div>
+                        </div>
+                        <button type="button" class="btn btn-outline-danger btn-sm px-2 py-1" style="font-size: 0.75rem;" onclick="revokeSessionAction()">
+                            <i class="fa-solid fa-arrow-right-from-bracket me-1"></i> Thu hồi phiên
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4. KHUNG DƯỚI: LỊCH SỬ THAY ĐỔI GẦN ĐÂY -->
+                <div class="mb-3">
+                    <div class="section-header-title">
+                        <span><i class="fa-solid fa-clock-rotate-left me-1 text-primary"></i> 4. Lịch sử thay đổi</span>
+                    </div>
+
+                    <div class="border rounded bg-white overflow-hidden">
+                        <table class="table table-sm mb-0 align-middle" style="font-size: 0.78rem;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Thời gian</th>
+                                    <th>Người thực hiện</th>
+                                    <th>Nội dung thay đổi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody">
+                                <!-- Render bởi JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Footer nút Lưu thay đổi -->
+                <div class="d-flex justify-content-end pt-3 border-top">
+                    <button type="button" class="btn btn-dark btn-sm px-4 fw-bold" onclick="saveAccountChanges()">
+                        <i class="fa-solid fa-floppy-disk me-1"></i> Lưu thay đổi
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- MODAL TẠO TÀI KHOẢN NHÂN VIÊN MỚI -->
+<div class="modal fade" id="createAccountModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content rounded-3 border-0 shadow">
+            <div class="modal-header border-bottom p-3">
+                <h5 class="modal-title fw-bold text-dark mb-0">Tạo tài khoản nhân viên mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-3">
+                <div class="mb-2">
+                    <label class="form-label small fw-semibold text-dark mb-1">Mã nhân viên:</label>
+                    <input type="text" class="form-control form-control-sm font-monospace" id="newCode" value="NV-06" />
+                </div>
+                <div class="mb-2">
+                    <label class="form-label small fw-semibold text-dark mb-1">Họ và tên:</label>
+                    <input type="text" class="form-control form-control-sm" id="newName" placeholder="Ví dụ: Hoàng Minh Nhật" />
+                </div>
+                <div class="row g-2 mb-2">
+                    <div class="col-6">
+                        <label class="form-label small fw-semibold text-dark mb-1">Email / Tên đăng nhập:</label>
+                        <input type="email" class="form-control form-control-sm font-monospace" id="newEmail" placeholder="nhat.hoang@lightlife.vn" />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small fw-semibold text-dark mb-1">Số điện thoại:</label>
+                        <input type="text" class="form-control form-control-sm font-monospace" id="newPhone" placeholder="0912.xxx.xxx" />
+                    </div>
+                </div>
+                <div class="row g-2 mb-2">
+                    <div class="col-6">
+                        <label class="form-label small fw-semibold text-dark mb-1">Quầy làm việc:</label>
+                        <select class="form-select form-select-sm" id="newCounter">
+                            <option value="Quầy chính">Quầy chính</option>
+                            <option value="Quầy phụ 2">Quầy phụ 2</option>
+                            <option value="Kho hàng">Kho hàng</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small fw-semibold text-dark mb-1">Mật khẩu khởi tạo:</label>
+                        <input type="password" class="form-control form-control-sm font-monospace" id="newPass" value="LightLife@123" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-top p-2 bg-light d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-light btn-sm px-3" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-dark btn-sm px-3 fw-bold" onclick="submitCreateAccount()">
+                    <i class="fa-solid fa-user-check me-1"></i> Tạo tài khoản
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Dữ liệu tài khoản mẫu
+        var accountsData = [
+            {
+                code: "AD-01",
+                name: "Admin Quản Trị",
+                email: "admin@lightlife.vn",
+                phone: "0909.999.888",
+                role: "Admin",
+                counter: "Toàn hệ thống",
+                status: "active",
+                color: "#dc2626",
+                hasOpenShift: false,
+                session: "Laptop Quản lý (Edge 128 - macOS)",
+                sessionIp: "IP: 192.168.1.1 · Đăng nhập lúc: 07:30",
+                history: [
+                    { time: "01/10/2026 08:00", actor: "System", action: "Khởi tạo tài khoản Quản trị viên tối cao" }
+                ]
+            },
+            {
+                code: "NV-01",
+                name: "Lê Hoàng Lan",
+                email: "lan.le@lightlife.vn",
+                phone: "0901.234.567",
+                role: "Staff",
+                counter: "Quầy chính",
+                status: "active",
+                color: "#3b82f6",
+                hasOpenShift: false,
+                session: "Máy POS Quầy chính (Chrome 128 - Windows)",
+                sessionIp: "IP: 192.168.1.45 · Đăng nhập lúc: 08:00",
+                history: [
+                    { time: "08/10/2026 08:00", actor: "Admin", action: "Đăng nhập ca làm việc Sáng" },
+                    { time: "01/10/2026 09:15", actor: "Admin", action: "Tạo tài khoản vai trò Nhân viên" }
+                ]
+            },
+            {
+                code: "NV-02",
+                name: "Vũ Minh Hiếu",
+                email: "hieu.vu@lightlife.vn",
+                phone: "0912.345.678",
+                role: "Staff",
+                counter: "Quầy chính",
+                status: "active",
+                color: "#8b5cf6",
+                hasOpenShift: true,
+                session: "Máy POS Quầy chính (Chrome 128 - Windows)",
+                sessionIp: "IP: 192.168.1.45 · Đăng nhập lúc: 15:30",
+                history: [
+                    { time: "08/10/2026 15:30", actor: "Vũ Minh Hiếu", action: "Nhận ca chiều 15:30" },
+                    { time: "05/10/2026 14:00", actor: "Admin", action: "Đổi phân công sang Quầy chính" }
+                ]
+            },
+            {
+                code: "NV-03",
+                name: "Đỗ Thị Yến",
+                email: "yen.do@lightlife.vn",
+                phone: "0988.765.432",
+                role: "Staff",
+                counter: "Quầy phụ 2",
+                status: "active",
+                color: "#ec4899",
+                hasOpenShift: false,
+                session: "Điện thoại cá nhân (Safari - iOS)",
+                sessionIp: "IP: 113.161.42.12 · Đăng nhập lúc: 10:20",
+                history: [
+                    { time: "07/10/2026 22:15", actor: "Admin", action: "Giải trình lệch tiền ca tối" },
+                    { time: "02/10/2026 10:00", actor: "Admin", action: "Tạo tài khoản vai trò Nhân viên" }
+                ]
+            },
+            {
+                code: "KH-1042",
+                name: "Nguyễn Thu Thủy",
+                email: "thuthuy.nguyen@gmail.com",
+                phone: "0934.888.777",
+                role: "Customer",
+                counter: "Không áp dụng",
+                status: "active",
+                color: "#6b7280",
+                hasOpenShift: false,
+                session: "Web Khách hàng (Chrome - Android)",
+                sessionIp: "IP: 14.162.88.90 · Đăng nhập lúc: 11:45",
+                history: [
+                    { time: "06/10/2026 11:30", actor: "Khách hàng", action: "Đăng ký tài khoản công khai H06" }
+                ]
+            }
+        ];
+
+        var selectedAccountCode = "NV-01";
+        var selectedRoleValue = "Staff";
+
+        document.addEventListener('DOMContentLoaded', function () {
+            renderAccountList();
+            loadAccountDetail(selectedAccountCode);
+        });
+
+        function renderAccountList() {
+            var container = document.getElementById('accountListContainer');
+            var kw = (document.getElementById('accSearchInput') ? document.getElementById('accSearchInput').value : '').toLowerCase().trim();
+            var roleFilter = document.getElementById('accRoleFilter') ? document.getElementById('accRoleFilter').value : '';
+
+            var filtered = accountsData.filter(function (acc) {
+                var matchKw = (kw === '' || acc.name.toLowerCase().includes(kw) || acc.code.toLowerCase().includes(kw) || acc.email.toLowerCase().includes(kw));
+                var matchRole = (roleFilter === '' || acc.role === roleFilter);
+                return matchKw && matchRole;
+            });
+
+            document.getElementById('totalAccountCount').innerText = filtered.length;
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="text-center text-muted py-4 small">Không tìm thấy tài khoản phù hợp.</div>';
+                return;
+            }
+
+            var html = '';
+            filtered.forEach(function (acc) {
+                var isActive = (acc.code === selectedAccountCode);
+                var initials = acc.name.split(' ').slice(-1)[0][0];
+
+                var roleTag = '';
+                if (acc.role === 'Admin') roleTag = '<span class="role-badge-admin">Admin</span>';
+                else if (acc.role === 'Staff') roleTag = '<span class="role-badge-staff">Nhân viên</span>';
+                else roleTag = '<span class="role-badge-customer">Khách hàng</span>';
+
+                var statusTag = acc.status === 'active' ? 
+                    '<span class="status-badge-active">Hoạt động</span>' : 
+                    '<span class="status-badge-locked">Bị khóa</span>';
+
+                html += `
+                    <div class="list-group-item account-item-row p-3 ${isActive ? 'active' : ''}" onclick="loadAccountDetail('${acc.code}')">
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="avatar-circle-sm text-white" style="background-color: ${acc.color};">
+                                    ${initials}
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark small">${acc.name}</div>
+                                    <div class="text-muted font-monospace" style="font-size: 0.75rem;">${acc.code} · ${acc.email}</div>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <div class="mb-1">${roleTag}</div>
+                                <div>${statusTag}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function filterAccountList() {
+            renderAccountList();
+        }
+
+        function loadAccountDetail(code) {
+            selectedAccountCode = code;
+            var acc = accountsData.find(function (a) { return a.code === code; });
+            if (!acc) return;
+
+            renderAccountList();
+
+            var initials = acc.name.split(' ').slice(-1)[0][0];
+            var avatarEl = document.getElementById('dAvatarCircle');
+            avatarEl.innerText = initials;
+            avatarEl.style.backgroundColor = acc.color;
+
+            document.getElementById('dFullName').innerText = acc.name;
+            document.getElementById('dCode').innerText = acc.code;
+            document.getElementById('dEmail').innerText = acc.email;
+
+            var rBadge = document.getElementById('dRoleBadge');
+            if (acc.role === 'Admin') {
+                rBadge.className = 'role-badge-admin';
+                rBadge.innerText = 'Admin';
+            } else if (acc.role === 'Staff') {
+                rBadge.className = 'role-badge-staff';
+                rBadge.innerText = 'Nhân viên';
+            } else {
+                rBadge.className = 'role-badge-customer';
+                rBadge.innerText = 'Khách hàng';
+            }
+
+            var sBadge = document.getElementById('dStatusBadge');
+            if (acc.status === 'active') {
+                sBadge.className = 'status-badge-active';
+                sBadge.innerText = 'Hoạt động';
+            } else {
+                sBadge.className = 'status-badge-locked';
+                sBadge.innerText = 'Bị khóa';
+            }
+
+            var btnLock = document.getElementById('btnToggleLock');
+            if (acc.role === 'Admin') {
+                btnLock.disabled = true;
+                btnLock.className = 'btn btn-outline-secondary btn-sm px-3';
+                btnLock.innerHTML = '<i class="fa-solid fa-shield-halved me-1"></i> Admin';
+            } else if (acc.status === 'active') {
+                btnLock.disabled = false;
+                btnLock.className = 'btn btn-outline-danger btn-sm px-3';
+                btnLock.innerHTML = '<i class="fa-solid fa-lock me-1"></i> Khóa tài khoản';
+            } else {
+                btnLock.disabled = false;
+                btnLock.className = 'btn btn-outline-success btn-sm px-3';
+                btnLock.innerHTML = '<i class="fa-solid fa-lock-open me-1"></i> Mở khóa tài khoản';
+            }
+
+            document.getElementById('fCode').value = acc.code;
+            document.getElementById('fFullName').value = acc.name;
+            document.getElementById('fEmail').value = acc.email;
+            document.getElementById('fPhone').value = acc.phone;
+            document.getElementById('fCounter').value = acc.counter;
+            document.getElementById('fStatus').value = acc.status;
+
+            var counterContainer = document.getElementById('fCounterContainer');
+            if (acc.role === 'Customer') {
+                counterContainer.style.display = 'none';
+            } else {
+                counterContainer.style.display = 'block';
+            }
+
+            var adminNotice = document.getElementById('adminNoticeBlock');
+            var roleRow = document.getElementById('roleSelectorRow');
+            if (acc.role === 'Admin') {
+                adminNotice.classList.remove('d-none');
+                roleRow.style.opacity = '0.5';
+                roleRow.style.pointerEvents = 'none';
+            } else {
+                adminNotice.classList.add('d-none');
+                roleRow.style.opacity = '1';
+                roleRow.style.pointerEvents = 'auto';
+                selectRole(acc.role);
+            }
+
+            document.getElementById('fNewPassword').value = '';
+            document.getElementById('dActiveSession').innerText = acc.session;
+            document.getElementById('dSessionIp').innerText = acc.sessionIp;
+
+            renderHistoryTable(acc.history);
+        }
+
+        function selectRole(role) {
+            selectedRoleValue = role;
+            var boxStaff = document.getElementById('roleBoxStaff');
+            var boxCustomer = document.getElementById('roleBoxCustomer');
+            var radioStaff = document.getElementById('radioRoleStaff');
+            var radioCustomer = document.getElementById('radioRoleCustomer');
+            var counterContainer = document.getElementById('fCounterContainer');
+
+            if (role === 'Staff') {
+                boxStaff.classList.add('selected');
+                boxCustomer.classList.remove('selected');
+                radioStaff.checked = true;
+                radioCustomer.checked = false;
+                if (counterContainer) counterContainer.style.display = 'block';
+            } else {
+                boxCustomer.classList.add('selected');
+                boxStaff.classList.remove('selected');
+                radioCustomer.checked = true;
+                radioStaff.checked = false;
+                if (counterContainer) counterContainer.style.display = 'none';
+            }
+        }
+
+        function renderHistoryTable(list) {
+            var tbody = document.getElementById('historyTableBody');
+            if (!list || list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-2">Chưa có lịch sử thay đổi.</td></tr>';
+                return;
+            }
+            var html = '';
+            list.forEach(function (item) {
+                html += `
+                    <tr>
+                        <td class="font-monospace text-muted">${item.time}</td>
+                        <td class="fw-semibold text-dark">${item.actor}</td>
+                        <td>${item.action}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function saveAccountChanges() {
+            var acc = accountsData.find(function (a) { return a.code === selectedAccountCode; });
+            if (!acc) return;
+
+            var newName = document.getElementById('fFullName').value.trim();
+            var newEmail = document.getElementById('fEmail').value.trim();
+            var newPhone = document.getElementById('fPhone').value.trim();
+            var newCounter = document.getElementById('fCounter').value;
+            var newStatus = document.getElementById('fStatus').value;
+
+            if (!newName || !newEmail) {
+                alert('Vui lòng nhập đầy đủ Họ tên và Email!');
+                return;
+            }
+
+            var oldRole = acc.role;
+            acc.name = newName;
+            acc.email = newEmail;
+            acc.phone = newPhone;
+            acc.counter = (selectedRoleValue === 'Customer' ? 'Không áp dụng' : newCounter);
+            acc.status = newStatus;
+
+            if (acc.role !== 'Admin') {
+                acc.role = selectedRoleValue;
+            }
+
+            var nowStr = new Date().toLocaleString('vi-VN');
+            if (oldRole !== acc.role) {
+                acc.history.unshift({ time: nowStr, actor: "Admin", action: "Đổi vai trò thành: " + (acc.role === 'Staff' ? 'Nhân viên' : 'Khách hàng') });
+            } else {
+                acc.history.unshift({ time: nowStr, actor: "Admin", action: "Cập nhật thông tin tài khoản" });
+            }
+
+            loadAccountDetail(acc.code);
+            alert('🎉 Đã lưu thay đổi tài khoản ' + acc.code + ' thành công!');
+        }
+
+        function toggleAccountLock() {
+            var acc = accountsData.find(function (a) { return a.code === selectedAccountCode; });
+            if (!acc || acc.role === 'Admin') return;
+
+            if (acc.status === 'active') {
+                if (acc.hasOpenShift) {
+                    alert('⚠️ NGOẠI LỆ NGHIỆP VỤ:\n\nNhân viên ' + acc.name + ' hiện đang có ca trực đang mở!\nYêu cầu bàn giao kết ca trước khi khóa tài khoản.');
+                    return;
+                }
+
+                if (!confirm('Xác nhận KHÓA TÀI KHOẢN ' + acc.name + ' (' + acc.code + ')?')) return;
+
+                acc.status = 'locked';
+                acc.session = 'Đã thu hồi phiên';
+                acc.sessionIp = '--';
+                acc.history.unshift({ time: new Date().toLocaleString('vi-VN'), actor: "Admin", action: "Khóa tài khoản" });
+                alert('Đã khóa tài khoản ' + acc.code + ' thành công!');
+            } else {
+                if (!confirm('Xác nhận MỞ KHÓA TÀI KHOẢN cho ' + acc.name + '?')) return;
+                acc.status = 'active';
+                acc.history.unshift({ time: new Date().toLocaleString('vi-VN'), actor: "Admin", action: "Mở khóa tài khoản" });
+                alert('Đã mở khóa tài khoản ' + acc.code + ' thành công!');
+            }
+
+            loadAccountDetail(acc.code);
+        }
+
+        function resetPasswordAction() {
+            var acc = accountsData.find(function (a) { return a.code === selectedAccountCode; });
+            var pass = document.getElementById('fNewPassword').value.trim();
+            if (!pass) {
+                alert('Vui lòng nhập mật khẩu mới trước khi bấm cập nhật!');
+                document.getElementById('fNewPassword').focus();
+                return;
+            }
+
+            if (!confirm('Xác nhận đặt lại mật khẩu mới cho tài khoản ' + acc.name + '?')) return;
+
+            document.getElementById('fNewPassword').value = '';
+            acc.history.unshift({ time: new Date().toLocaleString('vi-VN'), actor: "Admin", action: "Đặt lại mật khẩu mới" });
+            renderHistoryTable(acc.history);
+            alert('Đã đổi mật khẩu mới thành công cho tài khoản ' + acc.code + '!');
+        }
+
+        function revokeSessionAction() {
+            var acc = accountsData.find(function (a) { return a.code === selectedAccountCode; });
+            if (!confirm('Thu hồi phiên đăng nhập hiện tại của ' + acc.name + '?')) return;
+
+            acc.session = 'Chưa có phiên nào (Đã thu hồi)';
+            acc.sessionIp = '--';
+            acc.history.unshift({ time: new Date().toLocaleString('vi-VN'), actor: "Admin", action: "Thu hồi phiên đăng nhập" });
+            loadAccountDetail(acc.code);
+            alert('Đã thu hồi phiên đăng nhập thành công!');
+        }
+
+        function openCreateAccount() {
+            var nextId = "NV-0" + (accountsData.filter(function(a){return a.role === 'Staff';}).length + 1);
+            document.getElementById('newCode').value = nextId;
+            document.getElementById('newName').value = '';
+            document.getElementById('newEmail').value = '';
+            document.getElementById('newPhone').value = '';
+            new bootstrap.Modal(document.getElementById('createAccountModal')).show();
+        }
+
+        function submitCreateAccount() {
+            var code = document.getElementById('newCode').value.trim();
+            var name = document.getElementById('newName').value.trim();
+            var email = document.getElementById('newEmail').value.trim();
+            var phone = document.getElementById('newPhone').value.trim() || '0900.000.000';
+            var counter = document.getElementById('newCounter').value;
+
+            if (!code || !name || !email) {
+                alert('Vui lòng điền đầy đủ Mã, Họ tên và Email!');
+                return;
+            }
+
+            var newAcc = {
+                code: code,
+                name: name,
+                email: email,
+                phone: phone,
+                role: "Staff",
+                counter: counter,
+                status: "active",
+                color: "#10b981",
+                hasOpenShift: false,
+                session: "Chưa đăng nhập lần đầu",
+                sessionIp: "--",
+                history: [
+                    { time: new Date().toLocaleString('vi-VN'), actor: "Admin", action: "Tạo mới tài khoản nhân viên" }
+                ]
+            };
+
+            accountsData.push(newAcc);
+            bootstrap.Modal.getInstance(document.getElementById('createAccountModal')).hide();
+            selectedAccountCode = newAcc.code;
+            renderAccountList();
+            loadAccountDetail(newAcc.code);
+
+            alert('🎉 Đã tạo thành công tài khoản Nhân viên: ' + newAcc.name + ' (' + newAcc.code + ')');
+        }
+    </script>
+}
+

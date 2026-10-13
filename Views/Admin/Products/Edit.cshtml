@@ -1,0 +1,400 @@
+@{
+    bool isEdit = ViewBag.IsEdit == true;
+    ViewData["Title"] = isEdit ? "Chỉnh sửa sản phẩm" : "Thêm sản phẩm mới";
+}
+
+@section Styles {
+    <style>
+        .form-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.25rem 1.4rem;
+            margin-bottom: 1.25rem;
+        }
+        .form-card-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .attr-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid #e5e7eb;
+            background: #ffffff;
+            cursor: pointer;
+            transition: all 0.15s;
+            user-select: none;
+        }
+        .attr-chip.active {
+            background: #18181b;
+            color: #ffffff;
+            border-color: #18181b;
+        }
+        .product-preview-box {
+            width: 100%;
+            height: 240px;
+            border-radius: 10px;
+            border: 1px dashed #d1d5db;
+            background: #f9fafb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        .product-preview-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .sku-table th {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #6b7280;
+            background: #fafafa;
+            padding: 0.75rem 0.85rem;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+        .sku-table td {
+            padding: 0.75rem 0.85rem;
+            vertical-align: middle;
+            font-size: 0.88rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+    </style>
+}
+
+<div class="container-fluid p-0">
+
+    <!-- Thanh đầu trang: Điều hướng quay lại & Nút Lưu -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+        <div class="d-flex align-items-center gap-3">
+            <a asp-area="Admin" asp-controller="Products" asp-action="Index" class="btn btn-outline-dark btn-sm rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" title="Quay lại danh sách sản phẩm">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+            <div>
+                <h4 class="fw-bold mb-0 text-dark">@(isEdit ? "Chỉnh sửa sản phẩm" : "Thêm sản phẩm mới")</h4>
+                <div class="text-muted small">Màn hình con: Thiết lập thông tin mẫu và biến thể Màu - Size</div>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-area="Admin" asp-controller="Products" asp-action="Index" class="btn btn-light btn-sm px-3 text-secondary">
+                Hủy bỏ
+            </a>
+            <button type="button" class="btn btn-outline-dark btn-sm px-3" onclick="saveProduct(true)">
+                Lưu nháp
+            </button>
+            <button type="button" class="btn btn-dark btn-sm px-3 d-inline-flex align-items-center gap-2" onclick="saveProduct(false)">
+                <i class="fa-solid fa-check"></i>
+                <span>@(isEdit ? "Cập nhật sản phẩm" : "Lưu và mở bán")</span>
+            </button>
+        </div>
+    </div>
+
+    <form id="productForm">
+        <div class="row g-3">
+            <!-- Cột trái: Thông tin mẫu & Biến thể SKU -->
+            <div class="col-lg-8">
+                <!-- 1. Thông tin chung -->
+                <div class="form-card">
+                    <div class="form-card-title">
+                        <span>Thông tin mẫu sản phẩm</span>
+                        <span class="badge bg-light text-muted border fw-normal" style="font-size: 0.75rem;">Bắt buộc</span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-dark">Tên sản phẩm</label>
+                        <input type="text" id="prodName" class="form-control" placeholder="Ví dụ: Áo Tweed Thu Đông Cổ Điển" value="@(isEdit ? "Áo Tweed Thu Đông Cổ Điển" : "")" required />
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-dark">Mã mẫu (Parent Code)</label>
+                            <input type="text" id="prodCode" class="form-control font-monospace text-uppercase" placeholder="Ví dụ: AT-TWEED-01" value="@(isEdit ? "AT-TWEED-01" : "")" required />
+                            <small class="text-muted" style="font-size: 0.74rem;">Mã duy nhất dùng để nhóm các biến thể màu/size.</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-dark">Danh mục</label>
+                            <select id="prodCategory" class="form-select">
+                                <option value="Áo khoác & Blazer" selected="@(isEdit)">Áo khoác & Blazer</option>
+                                <option value="Đầm & Váy">Đầm & Váy</option>
+                                <option value="Áo sơ mi">Áo sơ mi</option>
+                                <option value="Quần tây & Jeans">Quần tây & Jeans</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-dark">Chất liệu</label>
+                            <input type="text" id="prodMaterial" class="form-control" placeholder="Ví dụ: Dạ tweed dệt kim cao cấp" value="@(isEdit ? "Dạ tweed dệt kim cao cấp" : "")" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-dark">Thương hiệu</label>
+                            <input type="text" id="prodBrand" class="form-control" placeholder="Light Life Studio" value="Light Life Studio" />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="form-label small fw-semibold text-dark">Mô tả sản phẩm</label>
+                        <textarea id="prodDesc" class="form-control" rows="3" placeholder="Mô tả form dáng, thiết kế, cách bảo quản...">@(isEdit ? "Mẫu áo dạ tweed cổ tròn cao cấp, form suông nhẹ thanh lịch phù hợp công sở và dự tiệc thu đông." : "")</textarea>
+                    </div>
+                </div>
+
+                <!-- 2. Biến thể Màu - Size (Trọng tâm nghiệp vụ A03) -->
+                <div class="form-card">
+                    <div class="form-card-title">
+                        <span>Thiết lập biến thể (Màu & Size)</span>
+                        <small class="text-muted fw-normal">Tự động sinh tổ hợp SKU</small>
+                    </div>
+
+                    <!-- Chọn Màu sắc -->
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-dark d-block">1. Chọn màu sắc</label>
+                        <div class="d-flex flex-wrap gap-2" id="colorChips">
+                            <span class="attr-chip @(isEdit ? "active" : "active")" onclick="toggleChip(this)">Đen</span>
+                            <span class="attr-chip @(isEdit ? "active" : "")" onclick="toggleChip(this)">Kem Be</span>
+                            <span class="attr-chip" onclick="toggleChip(this)">Trắng</span>
+                            <span class="attr-chip" onclick="toggleChip(this)">Xám</span>
+                            <span class="attr-chip" onclick="toggleChip(this)">Hồng Nude</span>
+                        </div>
+                    </div>
+
+                    <!-- Chọn Kích thước (Size) -->
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-dark d-block">2. Chọn kích thước (Size)</label>
+                        <div class="d-flex flex-wrap gap-2" id="sizeChips">
+                            <span class="attr-chip @(isEdit ? "active" : "active")" onclick="toggleChip(this)">S</span>
+                            <span class="attr-chip @(isEdit ? "active" : "active")" onclick="toggleChip(this)">M</span>
+                            <span class="attr-chip @(isEdit ? "active" : "")" onclick="toggleChip(this)">L</span>
+                            <span class="attr-chip" onclick="toggleChip(this)">XL</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 text-end">
+                        <button type="button" class="btn btn-outline-dark btn-sm" onclick="generateSKUTable()">
+                            <i class="fa-solid fa-arrows-rotate me-1"></i> Làm mới danh sách SKU
+                        </button>
+                    </div>
+
+                    <!-- Bảng danh sách SKU biến thể -->
+                    <div class="table-responsive border rounded-3">
+                        <table class="table sku-table mb-0 align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Màu sắc</th>
+                                    <th>Size</th>
+                                    <th>Mã SKU</th>
+                                    <th>Mã Barcode</th>
+                                    <th style="width: 140px;">Giá bán lẻ (₫)</th>
+                                    <th style="width: 140px;" class="text-primary" title="Chỉ Admin xem được">Giá vốn (₫)</th>
+                                    <th class="text-end">Xóa</th>
+                                </tr>
+                            </thead>
+                            <tbody id="skuTableBody">
+                                <!-- Hàng 1 -->
+                                <tr>
+                                    <td><strong>Đen</strong></td>
+                                    <td><span class="badge bg-light text-dark border">S</span></td>
+                                    <td><input type="text" class="form-control form-control-sm font-monospace" value="AT-TW01-BLK-S" /></td>
+                                    <td><input type="text" class="form-control form-control-sm font-monospace text-muted" value="89360010101" /></td>
+                                    <td><input type="text" class="form-control form-control-sm text-end fw-semibold" value="1.850.000" /></td>
+                                    <td><input type="text" class="form-control form-control-sm text-end text-primary" value="950.000" /></td>
+                                    <td class="text-end">
+                                        <button type="button" class="btn btn-light btn-sm text-danger" onclick="removeSkuRow(this)" title="Xóa biến thể không bán">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <!-- Hàng 2 -->
+                                <tr>
+                                    <td><strong>Đen</strong></td>
+                                    <td><span class="badge bg-light text-dark border">M</span></td>
+                                    <td><input type="text" class="form-control form-control-sm font-monospace" value="AT-TW01-BLK-M" /></td>
+                                    <td><input type="text" class="form-control form-control-sm font-monospace text-muted" value="89360010102" /></td>
+                                    <td><input type="text" class="form-control form-control-sm text-end fw-semibold" value="1.850.000" /></td>
+                                    <td><input type="text" class="form-control form-control-sm text-end text-primary" value="950.000" /></td>
+                                    <td class="text-end">
+                                        <button type="button" class="btn btn-light btn-sm text-danger" onclick="removeSkuRow(this)">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <!-- Hàng 3 -->
+                                <tr>
+                                    <td><strong>Kem Be</strong></td>
+                                    <td><span class="badge bg-light text-dark border">S</span></td>
+                                    <td><input type="text" class="form-control form-control-sm font-monospace" value="AT-TW01-BGE-S" /></td>
+                                    <td><input type="text" class="form-control form-control-sm font-monospace text-muted" value="89360010103" /></td>
+                                    <td><input type="text" class="form-control form-control-sm text-end fw-semibold" value="2.100.000" /></td>
+                                    <td><input type="text" class="form-control form-control-sm text-end text-primary" value="1.050.000" /></td>
+                                    <td class="text-end">
+                                        <button type="button" class="btn btn-light btn-sm text-danger" onclick="removeSkuRow(this)">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <!-- Hàng 4 -->
+                                <tr>
+                                    <td><strong>Kem Be</strong></td>
+                                    <td><span class="badge bg-light text-dark border">M</span></td>
+                                    <td><input type="text" class="form-control form-control-sm font-monospace" value="AT-TW01-BGE-M" /></td>
+                                    <td><input type="text" class="form-control form-control-sm font-monospace text-muted" value="89360010104" /></td>
+                                    <td><input type="text" class="form-control form-control-sm text-end fw-semibold" value="2.100.000" /></td>
+                                    <td><input type="text" class="form-control form-control-sm text-end text-primary" value="1.050.000" /></td>
+                                    <td class="text-end">
+                                        <button type="button" class="btn btn-light btn-sm text-danger" onclick="removeSkuRow(this)">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="mt-3 p-2 bg-light rounded text-muted small d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-circle-info text-secondary"></i>
+                        <span><strong>Nghiệp vụ kho:</strong> Số lượng tồn kho ban đầu được tạo qua <em>Phiếu nhập kho [N10]</em>, không cộng trực tiếp tại trang sản phẩm.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cột phải: Trạng thái, Ảnh sản phẩm & Kênh bán -->
+            <div class="col-lg-4">
+                <!-- 1. Trạng thái kinh doanh -->
+                <div class="form-card">
+                    <div class="form-card-title">Trạng thái sản phẩm</div>
+                    <div class="mb-3">
+                        <select id="prodStatus" class="form-select">
+                            <option value="active" selected="@(isEdit)">Đang kinh doanh (Mở bán)</option>
+                            <option value="paused">Tạm ngừng bán</option>
+                            <option value="draft" selected="@(!isEdit)">Lưu bản nháp</option>
+                        </select>
+                    </div>
+
+                    <div class="small text-muted mb-2 fw-semibold">Kênh phân phối:</div>
+                    <div class="form-check mb-1">
+                        <input class="form-check-input" type="checkbox" id="channelPos" checked />
+                        <label class="form-check-label small" for="channelPos">Bán tại quầy (POS)</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="channelOnline" checked />
+                        <label class="form-check-label small" for="channelOnline">Bán trực tuyến (Storefront)</label>
+                    </div>
+                </div>
+
+                <!-- 2. Hình ảnh sản phẩm -->
+                <div class="form-card">
+                    <div class="form-card-title">Hình ảnh đại diện</div>
+                    <div class="product-preview-box mb-2">
+                        <img id="previewImage" src="@(isEdit ? "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600&q=80" : "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600&q=80")" class="product-preview-img" alt="Ảnh sản phẩm" />
+                    </div>
+                    <div class="input-group input-group-sm mb-2">
+                        <input type="text" id="imgUrlInput" class="form-control" placeholder="Dán link ảnh (URL)..." value="@(isEdit ? "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600&q=80" : "")" onchange="updatePreviewImg(this.value)" />
+                        <button class="btn btn-outline-secondary" type="button" onclick="document.getElementById('imgUrlInput').onchange()">Xem</button>
+                    </div>
+                    <small class="text-muted d-block" style="font-size: 0.75rem;">Định dạng: JPG, PNG, WEBP. Ảnh sắc nét, phông nền sáng.</small>
+                </div>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+@section Scripts {
+    <script>
+        function toggleChip(el) {
+            el.classList.toggle('active');
+        }
+
+        function updatePreviewImg(url) {
+            if (url && url.trim() !== '') {
+                document.getElementById('previewImage').src = url;
+            }
+        }
+
+        function removeSkuRow(btn) {
+            var row = btn.closest('tr');
+            if (row) {
+                if (confirm('Bạn có chắc muốn bỏ biến thể SKU này khỏi danh sách kinh doanh?')) {
+                    row.remove();
+                }
+            }
+        }
+
+        // Tự động sinh lại bảng SKU khi đổi Màu hoặc Size
+        function generateSKUTable() {
+            var activeColors = [];
+            document.querySelectorAll('#colorChips .attr-chip.active').forEach(function(c) {
+                activeColors.push(c.innerText.trim());
+            });
+
+            var activeSizes = [];
+            document.querySelectorAll('#sizeChips .attr-chip.active').forEach(function(s) {
+                activeSizes.push(s.innerText.trim());
+            });
+
+            if (activeColors.length === 0 || activeSizes.length === 0) {
+                alert('Vui lòng chọn ít nhất 1 Màu sắc và 1 Size!');
+                return;
+            }
+
+            var tbody = document.getElementById('skuTableBody');
+            var baseCode = (document.getElementById('prodCode').value || 'SP').trim().toUpperCase();
+            var html = '';
+            var count = 1;
+
+            activeColors.forEach(function(color) {
+                activeSizes.forEach(function(size) {
+                    var colorCode = color.substring(0, 3).toUpperCase();
+                    var sku = baseCode + '-' + colorCode + '-' + size;
+                    var barcode = '893600' + String(count).padStart(5, '0');
+                    count++;
+
+                    html += `
+                        <tr>
+                            <td><strong>${color}</strong></td>
+                            <td><span class="badge bg-light text-dark border">${size}</span></td>
+                            <td><input type="text" class="form-control form-control-sm font-monospace" value="${sku}" /></td>
+                            <td><input type="text" class="form-control form-control-sm font-monospace text-muted" value="${barcode}" /></td>
+                            <td><input type="text" class="form-control form-control-sm text-end fw-semibold" value="1.850.000" /></td>
+                            <td><input type="text" class="form-control form-control-sm text-end text-primary" value="950.000" /></td>
+                            <td class="text-end">
+                                <button type="button" class="btn btn-light btn-sm text-danger" onclick="removeSkuRow(this)">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        function saveProduct(isDraft) {
+            var name = document.getElementById('prodName').value;
+            var code = document.getElementById('prodCode').value;
+
+            if (!name || !code) {
+                alert('Vui lòng điền Tên sản phẩm và Mã mẫu!');
+                return;
+            }
+
+            var actionName = isDraft ? 'Lưu bản nháp' : 'Lưu và phát hành kinh doanh';
+            alert('Đã ' + actionName + ' sản phẩm: ' + name + ' (' + code + ') thành công!');
+            window.location.href = '/Admin/Products';
+        }
+    </script>
+}
+

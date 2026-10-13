@@ -1,0 +1,726 @@
+@{
+    ViewData["Title"] = "Tạo yêu cầu đổi / trả hàng";
+}
+
+@section Styles {
+    <style>
+        .return-page {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .return-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+            margin-bottom: 1.25rem;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .section-header {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #4b5563;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #f3f4f6;
+            padding-bottom: 0.65rem;
+        }
+
+        .form-label-custom {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 0.35rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .item-row {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.15s ease;
+        }
+
+        .item-row.selected {
+            border-color: #18181b;
+            background: #fafbfc;
+        }
+
+        .summary-box {
+            background: #fcfcfd;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 1.25rem;
+        }
+
+        .qty-input {
+            width: 75px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .upload-placeholder {
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            padding: 1.25rem;
+            text-align: center;
+            background: #fafafa;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .upload-placeholder:hover {
+            border-color: #18181b;
+            background: #f4f5f7;
+        }
+
+        .preview-img {
+            max-height: 80px;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            object-fit: cover;
+        }
+    </style>
+}
+
+<div class="return-page">
+
+    <!-- Thanh tiêu đề & Quay lại -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <a asp-area="Employee" asp-controller="Invoices" asp-action="Index" class="text-decoration-none text-muted small me-1">
+                    <i class="fa-solid fa-arrow-left me-1"></i>Hóa đơn bán hàng
+                </a>
+                <span class="text-muted">/</span>
+                <h4 class="fw-bold mb-0 text-dark">Tạo yêu cầu đổi / trả hàng</h4>
+            </div>
+            <p class="text-muted small mb-0">Lập phiếu yêu cầu đổi hàng hoặc trả tiền từ hóa đơn gốc gửi Quản lý phê duyệt.</p>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <a asp-area="Employee" asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-secondary px-3 py-2 rounded-pill small">
+                Về ca làm việc
+            </a>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 1. KHUNG HÓA ĐƠN GỐC: Tra cứu, chọn hóa đơn & kiểm tra hạn     -->
+    <!-- ============================================================== -->
+    <div class="return-card">
+        <div class="section-header">
+            <span>1. Thông tin hóa đơn gốc</span>
+            <span class="badge bg-success-subtle text-success border border-success-subtle fw-semibold px-2 py-1" id="warrantyBadge">
+                Hợp lệ (Trong hạn đổi trả 07 ngày)
+            </span>
+        </div>
+
+        <div class="row g-3 align-items-end mb-3">
+            <div class="col-12 col-md-5">
+                <label class="form-label-custom">Mã hóa đơn gốc</label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white border-end-0 text-muted">
+                        <i class="fa-solid fa-receipt"></i>
+                    </span>
+                    <input type="text" id="invoiceCodeInput" class="form-control font-monospace border-start-0" placeholder="Nhập mã hóa đơn (VD: HD-2026-0145)..." value="HD-2026-0145" onkeydown="if(event.key === 'Enter') lookupOriginalInvoice()" />
+                    <button class="btn btn-dark" type="button" onclick="lookupOriginalInvoice()">
+                        <i class="fa-solid fa-magnifying-glass me-1"></i>Tra cứu
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-3">
+                <label class="form-label-custom">Thời gian mua</label>
+                <div class="fw-semibold text-dark small" id="origInvoiceDate">09:45 - 09/10/2026</div>
+            </div>
+
+            <div class="col-6 col-md-4">
+                <label class="form-label-custom">Khách hàng</label>
+                <div class="fw-semibold text-dark small" id="origCustomerName">Trần Thu Trang (0912 345 678)</div>
+            </div>
+        </div>
+
+        <div class="p-2 rounded bg-light border small text-muted d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div>
+                Thu ngân lập đơn: <strong class="text-dark" id="origCashierName">Lê Minh Nhật</strong> · Tổng hóa đơn gốc: <strong class="text-dark" id="origTotalAmount">3.300.000₫</strong>
+            </div>
+            <div class="text-secondary small">
+                Chính sách: Đổi size/mẫu trong 07 ngày, nguyên tem mác hoặc lỗi do nhà sản xuất.
+            </div>
+        </div>
+
+        <!-- Cảnh báo ngoại lệ quá hạn -->
+        <div id="warrantyAlertBox" class="alert alert-warning py-2 px-3 small border-warning-subtle mt-2 mb-0 d-none">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <div>
+                    <i class="fa-solid fa-clock-rotate-left me-1 text-warning"></i>
+                    <strong>Hóa đơn đã mua cách đây <span id="daysAgoText">20</span> ngày (Vượt quá hạn tiêu chuẩn 07 ngày).</strong>
+                </div>
+                <div class="form-check form-check-inline mb-0">
+                    <input class="form-check-input" type="checkbox" id="warrantyExceptionCheck">
+                    <label class="form-check-label fw-bold text-dark small" for="warrantyExceptionCheck">Yêu cầu Quản lý đặc cách duyệt ngoại lệ</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 2. KHUNG HÀNG TRẢ: Chọn sản phẩm, số lượng, lý do, phân loại   -->
+    <!-- ============================================================== -->
+    <div class="return-card">
+        <div class="section-header">
+            <span>2. Danh sách sản phẩm khách yêu cầu trả</span>
+            <span class="text-muted fw-normal small">Tích chọn sản phẩm cần đổi/trả</span>
+        </div>
+
+        <div id="returnItemsContainer">
+            <!-- Được render linh hoạt qua JS dựa trên hóa đơn đang chọn -->
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 3. KHUNG HÀNG ĐỔI: Khách lấy sản phẩm mới thay thế (Nếu có)   -->
+    <!-- ============================================================== -->
+    <div class="return-card">
+        <div class="section-header">
+            <span>3. Sản phẩm đổi mới (Nếu khách đổi sang mẫu/size khác)</span>
+            <div class="form-check form-switch mb-0">
+                <input class="form-check-input" type="checkbox" id="toggleExchangeCheck" checked onchange="toggleExchangeSection()" />
+                <label class="form-check-label small fw-semibold text-dark" for="toggleExchangeCheck">Khách có đổi sản phẩm mới</label>
+            </div>
+        </div>
+
+        <div id="exchangeSectionBody">
+            <div class="p-3 bg-light rounded border mb-2">
+                <div class="row g-2 align-items-center">
+                    <div class="col-12 col-md-5">
+                        <label class="form-label-custom">Chọn sản phẩm đổi mới</label>
+                        <select class="form-select form-select-sm" id="exchangeProductSelect" onchange="handleSelectExchangeProduct()">
+                            <option value="blazer-l" selected>Áo Blazer Linen Signature (Be - Size L) · Còn tồn 8 cái</option>
+                            <option value="blazer-s">Áo Blazer Linen Signature (Be - Size S) · Còn tồn 5 cái</option>
+                            <option value="blazer-xs">Áo Blazer Linen Signature (Be - Size XS) · TẠM HẾT HÀNG (0 cái)</option>
+                            <option value="tweed-m">Áo Khoác Dạ Tweed Tay Lỡ (Đen - Size M) · Giá: 2.850.000₫</option>
+                            <option value="dress-m">Đầm Lụa Satin Cúp Ngực (Đỏ rượu - Size M) · Giá: 1.850.000₫</option>
+                            <option value="pants-l">Quần Âu Ống Suông Lưng Cao (Đen - Size L) · Giá: 1.250.000₫</option>
+                        </select>
+                    </div>
+
+                    <div class="col-4 col-md-2">
+                        <label class="form-label-custom">Số lượng</label>
+                        <input type="number" class="form-control form-control-sm qty-input" id="exchangeQty" value="1" min="1" max="8" oninput="calculateFinancialBalance()" />
+                    </div>
+
+                    <div class="col-4 col-md-2">
+                        <label class="form-label-custom">Tồn kho</label>
+                        <div class="fw-semibold small pt-1" id="exchangeStockText">
+                            <span class="text-success"><i class="fa-solid fa-circle-check me-1"></i>Còn 8 cái</span>
+                        </div>
+                    </div>
+
+                    <div class="col-4 col-md-3 text-end">
+                        <label class="form-label-custom">Đơn giá mới</label>
+                        <div class="fw-bold text-dark fs-6 pt-1" id="exchangePriceText">1.450.000₫</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="stockOutWarning" class="alert alert-danger py-2 px-3 small border-danger-subtle d-none mb-0">
+                <i class="fa-solid fa-circle-exclamation me-1"></i>
+                <strong>Hàng mới đã hết tồn kho:</strong> Sản phẩm này không còn hàng tại quầy. Vui lòng hướng dẫn khách chọn màu/size khác hoặc mã sản phẩm thay thế.
+            </div>
+        </div>
+
+        <div id="noExchangeNotice" class="p-3 bg-light rounded text-muted small text-center d-none">
+            <i class="fa-solid fa-circle-info me-1"></i>Khách chỉ trả lại hàng và nhận hoàn tiền (Không lấy sản phẩm thay thế).
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 4. KHUNG TIỀN & QUYẾT TOÁN CHÊNH LỆCH                          -->
+    <!-- ============================================================== -->
+    <div class="return-card">
+        <div class="section-header">
+            <span>4. Quyết toán chênh lệch tài chính</span>
+        </div>
+
+        <div class="summary-box">
+            <div class="row g-3 align-items-center">
+                <div class="col-12 col-md-4 border-end">
+                    <div class="text-muted small mb-1">Tổng giá trị hàng trả lại:</div>
+                    <h5 class="fw-bold text-dark mb-0" id="totalReturnAmountDisplay">1.450.000₫</h5>
+                    <div class="text-secondary small mt-1">Dựa trên giá thực trả của hóa đơn gốc</div>
+                </div>
+
+                <div class="col-12 col-md-4 border-end">
+                    <div class="text-muted small mb-1">Tổng giá trị hàng đổi mới:</div>
+                    <h5 class="fw-bold text-dark mb-0" id="totalExchangeAmountDisplay">1.450.000₫</h5>
+                    <div class="text-secondary small mt-1" id="exchangeNoteText">Đổi sang mẫu mới hoặc cùng mẫu</div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <div class="text-muted small mb-1">Kết quả chênh lệch:</div>
+                    <div class="d-flex align-items-center gap-2">
+                        <h4 class="fw-bold mb-0 text-success" id="balanceAmountDisplay">0₫ (Đổi ngang)</h4>
+                    </div>
+                    <div class="small fw-semibold mt-1" id="balanceActionNotice">
+                        Không cần thu thêm hoặc hoàn tiền.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 5. KHUNG CUỐI: GHI CHÚ, BẰNG CHỨNG & GỬI DUYỆT                 -->
+    <!-- ============================================================== -->
+    <div class="return-card">
+        <div class="section-header">
+            <span>5. Xác nhận & Gửi Quản lý duyệt</span>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-md-7">
+                <label class="form-label-custom">Ghi chú giải trình lý do</label>
+                <textarea id="returnNoteInput" class="form-control form-control-sm" rows="3" placeholder="Nhập chi tiết yêu cầu của khách hoặc mô tả lỗi sản phẩm để Quản lý duyệt...">Khách mặc hơi chật ngực, muốn đổi từ size M sang size L cùng mẫu Linen Be.</textarea>
+            </div>
+
+            <div class="col-12 col-md-5">
+                <label class="form-label-custom">Bằng chứng lỗi / Ảnh chụp (Tùy chọn)</label>
+                <input type="file" id="evidenceFileInput" accept="image/*" class="d-none" onchange="handleEvidenceFileSelected(event)" />
+                <div class="upload-placeholder" onclick="document.getElementById('evidenceFileInput').click()">
+                    <div id="uploadPrompt">
+                        <i class="fa-solid fa-camera text-muted mb-1 fs-5"></i>
+                        <div class="small text-dark fw-semibold" id="uploadStatusText">Bấm để tải ảnh lỗi hoặc nhãn mác</div>
+                        <div class="text-muted" style="font-size: 0.72rem;">Hỗ trợ JPG, PNG (tối đa 5MB)</div>
+                    </div>
+                    <div id="uploadPreviewBox" class="d-none align-items-center justify-content-center gap-2">
+                        <img id="evidenceImagePreview" src="" alt="Ảnh lỗi" class="preview-img" />
+                        <div class="text-start">
+                            <div class="small fw-semibold text-success"><i class="fa-solid fa-check me-1"></i>Đã đính kèm ảnh</div>
+                            <div class="text-muted" style="font-size: 0.72rem;" id="evidenceFileName">anh_san_pham.jpg</div>
+                            <button type="button" class="btn btn-link text-danger p-0 small text-decoration-none" style="font-size: 0.72rem;" onclick="removeEvidencePhoto(event)">Gỡ ảnh</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-warning py-2 px-3 small border-warning-subtle mb-3">
+            <i class="fa-solid fa-triangle-exclamation me-1"></i>
+            <strong>Quy tắc nghiệp vụ:</strong> Phiếu yêu cầu sau khi gửi sẽ được chuyển đến người có thẩm quyền (Quản lý cửa hàng). Hệ thống <strong>chưa xuất kho đổi hay hoàn tiền mặt</strong> cho đến khi được duyệt chính thức. Hàng trả lỗi sẽ được chuyển kho kiểm định, không cộng vào tồn bán được.
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+            <a asp-area="Employee" asp-controller="Invoices" asp-action="Index" class="btn btn-outline-secondary px-3 py-2 rounded-pill small">
+                Hủy bỏ
+            </a>
+
+            <button type="button" class="btn btn-dark px-4 py-2 fw-semibold rounded-pill shadow-sm" onclick="submitReturnRequest()">
+                <i class="fa-solid fa-paper-plane me-1 small"></i>Gửi yêu cầu Quản lý duyệt
+            </button>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        // Cơ sở dữ liệu hóa đơn mẫu thực tế
+        var invoiceDatabase = {
+            'HD-2026-0145': {
+                code: 'HD-2026-0145',
+                date: '09:45 - 09/10/2026',
+                daysAgo: 0,
+                customer: 'Trần Thu Trang (0912 345 678)',
+                cashier: 'Lê Minh Nhật',
+                total: 3300000,
+                items: [
+                    { id: 1, name: 'Áo Blazer Linen Signature', variant: 'Be / M', price: 1450000, purchasedQty: 1, returnedQty: 0 },
+                    { id: 2, name: 'Đầm Lụa Satin Cúp Ngực', variant: 'Đen / S', price: 1850000, purchasedQty: 1, returnedQty: 0 }
+                ]
+            },
+            'HD-2026-0144': {
+                code: 'HD-2026-0144',
+                date: '09:20 - 09/10/2026',
+                daysAgo: 0,
+                customer: 'Hoàng Yến (0988 776 655)',
+                cashier: 'Lê Minh Nhật',
+                total: 890000,
+                items: [
+                    { id: 1, name: 'Chân Váy Xếp Ly Midi', variant: 'Xám / S', price: 890000, purchasedQty: 1, returnedQty: 0 }
+                ]
+            },
+            'HD-2026-0140': {
+                code: 'HD-2026-0140',
+                date: '14:15 - 08/10/2026',
+                daysAgo: 1,
+                customer: 'Nguyễn Bích Ngọc (0903 112 233)',
+                cashier: 'Lê Minh Nhật',
+                total: 1250000,
+                items: [
+                    { id: 1, name: 'Quần Âu Ống Suông Lưng Cao', variant: 'Đen / L', price: 1250000, purchasedQty: 1, returnedQty: 0 }
+                ]
+            },
+            'HD-2026-0080': {
+                code: 'HD-2026-0080',
+                date: '10:30 - 20/09/2026',
+                daysAgo: 19, // Quá hạn 7 ngày
+                customer: 'Phạm Minh Hằng (0934 567 890)',
+                cashier: 'Lê Minh Nhật',
+                total: 2850000,
+                items: [
+                    { id: 1, name: 'Áo Khoác Dạ Tweed Tay Lỡ', variant: 'Đen / M', price: 2850000, purchasedQty: 1, returnedQty: 0 }
+                ]
+            }
+        };
+
+        // Danh mục hàng đổi thay thế
+        var exchangeCatalog = {
+            'blazer-l': { name: 'Áo Blazer Linen Signature (Be - Size L)', price: 1450000, stock: 8 },
+            'blazer-s': { name: 'Áo Blazer Linen Signature (Be - Size S)', price: 1450000, stock: 5 },
+            'blazer-xs': { name: 'Áo Blazer Linen Signature (Be - Size XS)', price: 1450000, stock: 0 },
+            'tweed-m': { name: 'Áo Khoác Dạ Tweed Tay Lỡ (Đen - Size M)', price: 2850000, stock: 3 },
+            'dress-m': { name: 'Đầm Lụa Satin Cúp Ngực (Đỏ rượu - Size M)', price: 1850000, stock: 4 },
+            'pants-l': { name: 'Quần Âu Ống Suông Lưng Cao (Đen - Size L)', price: 1250000, stock: 12 }
+        };
+
+        var currentInvoice = null;
+
+        // Render các dòng sản phẩm của hóa đơn
+        function renderReturnItems(invoice) {
+            var container = document.getElementById('returnItemsContainer');
+            if (!invoice || !invoice.items || invoice.items.length === 0) {
+                container.innerHTML = '<div class="text-center py-4 text-muted small">Không tìm thấy sản phẩm trong hóa đơn này.</div>';
+                return;
+            }
+
+            var html = '';
+            invoice.items.forEach(function(item, index) {
+                var isFirst = index === 0;
+                var maxReturnable = item.purchasedQty - item.returnedQty;
+                html += `
+                <div class="item-row ${isFirst ? 'selected' : ''}" id="row-item-${item.id}">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <input class="form-check-input mt-0" type="checkbox" ${isFirst ? 'checked' : ''} id="checkItem${item.id}" onchange="toggleItemReturn(${item.id})" />
+                            <div>
+                                <div class="fw-bold text-dark">${item.name}</div>
+                                <div class="text-muted small">Phân loại: <span class="badge bg-light text-dark border">${item.variant}</span> · Đơn giá thực mua: <strong>${item.price.toLocaleString('vi-VN')}₫</strong></div>
+                                <div class="small text-secondary mt-1">Đã mua: ${item.purchasedQty} · Đã trả: ${item.returnedQty} · Còn được trả: <span class="fw-bold text-dark">${maxReturnable}</span></div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-wrap align-items-center gap-3">
+                            <div>
+                                <label class="form-label-custom d-block">SL trả</label>
+                                <input type="number" class="form-control form-control-sm qty-input" id="qtyItem${item.id}" value="${isFirst ? 1 : 1}" min="1" max="${maxReturnable}" ${isFirst ? '' : 'disabled'} oninput="calculateTotalReturnAmount()" />
+                            </div>
+
+                            <div style="min-width: 170px;">
+                                <label class="form-label-custom d-block">Lý do</label>
+                                <select class="form-select form-select-sm" id="reasonItem${item.id}" ${isFirst ? '' : 'disabled'}>
+                                    <option value="size" selected>Đổi sang size khác</option>
+                                    <option value="color">Đổi sang màu khác</option>
+                                    <option value="defect">Lỗi may / bung nút</option>
+                                    <option value="customer_mind">Khách đổi ý không ưng</option>
+                                </select>
+                            </div>
+
+                            <div style="min-width: 190px;">
+                                <label class="form-label-custom d-block">Tình trạng nhận lại</label>
+                                <select class="form-select form-select-sm" id="conditionItem${item.id}" ${isFirst ? '' : 'disabled'}>
+                                    <option value="restockable" selected>Nguyên tem (Nhập kho bán)</option>
+                                    <option value="damaged">Hàng lỗi (Chuyển kho kiểm định)</option>
+                                </select>
+                            </div>
+
+                            <div class="text-end" style="min-width: 120px;">
+                                <label class="form-label-custom d-block">Tiền trả lại</label>
+                                <div class="fw-bold fs-6 ${isFirst ? 'text-dark' : 'text-muted'}" id="subtotalItem${item.id}">
+                                    ${isFirst ? item.price.toLocaleString('vi-VN') + '₫' : '0₫'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            });
+
+            container.innerHTML = html;
+            calculateTotalReturnAmount();
+        }
+
+        // Tra cứu hóa đơn
+        function lookupOriginalInvoice() {
+            var code = document.getElementById('invoiceCodeInput').value.trim().toUpperCase();
+            if (!code) {
+                alert('Vui lòng nhập mã hóa đơn!');
+                return;
+            }
+
+            var inv = invoiceDatabase[code];
+            if (!inv) {
+                // Tạo hóa đơn động tạm thời nếu người dùng tra cứu mã khác
+                inv = {
+                    code: code,
+                    date: '10:00 - 09/10/2026',
+                    daysAgo: 0,
+                    customer: 'Khách lẻ vãng lai',
+                    cashier: 'Lê Minh Nhật',
+                    total: 1450000,
+                    items: [
+                        { id: 1, name: 'Sản phẩm theo hóa đơn ' + code, variant: 'Tiêu chuẩn', price: 1450000, purchasedQty: 1, returnedQty: 0 }
+                    ]
+                };
+            }
+
+            currentInvoice = inv;
+            document.getElementById('invoiceCodeInput').value = inv.code;
+            document.getElementById('origInvoiceDate').innerText = inv.date;
+            document.getElementById('origCustomerName').innerText = inv.customer;
+            document.getElementById('origCashierName').innerText = inv.cashier;
+            document.getElementById('origTotalAmount').innerText = inv.total.toLocaleString('vi-VN') + '₫';
+
+            var warrantyBadge = document.getElementById('warrantyBadge');
+            var alertBox = document.getElementById('warrantyAlertBox');
+            var exceptionCheck = document.getElementById('warrantyExceptionCheck');
+
+            if (inv.daysAgo > 7) {
+                warrantyBadge.className = 'badge bg-warning-subtle text-warning border border-warning-subtle fw-semibold px-2 py-1';
+                warrantyBadge.innerText = 'Quá hạn (' + inv.daysAgo + ' ngày)';
+                alertBox.classList.remove('d-none');
+                document.getElementById('daysAgoText').innerText = inv.daysAgo;
+                exceptionCheck.checked = false;
+            } else {
+                warrantyBadge.className = 'badge bg-success-subtle text-success border border-success-subtle fw-semibold px-2 py-1';
+                warrantyBadge.innerText = 'Hợp lệ (Trong hạn đổi trả 07 ngày)';
+                alertBox.classList.add('d-none');
+                exceptionCheck.checked = false;
+            }
+
+            renderReturnItems(inv);
+        }
+
+        // Bật/tắt sản phẩm trả
+        function toggleItemReturn(itemId) {
+            var checkbox = document.getElementById('checkItem' + itemId);
+            var isChecked = checkbox.checked;
+            var row = document.getElementById('row-item-' + itemId);
+            var qtyInput = document.getElementById('qtyItem' + itemId);
+            var reasonSelect = document.getElementById('reasonItem' + itemId);
+            var condSelect = document.getElementById('conditionItem' + itemId);
+
+            if (row) row.classList.toggle('selected', isChecked);
+            if (qtyInput) qtyInput.disabled = !isChecked;
+            if (reasonSelect) reasonSelect.disabled = !isChecked;
+            if (condSelect) condSelect.disabled = !isChecked;
+
+            calculateTotalReturnAmount();
+        }
+
+        // Bật/tắt phân hệ đổi hàng mới
+        function toggleExchangeSection() {
+            var isEnabled = document.getElementById('toggleExchangeCheck').checked;
+            document.getElementById('exchangeSectionBody').classList.toggle('d-none', !isEnabled);
+            document.getElementById('noExchangeNotice').classList.toggle('d-none', isEnabled);
+            calculateFinancialBalance();
+        }
+
+        // Chọn sản phẩm đổi mới
+        function handleSelectExchangeProduct() {
+            var selectedKey = document.getElementById('exchangeProductSelect').value;
+            var item = exchangeCatalog[selectedKey];
+            var stockWarning = document.getElementById('stockOutWarning');
+            var qtyInput = document.getElementById('exchangeQty');
+
+            if (item) {
+                document.getElementById('exchangePriceText').innerText = item.price.toLocaleString('vi-VN') + '₫';
+                if (item.stock > 0) {
+                    document.getElementById('exchangeStockText').innerHTML = '<span class="text-success"><i class="fa-solid fa-circle-check me-1"></i>Còn ' + item.stock + ' cái</span>';
+                    stockWarning.classList.add('d-none');
+                    qtyInput.disabled = false;
+                    qtyInput.max = item.stock;
+                    if (Number(qtyInput.value) <= 0) qtyInput.value = 1;
+                } else {
+                    document.getElementById('exchangeStockText').innerHTML = '<span class="text-danger fw-bold"><i class="fa-solid fa-triangle-exclamation me-1"></i>Hết hàng (0)</span>';
+                    stockWarning.classList.remove('d-none');
+                    qtyInput.disabled = true;
+                    qtyInput.value = 0;
+                }
+            }
+            calculateFinancialBalance();
+        }
+
+        // Tính tổng tiền hàng trả
+        function calculateTotalReturnAmount() {
+            if (!currentInvoice) return;
+            var totalReturn = 0;
+
+            currentInvoice.items.forEach(function(item) {
+                var chk = document.getElementById('checkItem' + item.id);
+                var subEl = document.getElementById('subtotalItem' + item.id);
+                if (chk && chk.checked) {
+                    var q = Number(document.getElementById('qtyItem' + item.id).value || 0);
+                    var sub = q * item.price;
+                    if (subEl) {
+                        subEl.className = 'fw-bold fs-6 text-dark';
+                        subEl.innerText = sub.toLocaleString('vi-VN') + '₫';
+                    }
+                    totalReturn += sub;
+                } else if (subEl) {
+                    subEl.className = 'fw-bold fs-6 text-muted';
+                    subEl.innerText = '0₫';
+                }
+            });
+
+            document.getElementById('totalReturnAmountDisplay').innerText = totalReturn.toLocaleString('vi-VN') + '₫';
+            calculateFinancialBalance();
+        }
+
+        // Tính toán quyết toán chênh lệch tài chính
+        function calculateFinancialBalance() {
+            if (!currentInvoice) return;
+            var totalReturn = 0;
+
+            currentInvoice.items.forEach(function(item) {
+                var chk = document.getElementById('checkItem' + item.id);
+                if (chk && chk.checked) {
+                    var q = Number(document.getElementById('qtyItem' + item.id).value || 0);
+                    totalReturn += q * item.price;
+                }
+            });
+
+            var hasExchange = document.getElementById('toggleExchangeCheck').checked;
+            var totalExchange = 0;
+
+            if (hasExchange) {
+                var selectedKey = document.getElementById('exchangeProductSelect').value;
+                var item = exchangeCatalog[selectedKey];
+                var qty = Number(document.getElementById('exchangeQty').value || 0);
+                totalExchange = (item && item.stock > 0 ? item.price : 0) * qty;
+            }
+
+            document.getElementById('totalExchangeAmountDisplay').innerText = totalExchange.toLocaleString('vi-VN') + '₫';
+
+            var diff = totalExchange - totalReturn;
+            var balanceEl = document.getElementById('balanceAmountDisplay');
+            var noticeEl = document.getElementById('balanceActionNotice');
+
+            if (!hasExchange) {
+                balanceEl.className = 'fw-bold mb-0 text-success';
+                balanceEl.innerText = '-' + totalReturn.toLocaleString('vi-VN') + '₫';
+                noticeEl.className = 'small fw-semibold text-success mt-1';
+                noticeEl.innerText = 'Cần hoàn lại cho khách ' + totalReturn.toLocaleString('vi-VN') + '₫ (Quản lý duyệt chi).';
+            } else if (diff === 0) {
+                balanceEl.className = 'fw-bold mb-0 text-dark';
+                balanceEl.innerText = '0₫ (Đổi ngang giá)';
+                noticeEl.className = 'small fw-semibold text-secondary mt-1';
+                noticeEl.innerText = 'Không cần thu thêm hoặc hoàn tiền.';
+            } else if (diff > 0) {
+                balanceEl.className = 'fw-bold mb-0 text-danger';
+                balanceEl.innerText = '+' + diff.toLocaleString('vi-VN') + '₫';
+                noticeEl.className = 'small fw-semibold text-danger mt-1';
+                noticeEl.innerText = 'Khách cần thanh toán bù thêm ' + diff.toLocaleString('vi-VN') + '₫ khi nhận hàng đổi.';
+            } else {
+                var refund = Math.abs(diff);
+                balanceEl.className = 'fw-bold mb-0 text-success';
+                balanceEl.innerText = '-' + refund.toLocaleString('vi-VN') + '₫';
+                noticeEl.className = 'small fw-semibold text-success mt-1';
+                noticeEl.innerText = 'Cần hoàn lại cho khách ' + refund.toLocaleString('vi-VN') + '₫ (Quản lý duyệt chi).';
+            }
+        }
+
+        // Tải ảnh lỗi sản phẩm
+        function handleEvidenceFileSelected(event) {
+            var file = event.target.files[0];
+            if (!file) return;
+
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('evidenceImagePreview').src = e.target.result;
+                document.getElementById('evidenceFileName').innerText = file.name;
+                document.getElementById('uploadPrompt').classList.add('d-none');
+                var previewBox = document.getElementById('uploadPreviewBox');
+                previewBox.classList.remove('d-none');
+                previewBox.classList.add('d-flex');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Gỡ ảnh lỗi
+        function removeEvidencePhoto(event) {
+            event.stopPropagation();
+            document.getElementById('evidenceFileInput').value = '';
+            document.getElementById('evidenceImagePreview').src = '';
+            document.getElementById('uploadPrompt').classList.remove('d-none');
+            var previewBox = document.getElementById('uploadPreviewBox');
+            previewBox.classList.add('d-none');
+            previewBox.classList.remove('d-flex');
+        }
+
+        // Gửi duyệt yêu cầu
+        function submitReturnRequest() {
+            if (!currentInvoice) {
+                alert('Vui lòng tra cứu hóa đơn hợp lệ trước khi gửi duyệt!');
+                return;
+            }
+
+            var hasChecked = false;
+            currentInvoice.items.forEach(function(item) {
+                var chk = document.getElementById('checkItem' + item.id);
+                if (chk && chk.checked) hasChecked = true;
+            });
+
+            if (!hasChecked) {
+                alert('Vui lòng tích chọn ít nhất 1 sản phẩm khách muốn đổi/trả!');
+                return;
+            }
+
+            if (currentInvoice.daysAgo > 7) {
+                var exceptionChecked = document.getElementById('warrantyExceptionCheck').checked;
+                if (!exceptionChecked) {
+                    alert('Hóa đơn này đã quá hạn 07 ngày đổi trả!\nVui lòng tích chọn "Yêu cầu Quản lý đặc cách duyệt ngoại lệ" trước khi gửi.');
+                    return;
+                }
+            }
+
+            var note = document.getElementById('returnNoteInput').value.trim();
+            if (!note) {
+                alert('Vui lòng ghi chú lý do đổi trả để Quản lý có căn cứ phê duyệt!');
+                return;
+            }
+
+            var requestCode = 'YC-DT-' + Math.floor(1000 + Math.random() * 9000);
+            var balanceText = document.getElementById('balanceAmountDisplay').innerText;
+
+            var msg = '✅ ĐÃ GỬI YÊU CẦU ĐỔI / TRẢ THÀNH CÔNG!\n\n' +
+                '• Mã phiếu yêu cầu: ' + requestCode + '\n' +
+                '• Hóa đơn gốc: ' + currentInvoice.code + '\n' +
+                '• Khách hàng: ' + currentInvoice.customer + '\n' +
+                '• Quyết toán chênh lệch: ' + balanceText + '\n' +
+                '• Trạng thái: Chờ Quản lý phê duyệt\n\n' +
+                'Phiếu đã được chuyển vào danh sách chờ duyệt của Quản lý cửa hàng.';
+
+            alert(msg);
+            window.location.href = '@Url.Action("Index", "Invoices", new { area = "Employee" })';
+        }
+
+        // Tự động nạp mã hóa đơn nếu có trên URL query
+        window.addEventListener('DOMContentLoaded', function() {
+            var urlParams = new URLSearchParams(window.location.search);
+            var code = urlParams.get('invoiceCode') || urlParams.get('code') || 'HD-2026-0145';
+            document.getElementById('invoiceCodeInput').value = code;
+            lookupOriginalInvoice();
+        });
+    </script>
+}
+

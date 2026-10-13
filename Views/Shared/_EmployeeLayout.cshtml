@@ -1,0 +1,359 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Light Life Cửa Hàng</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        :root {
+            --sidebar-width: 250px;
+            --sidebar-bg: #ffffff;
+            --sidebar-border: #e5e7eb;
+            --sidebar-text: #4b5563;
+            --sidebar-active-bg: #f9fafb;
+            --sidebar-active-color: #111827;        
+            --emp-topbar-h: 70px;
+        }
+
+        body.employee-body {
+            background-color: #f4f5f7;
+            color: #111827;
+            font-family: var(--ll-font-body);
+            overflow-x: hidden;
+        }
+
+        .employee-sidebar {
+            width: var(--sidebar-width);
+            min-height: 100vh;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--sidebar-border);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1040;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+
+        .employee-sidebar-header {
+            height: var(--emp-topbar-h);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.25rem;
+            border-bottom: 1px solid var(--sidebar-border);
+            background: #ffffff;
+        }
+
+        .sidebar-brand-name {
+            font-family: var(--ll-font-heading);
+            font-size: 1.15rem;
+            letter-spacing: 0.5px;
+            color: #111827;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .sidebar-menu {
+            flex-grow: 1;
+            padding: 1.25rem 0.85rem;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow-y: auto;
+        }
+
+        .sidebar-section-title {
+            color: #9ca3af;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 0.75rem 0.75rem 0.25rem;
+            margin-top: 4px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.65rem 0.85rem;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-link:hover {
+            color: #111827;
+            background: #f3f4f6;
+        }
+
+        .sidebar-link.active {
+            color: #111827;
+            background: var(--sidebar-active-bg);
+            font-weight: 600;
+        }
+
+        .sidebar-link.active .sidebar-icon {
+            color: var(--sidebar-active-color);
+        }
+
+        .sidebar-icon {
+            width: 22px;
+            margin-right: 12px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .employee-sidebar-footer {
+            padding: 0.85rem 1.15rem;
+            border-top: 1px solid var(--sidebar-border);
+            background: #ffffff;
+        }
+
+        .employee-main-wrapper {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.3s ease;
+        }
+
+        .employee-topbar {
+            height: var(--emp-topbar-h);
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+        }
+
+        .employee-avatar-sm {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #f3f4f6;
+            color: #111827;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            border: 1px solid #e5e7eb;
+        }
+
+        @@media (max-width: 991.98px) {
+            .employee-sidebar {
+                transform: translateX(-100%);
+            }
+            .employee-sidebar.show {
+                transform: translateX(0);
+            }
+            .employee-main-wrapper {
+                margin-left: 0;
+            }
+            .sidebar-backdrop {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.4);
+                z-index: 1035;
+            }
+            .sidebar-backdrop.show {
+                display: block;
+            }
+        }
+    </style>
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="employee-body">
+
+    <!-- Mobile Backdrop -->
+    <div id="sidebarBackdrop" class="sidebar-backdrop" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar Employee: Tinh gọn, không chứa mã kỹ thuật rườm rà -->
+    <aside id="employeeSidebar" class="employee-sidebar">
+        <!-- Brand Header -->
+        <div class="employee-sidebar-header">
+            <a asp-area="Employee" asp-controller="Dashboard" asp-action="Index" class="d-flex align-items-center text-decoration-none">
+                <img src="~/images/logo.png" alt="Light Life" style="height: 32px; width: auto; object-fit: contain; margin-right: 9px;" />
+                <span class="sidebar-brand-name">LIGHT LIFE</span>
+            </a>
+        </div>
+
+        <!-- Menu Navigation: Tinh gọn và đầy đủ nghiệp vụ -->
+        <nav class="sidebar-menu">
+            @{
+                var currentCtrl = ViewContext.RouteData.Values["controller"]?.ToString();
+                var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+            }
+
+            <div class="sidebar-section-title">BÁN HÀNG & ĐIỀU PHỐI</div>
+            
+            <a asp-area="Employee" asp-controller="Dashboard" asp-action="Index" class="sidebar-link @(currentCtrl == "Dashboard" ? "active" : "")">
+                <div class="d-flex align-items-center">
+                    <span class="sidebar-icon"><i class="fa-solid fa-gauge-high"></i></span>
+                    <span>Tổng quan ca</span>
+                </div>
+            </a>
+
+            <a asp-area="Employee" asp-controller="OnlineOrders" asp-action="Index" class="sidebar-link @(currentCtrl == "OnlineOrders" ? "active" : "")">
+                <div class="d-flex align-items-center">
+                    <span class="sidebar-icon"><i class="fa-solid fa-box-open"></i></span>
+                    <span>Xử lý đơn Online</span>
+                </div>
+                <span class="badge rounded-pill bg-danger-subtle text-danger small" style="font-size: 0.65rem;">Mới</span>
+            </a>
+
+            <a asp-area="Employee" asp-controller="Invoices" asp-action="Index" class="sidebar-link @(currentCtrl == "Invoices" ? "active" : "")">
+                <div class="d-flex align-items-center">
+                    <span class="sidebar-icon"><i class="fa-solid fa-receipt"></i></span>
+                    <span>Hóa đơn bán hàng</span>
+                </div>
+            </a>
+
+            <div class="sidebar-section-title mt-2">QUẢN LÝ KHO</div>
+
+            <a asp-area="Employee" asp-controller="Warehouse" asp-action="Index" class="sidebar-link @(currentCtrl == "Warehouse" && currentAction == "Index" ? "active" : "")">
+                <div class="d-flex align-items-center">
+                    <span class="sidebar-icon"><i class="fa-solid fa-dolly"></i></span>
+                    <span>Nhập & Tra tồn kho</span>
+                </div>
+            </a>
+
+            <a asp-area="Employee" asp-controller="Warehouse" asp-action="Exports" class="sidebar-link @(currentCtrl == "Warehouse" && currentAction == "Exports" ? "active" : "")">
+                <div class="d-flex align-items-center">
+                    <span class="sidebar-icon"><i class="fa-solid fa-file-export"></i></span>
+                    <span>Phiếu xuất kho</span>
+                </div>
+            </a>
+
+            <a asp-area="Employee" asp-controller="Warehouse" asp-action="Audits" class="sidebar-link @(currentCtrl == "Warehouse" && currentAction == "Audits" ? "active" : "")">
+                <div class="d-flex align-items-center">
+                    <span class="sidebar-icon"><i class="fa-solid fa-clipboard-check"></i></span>
+                    <span>Kiểm kê & Điều chỉnh</span>
+                </div>
+            </a>
+        </nav>
+
+        <!-- Sidebar Footer -->
+        <div class="employee-sidebar-footer">
+            <div class="d-flex align-items-center gap-2">
+                <div class="employee-avatar-sm">NV</div>
+                <div class="lh-1 overflow-hidden">
+                    <div class="fw-semibold text-dark small text-truncate" id="sidebarEmpName">Lê Minh Nhật</div>
+                    <div class="text-muted" style="font-size: 0.72rem;">Nhân viên bán hàng</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="employee-main-wrapper">
+        <!-- Topbar Header -->
+        <header class="employee-topbar">
+            <!-- Bên trái: Toggle & Chào mừng + Giờ thực -->
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-light d-lg-none" type="button" onclick="toggleSidebar()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div>
+                    <div class="d-flex align-items-center gap-2">
+                        <h6 class="fw-bold mb-0 text-dark">Tổng quan ca làm việc</h6>
+                        <span id="topbarShiftBadge" class="badge bg-success-subtle text-success border border-success-subtle small px-2 py-1">
+                            <i class="fa-solid fa-circle text-success me-1" style="font-size: 0.45rem;"></i>Ca đang mở
+                        </span>
+                    </div>
+                    <div class="text-muted small" style="font-size: 0.76rem; font-variant-numeric: tabular-nums; min-width: 170px; display: inline-block;" id="liveClockDisplay">--:--:-- - --/--/----</div>
+                </div>
+            </div>
+
+            <!-- Bên phải: Xem shop, Đăng xuất -->
+            <div class="d-flex align-items-center gap-2 gap-md-3">
+                <a asp-area="" asp-controller="Home" asp-action="Index" target="_blank" class="btn btn-outline-dark btn-sm rounded-pill px-3 py-1 d-inline-flex align-items-center gap-1" style="font-size: 0.82rem;">
+                    <i class="fa-solid fa-store"></i>
+                    <span class="d-none d-sm-inline">Xem shop</span>
+                </a>
+
+                <a asp-area="" asp-controller="Account" asp-action="Login" class="btn btn-outline-danger btn-sm d-flex align-items-center gap-1 rounded-3 px-2 py-1" style="height: 34px;" title="Đăng xuất">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span class="small d-none d-sm-inline">Đăng xuất</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Body -->
+        <main role="main" class="flex-grow-1 p-3 p-lg-4">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        // Toggle mobile sidebar
+        function toggleSidebar() {
+            var sidebar = document.getElementById('employeeSidebar');
+            var backdrop = document.getElementById('sidebarBackdrop');
+            if (sidebar && backdrop) {
+                sidebar.classList.toggle('show');
+                backdrop.classList.toggle('show');
+            }
+        }
+
+        // Live Clock Display
+        function updateLiveClock() {
+            var el = document.getElementById('liveClockDisplay');
+            if (!el) return;
+            var now = new Date();
+            var hours = String(now.getHours()).padStart(2, '0');
+            var minutes = String(now.getMinutes()).padStart(2, '0');
+            var seconds = String(now.getSeconds()).padStart(2, '0');
+            var day = String(now.getDate()).padStart(2, '0');
+            var month = String(now.getMonth() + 1).padStart(2, '0');
+            var year = now.getFullYear();
+            el.innerText = hours + ':' + minutes + ':' + seconds + ' - ' + day + '/' + month + '/' + year;
+        }
+        setInterval(updateLiveClock, 1000);
+        updateLiveClock();
+
+        // Fallback điều hướng cho Sidebar khi ở trang khác Dashboard
+        window.quickActionTrigger = function(action) {
+            if (action === 'pos') {
+                window.location.href = '@Url.Action("Index", "Pos", new { area = "Employee" })';
+            } else if (action === 'invoices') {
+                window.location.href = '@Url.Action("Index", "Invoices", new { area = "Employee" })';
+            } else if (action === 'stock') {
+                window.location.href = '@Url.Action("Index", "Warehouse", new { area = "Employee" })?view=n09';
+            } else {
+                window.location.href = '@Url.Action("Index", "Dashboard", new { area = "Employee" })';
+            }
+        };
+        try {
+            var userRaw = localStorage.getItem('lightLifeUser') || sessionStorage.getItem('lightLifeUser');
+            if (userRaw) {
+                var userObj = JSON.parse(userRaw);
+                if (userObj.fullName) {
+                    var empEl = document.getElementById('sidebarEmpName');
+                    if (empEl) empEl.innerText = userObj.fullName;
+                }
+            }
+        } catch(e) {}
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+

@@ -1,0 +1,326 @@
+@* Views/Account/OrderDetail.cshtml *@
+@{
+    Layout = "_StoreLayout";
+    ViewData["Title"] = "Chi tiết đơn hàng - LIGHT LIFE";
+    var orderId = ViewData["OrderId"] as string ?? "";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/lightlife-orders.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/lightlife-order-detail.css" asp-append-version="true" />
+}
+
+<div class="ll-order-detail-page">
+    <div class="ll-container">
+        <!-- BREADCRUMB ĐIỀU HƯỚNG -->
+        <nav class="ll-detail-breadcrumb" aria-label="Đường dẫn trang">
+            <a href="/">Trang chủ</a>
+            <span class="ll-detail-breadcrumb__sep">/</span>
+            <a href="/Account/Profile">Tài khoản</a>
+            <span class="ll-detail-breadcrumb__sep">/</span>
+            <a href="/Account/Orders">Đơn hàng của tôi</a>
+            <span class="ll-detail-breadcrumb__sep">/</span>
+            <span class="ll-detail-breadcrumb__current" id="breadcrumbOrderCode">@(string.IsNullOrEmpty(orderId) ? "Chi tiết đơn" : orderId)</span>
+        </nav>
+
+        <!-- BỐ CỤC 2 CỘT TÀI KHOẢN -->
+        <div class="ll-detail-layout">
+            <!-- CỘT 1: SIDEBAR TÀI KHOẢN (280px) -->
+            <aside class="ll-account-sidebar" aria-label="Menu tài khoản cá nhân">
+                <div class="ll-account-user-card">
+                    <div class="ll-account-user-avatar" id="accountUserAvatar">T</div>
+                    <div class="ll-account-user-info">
+                        <span class="ll-account-user-name" id="accountUserName">Nguyễn Thu Trang</span>
+                        <span class="ll-account-user-email" id="accountUserEmail">thutrang@lightlife.vn</span>
+                        <span class="ll-account-user-tag">Khách hàng</span>
+                    </div>
+                </div>
+
+                <nav>
+                    <ul class="ll-account-nav-list">
+                        <li class="ll-account-nav-item">
+                            <a href="/Account/Profile"><i class="fa-regular fa-user"></i> Hồ sơ cá nhân</a>
+                        </li>
+                        <li class="ll-account-nav-item">
+                            <a href="/Account/Addresses"><i class="fa-solid fa-location-dot"></i> Sổ địa chỉ</a>
+                        </li>
+                        <li class="ll-account-nav-item active">
+                            <a href="/Account/Orders"><i class="fa-solid fa-box-open"></i> Đơn hàng của tôi</a>
+                        </li>
+                        <li class="ll-account-nav-item">
+                            <a href="/Account/ChangePassword"><i class="fa-solid fa-key"></i> Đổi mật khẩu</a>
+                        </li>
+                        <li class="ll-account-nav-item ll-account-nav-item--logout">
+                            <a href="javascript:void(0)" onclick="LightLifeAuth.logout();">
+                                <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- CỘT 2: NỘI DUNG CHI TIẾT ĐƠN HÀNG CHÍNH -->
+            <main class="ll-order-detail-main">
+                <!-- Nút quay lại & Header Đơn hàng -->
+                <div class="ll-detail-card">
+                    <div class="ll-detail-top-nav">
+                        <a href="/Account/Orders" class="ll-btn-back">
+                            <i class="fa-solid fa-arrow-left"></i> Quay lại danh sách đơn hàng
+                        </a>
+                        <div class="ll-detail-action-buttons" id="detailActionButtons">
+                            <!-- Render bằng JS: Nút Hủy đơn / Nút Đổi trả / Hỗ trợ -->
+                        </div>
+                    </div>
+
+                    <div class="ll-order-detail-header">
+                        <div>
+                            <h1 class="ll-detail-code-title">
+                                <i class="fa-solid fa-box-open"></i> Đơn hàng #<span id="detailOrderCode">@orderId</span>
+                            </h1>
+                            <div class="ll-detail-meta-date" id="detailOrderDate">
+                                <i class="fa-regular fa-clock me-1"></i> Đang tải thông tin...
+                            </div>
+                        </div>
+
+                        <!-- 2 Badge riêng biệt: Trạng thái đơn & Thanh toán -->
+                        <div class="ll-detail-badges-group">
+                            <span class="ll-badge ll-badge--pending" id="detailOrderStatusBadge">Chờ xác nhận</span>
+                            <span class="ll-badge-payment ll-badge-payment--waiting" id="detailPaymentStatusBadge">Chờ xác nhận thanh toán</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1. TIMELINE QUY TRÌNH TIẾN TRÌNH ĐƠN HÀNG -->
+                <div class="ll-detail-card" id="orderTimelineCard">
+                    <!-- Render từ JS: Stepper 5 bước hoặc Banner Đã Hủy -->
+                </div>
+
+                <!-- 2. KHUNG THEO DÕI YÊU CẦU ĐỔI TRẢ (Nếu có) -->
+                <div id="orderReturnTrackerContainer" style="display: none;">
+                    <!-- Render từ JS -->
+                </div>
+
+                <!-- 3. DANH SÁCH SẢN PHẨM TRONG ĐƠN (ẢNH 4:5) -->
+                <div class="ll-detail-card">
+                    <h3 class="ll-products-card-title">
+                        <i class="fa-solid fa-shirt" style="color: var(--color-brand);"></i>
+                        Sản phẩm trong đơn hàng
+                    </h3>
+                    <div class="ll-detail-items-table" id="detailProductsContainer">
+                        <!-- Render danh sách sản phẩm từ JS -->
+                    </div>
+                </div>
+
+                <!-- 4. LƯỚI THÔNG TIN: GIAO NHẬN, VẬN CHUYỂN & BẢNG TÀI CHÍNH -->
+                <div class="ll-detail-grid-info">
+                    <!-- Khối Người nhận -->
+                    <div class="ll-detail-card">
+                        <h4 class="ll-info-section-title">
+                            <i class="fa-solid fa-location-dot" style="color: var(--color-brand);"></i>
+                            Địa chỉ nhận hàng
+                        </h4>
+                        <div class="ll-info-block" id="recipientInfoBlock">
+                            <!-- Render từ JS -->
+                        </div>
+                    </div>
+
+                    <!-- Khối Vận chuyển & Thanh toán -->
+                    <div class="ll-detail-card">
+                        <h4 class="ll-info-section-title">
+                            <i class="fa-solid fa-truck-fast" style="color: var(--color-brand);"></i>
+                            Vận chuyển & Thanh toán
+                        </h4>
+                        <div class="ll-info-block" id="shippingPaymentInfoBlock">
+                            <!-- Render từ JS -->
+                        </div>
+                    </div>
+
+                    <!-- Khối Bảng tài chính -->
+                    <div class="ll-detail-card">
+                        <h4 class="ll-info-section-title">
+                            <i class="fa-solid fa-receipt" style="color: var(--color-brand);"></i>
+                            Tổng kết đơn hàng
+                        </h4>
+                        <div class="ll-financial-rows" id="financialRowsBlock">
+                            <!-- Render từ JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. LỊCH SỬ SỰ KIỆN & HỖ TRỢ CSKH -->
+                <div class="ll-detail-card">
+                    <h3 class="ll-products-card-title">
+                        <i class="fa-solid fa-clock-rotate-left" style="color: var(--color-brand);"></i>
+                        Lịch sử cập nhật đơn hàng
+                    </h3>
+                    <ul class="ll-audit-history-list" id="auditLogsContainer">
+                        <!-- Render từ JS -->
+                    </ul>
+
+                    <div class="ll-support-contact-box" style="margin-top: 1.5rem;">
+                        <div>
+                            <strong style="color: var(--color-text-main); font-size: 0.9375rem;">Cần hỗ trợ về đơn hàng này?</strong>
+                            <p style="margin: 0.25rem 0 0 0; font-size: 0.8125rem; color: var(--color-text-sub);">
+                                Vui lòng liên hệ tổng đài <strong>1900 8924</strong> hoặc email <strong>support@lightlife.vn</strong> (08:30 - 21:30 hàng ngày).
+                            </p>
+                        </div>
+                        <a href="tel:19008924" class="ll-btn-support-contact">
+                            <i class="fa-solid fa-phone"></i> Gọi tổng đài
+                        </a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================================================
+     MODAL 1: YÊU CẦU HỦY ĐƠN HÀNG
+     ========================================================================== -->
+<div class="ll-modal-overlay" id="cancelOrderModal" role="dialog" aria-modal="true" aria-labelledby="cancelModalTitle">
+    <div class="ll-modal-dialog--cancel">
+        <div class="ll-modal-header">
+            <div>
+                <span style="font-size: 0.8125rem; color: var(--color-text-sub); display: block;">Hủy đơn hàng</span>
+                <h3 class="ll-modal-title" style="color: var(--color-error);" id="cancelModalTitle">
+                    Xác nhận hủy đơn #<span id="cancelModalOrderCode">LL-893124</span>
+                </h3>
+            </div>
+            <button type="button" class="ll-modal-close-btn" onclick="closeCancelModal()" aria-label="Đóng">&times;</button>
+        </div>
+
+        <div style="font-size: 0.875rem; color: var(--color-text-sub); line-height: 1.5; margin-bottom: 1.25rem;">
+            Lưu ý: Thao tác hủy đơn sẽ dừng toàn bộ quá trình chuẩn bị hàng.
+            <div style="background: #FEF3F2; color: #B42318; padding: 0.75rem 1rem; border-radius: 6px; margin-top: 0.5rem; font-size: 0.8125rem;">
+                <i class="fa-solid fa-triangle-exclamation me-1"></i>
+                Hủy đơn <strong>không tự đồng nghĩa là đã hoàn tiền</strong>. Nếu bạn đã thanh toán qua chuyển khoản trước, bộ phận CSKH sẽ liên hệ đối soát và hoàn tiền vào tài khoản ngân hàng của bạn trong 24 - 48h làm việc.
+            </div>
+        </div>
+
+        <div class="ll-form-group">
+            <label class="ll-form-label" for="cancelReasonSelect">
+                Lý do hủy đơn <span class="req">*</span>
+            </label>
+            <select class="ll-form-select" id="cancelReasonSelect" required>
+                <option value="Đổi ý, không muốn mua nữa">Đổi ý, không muốn mua nữa</option>
+                <option value="Muốn thay đổi màu sắc / kích cỡ / sản phẩm khác">Muốn thay đổi màu sắc / kích cỡ / sản phẩm khác</option>
+                <option value="Nhập sai địa chỉ hoặc thông tin nhận hàng">Nhập sai địa chỉ hoặc thông tin nhận hàng</option>
+                <option value="Tìm thấy sản phẩm khác phù hợp hơn">Tìm thấy sản phẩm khác phù hợp hơn</option>
+                <option value="Thời gian giao hàng dự kiến không phù hợp">Thời gian giao hàng dự kiến không phù hợp</option>
+                <option value="Lý do khác">Lý do khác</option>
+            </select>
+        </div>
+
+        <div class="ll-form-group">
+            <label class="ll-form-label" for="cancelNoteInput">
+                Ghi chú thêm (Không bắt buộc)
+            </label>
+            <textarea class="ll-form-textarea" id="cancelNoteInput" placeholder="Nhập thêm chi tiết nếu cần..."></textarea>
+        </div>
+
+        <div class="ll-modal-actions">
+            <button type="button" class="ll-modal-btn-close" onclick="closeCancelModal()">Quay lại</button>
+            <button type="button" class="ll-modal-btn-confirm ll-modal-btn-confirm--danger" onclick="handleConfirmCancel()">
+                <i class="fa-solid fa-circle-xmark"></i> Xác nhận hủy đơn
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================================================
+     MODAL 2: FORM YÊU CẦU ĐỔI TRẢ HÀNG
+     ========================================================================== -->
+<div class="ll-modal-overlay" id="returnOrderModal" role="dialog" aria-modal="true" aria-labelledby="returnModalTitle">
+    <div class="ll-modal-dialog--return">
+        <div class="ll-modal-header">
+            <div>
+                <span style="font-size: 0.8125rem; color: var(--color-text-sub); display: block;">Chính sách đổi trả 7 ngày</span>
+                <h3 class="ll-modal-title" style="color: var(--color-brand);" id="returnModalTitle">
+                    Yêu cầu Đổi / Trả hàng #<span id="returnModalOrderCode">LL-893124</span>
+                </h3>
+            </div>
+            <button type="button" class="ll-modal-close-btn" onclick="closeReturnModal()" aria-label="Đóng">&times;</button>
+        </div>
+
+        <!-- Chọn sản phẩm -->
+        <div class="ll-form-group">
+            <label class="ll-form-label">
+                1. Chọn sản phẩm cần đổi / trả <span class="req">*</span>
+            </label>
+            <div class="ll-return-items-select" id="returnItemsSelectList">
+                <!-- Render từ JS -->
+            </div>
+        </div>
+
+        <!-- Hình thức yêu cầu -->
+        <div class="ll-form-group">
+            <label class="ll-form-label">
+                2. Hình thức mong muốn <span class="req">*</span>
+            </label>
+            <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: 0.9375rem;">
+                <label style="display: flex; align-items: center; gap: 0.45rem; cursor: pointer;">
+                    <input type="radio" name="return_type" value="EXCHANGE" checked />
+                    <span>Đổi sang kích cỡ / màu sắc khác</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 0.45rem; cursor: pointer;">
+                    <input type="radio" name="return_type" value="REFUND" />
+                    <span>Trả hàng & Hoàn tiền</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Lý do đổi trả -->
+        <div class="ll-form-group">
+            <label class="ll-form-label" for="returnReasonSelect">
+                3. Lý do đổi / trả <span class="req">*</span>
+            </label>
+            <select class="ll-form-select" id="returnReasonSelect" required>
+                <option value="Sản phẩm mặc không vừa (rộng hoặc chật)">Sản phẩm mặc không vừa (rộng hoặc chật)</option>
+                <option value="Sản phẩm bị lỗi may / lỗi vải từ nhà sản xuất">Sản phẩm bị lỗi may / lỗi vải từ nhà sản xuất</option>
+                <option value="Giao sai mẫu mã, màu sắc hoặc kích cỡ">Giao sai mẫu mã, màu sắc hoặc kích cỡ</option>
+                <option value="Sản phẩm không đúng với mô tả trên website">Sản phẩm không đúng với mô tả trên website</option>
+                <option value="Khác">Lý do khác</option>
+            </select>
+        </div>
+
+        <!-- Tải ảnh bằng chứng -->
+        <div class="ll-form-group">
+            <label class="ll-form-label" for="returnEvidenceFiles">
+                4. Ảnh chụp bằng chứng (Nếu sản phẩm lỗi hoặc sai mẫu)
+            </label>
+            <input type="file" id="returnEvidenceFiles" class="ll-form-input" accept="image/*" multiple />
+            <div class="ll-return-evidence-preview" id="returnEvidencePreviewContainer"></div>
+            <span style="font-size: 0.75rem; color: var(--color-text-sub); display: block; margin-top: 0.35rem;">
+                Hỗ trợ định dạng JPG, PNG (tối đa 3 ảnh).
+            </span>
+        </div>
+
+        <!-- Ghi chú chi tiết -->
+        <div class="ll-form-group">
+            <label class="ll-form-label" for="returnNoteInput">
+                5. Mô tả chi tiết vấn đề
+            </label>
+            <textarea class="ll-form-textarea" id="returnNoteInput" placeholder="Ví dụ: Áo size M bị rộng vai, mong muốn đổi sang size S màu Trắng Kem..."></textarea>
+        </div>
+
+        <!-- Cam kết & Thông báo -->
+        <div style="background: #FAF8F5; border: 1px dashed var(--color-border); border-radius: 6px; padding: 0.85rem 1rem; font-size: 0.8125rem; color: var(--color-text-sub); line-height: 1.5;">
+            <i class="fa-solid fa-shield-halved" style="color: var(--color-brand); margin-right: 4px;"></i>
+            Sau khi bạn gửi yêu cầu, trạng thái sẽ là <strong>“Chờ cửa hàng kiểm tra”</strong>. LIGHT LIFE sẽ liên hệ trong 24h làm việc để hướng dẫn gửi kiện hàng về kho.
+            <br />
+            * Tuyệt đối không tự ý trừ tiền hoặc coi như đã hoàn tiền trước khi shop nhận và thẩm định hàng.
+        </div>
+
+        <div class="ll-modal-actions">
+            <button type="button" class="ll-modal-btn-close" onclick="closeReturnModal()">Đóng</button>
+            <button type="button" class="ll-modal-btn-confirm ll-modal-btn-confirm--brand" onclick="handleConfirmReturn()">
+                <i class="fa-solid fa-paper-plane"></i> Gửi yêu cầu đổi trả
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/lightlife-order-detail.js" asp-append-version="true"></script>
+}
+

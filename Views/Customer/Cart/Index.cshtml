@@ -1,0 +1,190 @@
+@* Views/Cart/Index.cshtml *@
+@{
+    Layout = "_StoreLayout";
+    ViewData["Title"] = "Giỏ hàng của bạn - LIGHT LIFE";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/lightlife-cart.css" asp-append-version="true" />
+}
+
+<div class="ll-cart-page">
+    <div class="ll-container">
+        <!-- Breadcrumb điều hướng -->
+        <nav class="ll-cart-breadcrumb" aria-label="Đường dẫn trang">
+            <a href="/">Trang chủ</a>
+            <span class="ll-cart-breadcrumb__sep">/</span>
+            <span class="ll-cart-breadcrumb__current" aria-current="page">Giỏ hàng của bạn</span>
+        </nav>
+
+        <!-- Tiêu đề trang & số lượng sản phẩm -->
+        <header class="ll-cart-header">
+            <h1 class="ll-cart-title">
+                <i class="fa-solid fa-bag-shopping" style="color: var(--color-brand); font-size: 1.5rem;"></i>
+                Giỏ hàng của bạn
+                <span class="ll-cart-count-pill" id="cartCountPill">0 sản phẩm</span>
+            </h1>
+            <a href="/Products" class="ll-cart-continue-link">
+                <i class="fa-solid fa-arrow-left"></i> Tiếp tục mua sắm
+            </a>
+        </header>
+
+        <!-- Banner cảnh báo / lỗi (Hiện khi cần thông báo) -->
+        <div class="ll-cart-alert-banner" id="cartAlertBanner" role="alert">
+            <div class="ll-cart-alert-banner__content">
+                <i class="fa-solid fa-triangle-exclamation" style="font-size: 1.25rem;"></i>
+                <span id="cartAlertText">Thông báo lỗi cập nhật giỏ hàng</span>
+            </div>
+            <button type="button" class="ll-cart-alert-banner__close" id="closeCartAlertBtn" aria-label="Đóng thông báo">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Trạng thái Đang tải (Loading Skeleton) -->
+        <div class="ll-cart-loading" id="cartLoading" aria-live="polite">
+            <div class="ll-skeleton-item">
+                <div class="ll-skeleton-box" style="height: 120px;"></div>
+                <div style="display:flex; flex-direction:column; gap:0.75rem;">
+                    <div class="ll-skeleton-box" style="height: 24px; width: 60%;"></div>
+                    <div class="ll-skeleton-box" style="height: 18px; width: 40%;"></div>
+                    <div class="ll-skeleton-box" style="height: 18px; width: 30%;"></div>
+                </div>
+                <div class="ll-skeleton-box" style="height: 44px; width: 100%;"></div>
+            </div>
+            <div class="ll-skeleton-item">
+                <div class="ll-skeleton-box" style="height: 120px;"></div>
+                <div style="display:flex; flex-direction:column; gap:0.75rem;">
+                    <div class="ll-skeleton-box" style="height: 24px; width: 50%;"></div>
+                    <div class="ll-skeleton-box" style="height: 18px; width: 35%;"></div>
+                    <div class="ll-skeleton-box" style="height: 18px; width: 25%;"></div>
+                </div>
+                <div class="ll-skeleton-box" style="height: 44px; width: 100%;"></div>
+            </div>
+        </div>
+
+        <!-- Trạng thái Giỏ hàng trống (Empty State) -->
+        <div class="ll-cart-empty" id="cartEmpty">
+            <div class="ll-cart-empty__icon-wrap">
+                <i class="fa-solid fa-bag-shopping"></i>
+            </div>
+            <h2 class="ll-cart-empty__title">Giỏ hàng của bạn đang trống</h2>
+            <p class="ll-cart-empty__desc">
+                Bạn chưa thêm sản phẩm nào vào giỏ hàng. Hãy khám phá ngay các bộ sưu tập thời trang thanh lịch mới nhất tại LIGHT LIFE.
+            </p>
+            <a href="/Products" class="ll-btn ll-btn-primary ll-cart-empty__btn">
+                <i class="fa-solid fa-shirt"></i> Khám phá sản phẩm ngay
+            </a>
+        </div>
+
+        <!-- Layout 2 cột Desktop (Danh sách bên trái, Tóm tắt tiền bên phải) -->
+        <div class="ll-cart-layout" id="cartLayout">
+            <!-- Cột trái (~65%): Danh sách sản phẩm -->
+            <div class="ll-cart-main">
+                <div class="ll-cart-items-container" id="cartItemsList">
+                    <!-- Danh sách các dòng mặt hàng được render từ lightlife-cart.js -->
+                </div>
+
+                <!-- Ghi chú chính sách dưới danh sách mặt hàng (Tuân thủ: KHÔNG ghi "Đã giữ hàng") -->
+                <div class="ll-cart-notice-box">
+                    <p>
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span><strong>Lưu ý về số lượng:</strong> Sản phẩm trong giỏ hàng không được giữ chỗ trước khi hoàn tất đặt hàng. Vui lòng thanh toán sớm để đảm bảo sản phẩm không hết số lượng.</span>
+                    </p>
+                    <p>
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span><strong>Chính sách đổi trả:</strong> Hỗ trợ đổi size hoặc mẫu trong vòng 07 ngày làm việc kể từ khi nhận hàng.</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Cột phải (~35%): Tóm tắt đơn hàng (Sticky Sidebar) -->
+            <aside class="ll-cart-sidebar" aria-label="Tóm tắt đơn hàng">
+                <div class="ll-cart-summary">
+                    <h2 class="ll-cart-summary__title">Tóm tắt đơn hàng</h2>
+
+                    <!-- Ô nhập mã ưu đãi (Coupon) -->
+                    <div class="ll-coupon-block">
+                        <label for="couponInput" class="ll-coupon-label">Mã ưu đãi / Voucher:</label>
+                        <form id="couponForm" class="ll-coupon-form" novalidate>
+                            <input type="text" 
+                                   id="couponInput" 
+                                   class="ll-coupon-input" 
+                                   placeholder="VD: LIGHTLIFE10" 
+                                   autocomplete="off" 
+                                   aria-label="Nhập mã ưu đãi" />
+                            <button type="submit" class="ll-coupon-btn" id="applyCouponBtn">Áp dụng</button>
+                        </form>
+                        <div class="ll-coupon-msg" id="couponMsg" role="status"></div>
+                        
+                        <!-- Chip hiển thị mã đã áp dụng -->
+                        <div class="ll-coupon-applied-chip" id="couponChip">
+                            <span class="ll-coupon-applied-chip__text">
+                                <i class="fa-solid fa-tag"></i>
+                                <span id="couponChipText"></span>
+                            </span>
+                            <button type="button" class="ll-coupon-applied-chip__remove" id="removeCouponBtn" title="Gỡ mã">Xóa</button>
+                        </div>
+                    </div>
+
+                    <!-- Bảng tính tiền chi tiết -->
+                    <div class="ll-summary-rows">
+                        <div class="ll-summary-row">
+                            <span class="ll-summary-row__label">Tạm tính tiền hàng:</span>
+                            <span class="ll-summary-row__value" id="summarySubtotal">0 đ</span>
+                        </div>
+                        <div class="ll-summary-row ll-summary-row--discount" id="summaryDiscountRow" style="display: none;">
+                            <span class="ll-summary-row__label">Giảm giá ưu đãi:</span>
+                            <span class="ll-summary-row__value" id="summaryDiscountValue">-0 đ</span>
+                        </div>
+                        <div class="ll-summary-row ll-summary-row--shipping">
+                            <span class="ll-summary-row__label">Phí giao hàng:</span>
+                            <span class="ll-summary-row__value">Xác định tại checkout</span>
+                        </div>
+                    </div>
+
+                    <hr class="ll-summary-divider" />
+
+                    <!-- Tổng tiền tạm tính -->
+                    <div class="ll-summary-total">
+                        <span class="ll-summary-total__label">Tổng tiền tạm tính:</span>
+                        <span class="ll-summary-total__value" id="summaryTotal">0 đ</span>
+                    </div>
+
+                    <!-- Nút hành động chính: Tiến hành đặt hàng -->
+                    <button type="button" class="ll-checkout-btn" id="checkoutBtn">
+                        Tiến hành đặt hàng <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+
+                    <p class="ll-summary-disclaimer">
+                        * Giá cuối cùng, thuế và phí vận chuyển sẽ được xác định chính xác tại bước thanh toán.
+                    </p>
+
+                    <div style="text-align: center; margin-top: 1.25rem;">
+                        <a href="/Products" class="ll-cart-continue-link">
+                            <i class="fa-solid fa-arrow-left"></i> Tiếp tục chọn đồ
+                        </a>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xác nhận xóa sản phẩm khỏi giỏ -->
+<div class="ll-modal-overlay" id="deleteConfirmModal" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+    <div class="ll-modal-dialog">
+        <h3 class="ll-modal-title" id="deleteModalTitle">Xác nhận bỏ sản phẩm</h3>
+        <p class="ll-modal-desc">
+            Bạn có chắc chắn muốn bỏ sản phẩm <strong id="deleteConfirmItemName"></strong> khỏi giỏ hàng?
+        </p>
+        <div class="ll-modal-actions">
+            <button type="button" class="ll-btn ll-btn-secondary" id="cancelDeleteBtn">Không, giữ lại</button>
+            <button type="button" class="ll-btn ll-btn-primary" id="confirmDeleteBtn" style="background-color: var(--color-error); border-color: var(--color-error);">Xác nhận xóa</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/lightlife-cart.js" asp-append-version="true"></script>
+}
+

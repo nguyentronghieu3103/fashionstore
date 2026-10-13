@@ -1,0 +1,429 @@
+@{
+    ViewData["Title"] = "Mở ca bán hàng";
+}
+
+@section Styles {
+    <style>
+        .shift-open-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.35rem 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+            margin-bottom: 1.25rem;
+        }
+
+        .section-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+        }
+
+        .meta-label {
+            font-size: 0.82rem;
+            color: #6b7280;
+            margin-bottom: 0.2rem;
+        }
+
+        .meta-value {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .handover-box {
+            background: #fafaf9;
+            border: 1px solid #eaeaea;
+            border-radius: 10px;
+            padding: 1.15rem;
+        }
+
+        .quick-amount-btn {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            color: #374151;
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.15s ease;
+        }
+
+        .quick-amount-btn:hover {
+            border-color: #18181b;
+            color: #18181b;
+            background: #f4f4f5;
+        }
+
+        .summary-sticky {
+            position: sticky;
+            top: 90px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.88rem;
+            padding: 0.45rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+    </style>
+}
+
+<div class="container-fluid p-0" style="max-width: 1100px; margin: 0 auto;">
+
+    <!-- Thanh dẫn & Điều hướng quay lại -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div class="d-flex align-items-center gap-2">
+            <a asp-area="Employee" asp-controller="Dashboard" asp-action="Index" class="btn btn-sm btn-outline-dark rounded-pill px-3 py-1 text-decoration-none">
+                ← Quay về tổng quan
+            </a>
+            <span class="text-muted">/</span>
+            <span class="text-dark fw-semibold small">Quy trình mở ca</span>
+        </div>
+        <div class="text-muted small" id="openShiftLiveClock">--:--:--</div>
+    </div>
+
+    <!-- Cảnh báo ngoại lệ: Quầy đã có ca mở (mặc định ẩn, bật khi test hoặc quầy bận) -->
+    <div id="alreadyOpenAlert" class="alert alert-warning d-none mb-3 py-2 px-3 small border-warning-subtle" role="alert">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div>
+                <strong>Lưu ý:</strong> Quầy hiện đang ghi nhận một ca làm việc chưa kết thúc. Theo quy định, một quầy chỉ có tối đa một ca đang mở.
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-dark rounded-pill px-3" onclick="simulateResolveExistingShift()">
+                Đóng ca cũ để bàn giao
+            </button>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <!-- Cột trái: 3 Khung chính (Thông tin phiên, Bàn giao từ ca trước, Nhập liệu kiểm đếm) -->
+        <div class="col-12 col-lg-7 col-xl-8">
+
+            <!-- KHUNG 1: THÔNG TIN PHIÊN CA -->
+            <div class="shift-open-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-dark">Mở ca bán hàng</h5>
+                    <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1 small">
+                        Chưa mở ca
+                    </span>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-sm-6 col-md-3">
+                        <div class="meta-label">Quầy phân công</div>
+                        <div class="meta-value">Quầy thu ngân 01</div>
+                    </div>
+                    <div class="col-sm-6 col-md-3">
+                        <div class="meta-label">Nhân viên tiếp nhận</div>
+                        <div class="meta-value" id="openEmpName">Lê Minh Nhật</div>
+                    </div>
+                    <div class="col-sm-6 col-md-3">
+                        <div class="meta-label">Ca làm việc</div>
+                        <div class="meta-value">Ca sáng (08:00 - 15:30)</div>
+                    </div>
+                    <div class="col-sm-6 col-md-3">
+                        <div class="meta-label">Thời điểm tiếp nhận</div>
+                        <div class="meta-value" id="shiftStartTimeDisplay">Hôm nay, 08:00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KHUNG 2: BÀN GIAO TỪ CA TRƯỚC -->
+            <div class="shift-open-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="section-label mb-0">Bàn giao từ ca liền trước</div>
+                    <button type="button" class="btn btn-link btn-sm text-decoration-none p-0 small text-dark fw-semibold" onclick="toggleHandoverDetails()">
+                        <span id="toggleHandoverText">Xem cơ cấu tiền</span>
+                    </button>
+                </div>
+
+                <div class="handover-box">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                        <div>
+                            <span class="text-muted small">Ca bàn giao:</span>
+                            <strong class="text-dark ms-1 small">Ca tối (Hôm qua, kết ca 22:15)</strong>
+                        </div>
+                        <div>
+                            <span class="text-muted small">Người bàn giao:</span>
+                            <span class="fw-semibold text-dark ms-1 small">Nguyễn Mai Anh</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center py-2 border-top border-bottom my-2">
+                        <span class="fw-semibold text-dark small">Tiền mặt bàn giao dự kiến trong két:</span>
+                        <span class="fs-5 fw-bold text-dark" id="expectedHandoverCashText">1.000.000₫</span>
+                    </div>
+
+                    <div class="text-muted small">
+                        <strong>Ghi chú ca trước:</strong> "Tiền mặt lẻ đã kiểm đếm đủ 1.000.000₫ để thối khách (gồm 20 tờ 20k, 10 tờ 50k, 1 tờ 100k). Thiết bị POS và máy in hóa đơn hoạt động bình thường."
+                    </div>
+
+                    <!-- Bảng cơ cấu chi tiết mệnh giá tiền bàn giao (ẩn mặc định, nhấn xem mở ra) -->
+                    <div id="handoverDenomDetails" class="d-none mt-3 pt-2 border-top">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-borderless mb-0 small">
+                                <thead>
+                                    <tr class="text-muted">
+                                        <th>Mệnh giá</th>
+                                        <th class="text-center">Số tờ</th>
+                                        <th class="text-end">Thành tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>100.000₫</td>
+                                        <td class="text-center">1</td>
+                                        <td class="text-end">100.000₫</td>
+                                    </tr>
+                                    <tr>
+                                        <td>50.000₫</td>
+                                        <td class="text-center">10</td>
+                                        <td class="text-end">500.000₫</td>
+                                    </tr>
+                                    <tr>
+                                        <td>20.000₫</td>
+                                        <td class="text-center">20</td>
+                                        <td class="text-end">400.000₫</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KHUNG 3: NHẬP LIỆU KIỂM ĐẾM THỰC TẾ -->
+            <div class="shift-open-card">
+                <div class="section-label">Kiểm đếm thực tế & Xác nhận</div>
+
+                <div class="mb-3">
+                    <label for="actualCashInput" class="form-label fw-bold text-dark small mb-1">
+                        Tiền mặt thực tế đếm được trong két (*):
+                    </label>
+                    <div class="input-group mb-2">
+                        <input type="number" id="actualCashInput" class="form-control form-control-lg fw-bold text-dark" value="1000000" min="0" step="10000" oninput="handleCashInputChanged()" />
+                        <span class="input-group-text fw-semibold bg-white text-dark">VNĐ</span>
+                    </div>
+
+                    <!-- Phím chọn nhanh -->
+                    <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
+                        <span class="text-muted small">Chọn nhanh:</span>
+                        <button type="button" class="quick-amount-btn" onclick="setCashAmount(1000000)">1.000.000₫ (Chuẩn)</button>
+                        <button type="button" class="quick-amount-btn" onclick="setCashAmount(1500000)">1.500.000₫</button>
+                        <button type="button" class="quick-amount-btn" onclick="setCashAmount(2000000)">2.000.000₫</button>
+                        <button type="button" class="quick-amount-btn" onclick="setCashAmount(0)">0₫</button>
+                    </div>
+
+                    <!-- Thông báo chênh lệch đối soát -->
+                    <div id="handoverDiffBox" class="p-2 rounded bg-success-subtle text-success border border-success-subtle small fw-semibold">
+                        Khớp hoàn toàn với tiền bàn giao ca trước (Chênh lệch: 0₫)
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="openShiftNote" class="form-label fw-bold text-dark small mb-1">
+                        Ghi chú nhận ca (tùy chọn):
+                    </label>
+                    <textarea class="form-control small" id="openShiftNote" rows="2" placeholder="Ví dụ: Đã kiểm tra quầy sạch sẽ, nhận đủ thiết bị thanh toán..."></textarea>
+                </div>
+
+                <!-- Checkbox xác nhận bắt buộc -->
+                <div class="form-check p-3 bg-light rounded-3 border">
+                    <input class="form-check-input mt-1" type="checkbox" id="checkConfirmHandover" checked onchange="toggleConfirmState()" />
+                    <label class="form-check-label small fw-semibold text-dark" for="checkConfirmHandover">
+                        Tôi xác nhận đã nhận bàn giao quầy và kiểm đếm chính xác số tiền mặt đầu ca nêu trên.
+                    </label>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Cột phải: KHUNG 4 - TÓM TẮT & NÚT THAO TÁC XÁC NHẬN -->
+        <div class="col-12 col-lg-5 col-xl-4">
+            <div class="shift-open-card summary-sticky">
+                <div class="section-label">Tóm tắt thông tin mở ca</div>
+
+                <div class="mb-3">
+                    <div class="summary-row">
+                        <span class="text-muted">Quầy làm việc:</span>
+                        <span class="fw-semibold text-dark">Quầy thu ngân 01</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="text-muted">Nhân viên mở:</span>
+                        <span class="fw-semibold text-dark">Lê Minh Nhật</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="text-muted">Ca làm việc:</span>
+                        <span class="fw-semibold text-dark">Ca sáng</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="text-muted">Tiền bàn giao ca trước:</span>
+                        <span class="fw-semibold text-dark">1.000.000₫</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="text-muted">Tiền mặt đầu ca ghi nhận:</span>
+                        <span class="fs-6 fw-bold text-dark" id="summaryActualCashText">1.000.000₫</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="text-muted">Trạng thái sau mở:</span>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle small">Bật POS bán hàng</span>
+                    </div>
+                </div>
+
+                <!-- Nút thao tác mở ca -->
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-dark py-2 fw-semibold rounded-pill" id="btnConfirmOpenShift" onclick="handleConfirmOpenShift()">
+                        Xác nhận mở ca
+                    </button>
+                    <a asp-area="Employee" asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-secondary py-2 fw-semibold rounded-pill text-decoration-none">
+                        Hủy bỏ
+                    </a>
+                </div>
+
+                <!-- Thao tác kiểm thử ngoại lệ -->
+                <div class="pt-3 mt-3 border-top text-center">
+                    <button type="button" class="btn btn-link btn-sm text-decoration-none text-muted p-0" style="font-size: 0.76rem;" onclick="simulateAlreadyOpenCondition()">
+                        Mô phỏng trường hợp quầy đã có ca mở
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        var expectedCash = 1000000;
+        var hasAlreadyOpenShift = false;
+
+        // Đồng hồ giờ thực
+        function updateLiveClock() {
+            var now = new Date();
+            var timeStr = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            var dateStr = now.toLocaleDateString('vi-VN');
+            var el = document.getElementById('openShiftLiveClock');
+            if (el) el.innerText = timeStr + ' · ' + dateStr;
+        }
+        setInterval(updateLiveClock, 1000);
+        updateLiveClock();
+
+        // Xem chi tiết cơ cấu mệnh giá
+        function toggleHandoverDetails() {
+            var el = document.getElementById('handoverDenomDetails');
+            var btnText = document.getElementById('toggleHandoverText');
+            if (el.classList.contains('d-none')) {
+                el.classList.remove('d-none');
+                btnText.innerText = 'Ẩn cơ cấu';
+            } else {
+                el.classList.add('d-none');
+                btnText.innerText = 'Xem cơ cấu tiền';
+            }
+        }
+
+        // Chọn nhanh số tiền
+        function setCashAmount(amount) {
+            document.getElementById('actualCashInput').value = amount;
+            handleCashInputChanged();
+        }
+
+        // Xử lý thay đổi số tiền nhập
+        function handleCashInputChanged() {
+            var inputVal = Number(document.getElementById('actualCashInput').value || 0);
+            var summaryEl = document.getElementById('summaryActualCashText');
+            var diffBox = document.getElementById('handoverDiffBox');
+
+            if (summaryEl) {
+                summaryEl.innerText = inputVal.toLocaleString('vi-VN') + '₫';
+            }
+
+            var diff = inputVal - expectedCash;
+            if (inputVal < 0) {
+                diffBox.className = 'p-2 rounded bg-danger-subtle text-danger border border-danger-subtle small fw-semibold';
+                diffBox.innerText = 'Số tiền đầu ca không được nhỏ hơn 0₫!';
+            } else if (diff === 0) {
+                diffBox.className = 'p-2 rounded bg-success-subtle text-success border border-success-subtle small fw-semibold';
+                diffBox.innerText = 'Khớp hoàn toàn với tiền bàn giao ca trước (Chênh lệch: 0₫)';
+            } else if (diff > 0) {
+                diffBox.className = 'p-2 rounded bg-warning-subtle text-warning-emphasis border border-warning-subtle small fw-semibold';
+                diffBox.innerText = 'Tiền đếm nhiều hơn bàn giao: +' + diff.toLocaleString('vi-VN') + '₫ (Vui lòng ghi chú lý do)';
+            } else {
+                diffBox.className = 'p-2 rounded bg-danger-subtle text-danger border border-danger-subtle small fw-semibold';
+                diffBox.innerText = 'Tiền đếm ít hơn bàn giao: ' + diff.toLocaleString('vi-VN') + '₫ (Cần đối chiếu lại với ca trước)';
+            }
+        }
+
+        // Bật/tắt nút xác nhận theo checkbox
+        function toggleConfirmState() {
+            var isChecked = document.getElementById('checkConfirmHandover').checked;
+            var btn = document.getElementById('btnConfirmOpenShift');
+            btn.disabled = !isChecked;
+        }
+
+        // Mô phỏng ngoại lệ: Quầy đã có ca mở
+        function simulateAlreadyOpenCondition() {
+            hasAlreadyOpenShift = true;
+            document.getElementById('alreadyOpenAlert').classList.remove('d-none');
+            alert('Đã bật mô phỏng: Quầy thu ngân 01 đang có 1 ca chưa đóng. Hệ thống sẽ chặn tạo ca mới!');
+        }
+
+        // Xử lý giải quyết ca cũ
+        function simulateResolveExistingShift() {
+            hasAlreadyOpenShift = false;
+            document.getElementById('alreadyOpenAlert').classList.add('d-none');
+            alert('Ca cũ đã được đối soát & bàn giao thành công. Bây giờ quầy sẵn sàng mở ca mới!');
+        }
+
+        // Thực hiện MỞ CA BÁN HÀNG
+        function handleConfirmOpenShift() {
+            // 1. Kiểm tra ngoại lệ quầy đã có ca mở
+            if (hasAlreadyOpenShift) {
+                alert('Không thể mở ca mới vì Quầy thu ngân 01 đang có một ca làm việc chưa kết thúc!\nVui lòng hoàn tất đối soát ca trước đó.');
+                return;
+            }
+
+            // 2. Kiểm tra điều kiện tiền >= 0
+            var cash = Number(document.getElementById('actualCashInput').value || 0);
+            if (cash < 0 || isNaN(cash)) {
+                alert('Số tiền mặt đầu ca không hợp lệ! Tiền đầu ca phải >= 0.');
+                return;
+            }
+
+            // 3. Kiểm tra checkbox xác nhận
+            var isConfirmed = document.getElementById('checkConfirmHandover').checked;
+            if (!isConfirmed) {
+                alert('Vui lòng tích xác nhận đã kiểm đếm đủ tiền mặt đầu ca trước khi tiếp tục!');
+                return;
+            }
+
+            // 4. Lưu trạng thái mở ca vào sessionStorage để trang Dashboard nhận diện
+            sessionStorage.setItem('currentShiftState', 'open');
+            sessionStorage.setItem('initialShiftCash', cash.toString());
+
+            var diff = cash - expectedCash;
+            var alertMsg = 'MỞ CA THÀNH CÔNG!\n\n' +
+                '- Nhân viên: Lê Minh Nhật\n' +
+                '- Quầy: Quầy thu ngân 01\n' +
+                '- Tiền mặt đầu ca: ' + cash.toLocaleString('vi-VN') + ' VNĐ\n';
+            if (diff !== 0) {
+                alertMsg += '- Chênh lệch bàn giao: ' + (diff > 0 ? '+' : '') + diff.toLocaleString('vi-VN') + ' VNĐ\n';
+            }
+            alertMsg += '\nChuyển về Tổng quan ca làm việc và kích hoạt chức năng Bán hàng POS.';
+
+            alert(alertMsg);
+
+            // 5. Chuyển hướng về Tổng quan ca làm việc và bật tính năng bán hàng
+            window.location.href = '@Url.Action("Index", "Dashboard", new { area = "Employee" })';
+        }
+    </script>
+}
+

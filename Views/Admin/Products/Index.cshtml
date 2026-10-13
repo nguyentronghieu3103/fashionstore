@@ -1,0 +1,698 @@
+@{
+    ViewData["Title"] = "Quản lý sản phẩm";
+}
+
+@section Styles {
+    <style>
+        .product-thumb {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid #e5e7eb;
+            background: #f9fafb;
+        }
+
+        .product-table thead th {
+            background: #fafafa;
+            color: #6b7280;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.85rem 1.25rem;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        .product-table tbody td {
+            padding: 1rem 1.25rem;
+            vertical-align: middle;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .product-table tbody tr:hover {
+            background-color: #fafafa;
+        }
+
+        .filter-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+        }
+
+        .badge-category {
+            background: #f3f4f6;
+            color: #374151;
+            font-weight: 500;
+            font-size: 0.78rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .variant-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.76rem;
+            padding: 2px 7px;
+            border-radius: 4px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            color: #4b5563;
+        }
+    </style>
+}
+
+<div class="container-fluid p-0">
+
+    <!-- 1. Khung đầu: Tiêu đề, Số mẫu, Nút tạo mới & Xuất -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+        <div>
+            <h4 class="fw-bold mb-1 text-dark">Danh sách sản phẩm</h4>
+            <div class="text-muted small">Quản lý mẫu thời trang và biến thể màu - size (Tổng số: <strong class="text-dark" id="totalCount">24 mẫu</strong>)</div>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-dark btn-sm px-3 d-inline-flex align-items-center gap-2" onclick="exportProductList()">
+                <i class="fa-solid fa-file-export"></i>
+                <span>Xuất file</span>
+            </button>
+            <a href="/Admin/Products/Create" class="btn btn-dark btn-sm px-3 d-inline-flex align-items-center gap-2">
+                <i class="fa-solid fa-plus"></i>
+                <span>Thêm sản phẩm</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- 2. Khung lọc: Tên/mã, danh mục, trạng thái, mức giá -->
+    <div class="filter-card mb-4">
+        <div class="row g-2 align-items-center">
+            <!-- Tìm tên hoặc mã -->
+            <div class="col-md-4">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" id="filterKeyword" class="form-control border-start-0 ps-1" placeholder="Tìm theo tên hoặc mã mẫu..." onkeyup="applyFilter()" />
+                </div>
+            </div>
+
+            <!-- Danh mục -->
+            <div class="col-md-3">
+                <select id="filterCategory" class="form-select form-select-sm" onchange="applyFilter()">
+                    <option value="">Tất cả danh mục</option>
+                    <option value="Đầm & Váy">Đầm & Váy</option>
+                    <option value="Áo khoác & Blazer">Áo khoác & Blazer</option>
+                    <option value="Áo sơ mi">Áo sơ mi</option>
+                    <option value="Quần tây & Jeans">Quần tây & Jeans</option>
+                </select>
+            </div>
+
+            <!-- Trạng thái: Đang bán / Ngừng bán -->
+            <div class="col-md-3">
+                <select id="filterStatus" class="form-select form-select-sm" onchange="applyFilter()">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="active">Đang bán</option>
+                    <option value="paused">Ngừng bán</option>
+                </select>
+            </div>
+
+            <!-- Đặt lại -->
+            <div class="col-md-2 text-md-end">
+                <button type="button" class="btn btn-light btn-sm text-secondary w-100" onclick="resetFilter()">
+                    <i class="fa-solid fa-rotate-left me-1"></i> Đặt lại
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Khung bảng: Danh sách mẫu sản phẩm -->
+    <div class="card border border-1 rounded-3 overflow-hidden shadow-none mb-4">
+        <div class="table-responsive">
+            <table class="table product-table mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th>Mẫu sản phẩm</th>
+                        <th>Mã mẫu</th>
+                        <th>Danh mục</th>
+                        <th>Khoảng giá</th>
+                        <th>Biến thể & Tồn</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="productTableBody">
+                    <!-- SP 1 -->
+                    <tr data-cat="Áo khoác & Blazer" data-status="active" id="prod-1">
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=100&q=80" class="product-thumb" alt="Áo Tweed" />
+                                <div>
+                                    <div class="fw-bold text-dark">Áo Tweed Thu Đông Cổ Điển</div>
+                                    <small class="text-muted">Chất liệu: Dạ tweed dệt kim</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="font-monospace text-secondary fw-semibold">AT-TWEED-01</span></td>
+                        <td><span class="badge-category">Áo khoác & Blazer</span></td>
+                        <td><strong class="text-dark">1.850.000 ₫ – 2.100.000 ₫</strong></td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="variant-chip">4 SKU</span>
+                                <span class="text-muted small">Tồn: <strong class="text-dark">68</strong></span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle status-badge">Đang bán</span>
+                        </td>
+                        <td class="text-end">
+                            <a href="/Admin/Products/Edit/1" class="btn btn-outline-dark btn-sm px-2 py-1 me-1" title="Chỉnh sửa sản phẩm [A03]">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <button type="button" class="btn btn-outline-dark btn-sm px-2 py-1 me-1" onclick="viewVariants(1, 'Áo Tweed Thu Đông Cổ Điển', 'AT-TWEED-01', 68, true)" title="Xem biến thể màu/size">
+                                <i class="fa-solid fa-boxes-stacked me-1"></i> Biến thể
+                            </button>
+                            <button type="button" class="btn btn-light btn-sm text-danger border px-2 py-1 toggle-status-btn" onclick="toggleSellStatus('prod-1', 'Áo Tweed Thu Đông', 68, true)" title="Ngừng bán">
+                                <i class="fa-solid fa-ban"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- SP 2 -->
+                    <tr data-cat="Đầm & Váy" data-status="active" id="prod-2">
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=100&q=80" class="product-thumb" alt="Đầm Satin" />
+                                <div>
+                                    <div class="fw-bold text-dark">Đầm Lụa Satin Kem Dự Tiệc</div>
+                                    <small class="text-muted">Chất liệu: Lụa satin mềm cao cấp</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="font-monospace text-secondary fw-semibold">DL-SATIN-02</span></td>
+                        <td><span class="badge-category">Đầm & Váy</span></td>
+                        <td><strong class="text-dark">1.450.000 ₫</strong></td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="variant-chip">3 SKU</span>
+                                <span class="text-muted small">Tồn: <strong class="text-dark">42</strong></span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle status-badge">Đang bán</span>
+                        </td>
+                        <td class="text-end">
+                            <a href="/Admin/Products/Edit/2" class="btn btn-outline-dark btn-sm px-2 py-1 me-1" title="Chỉnh sửa sản phẩm [A03]">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <button type="button" class="btn btn-outline-dark btn-sm px-2 py-1 me-1" onclick="viewVariants(2, 'Đầm Lụa Satin Kem Dự Tiệc', 'DL-SATIN-02', 42, true)" title="Xem biến thể màu/size">
+                                <i class="fa-solid fa-boxes-stacked me-1"></i> Biến thể
+                            </button>
+                            <button type="button" class="btn btn-light btn-sm text-danger border px-2 py-1 toggle-status-btn" onclick="toggleSellStatus('prod-2', 'Đầm Lụa Satin Kem', 42, true)" title="Ngừng bán">
+                                <i class="fa-solid fa-ban"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- SP 3 -->
+                    <tr data-cat="Áo khoác & Blazer" data-status="active" id="prod-3">
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="https://images.unsplash.com/photo-1584273143981-41c073dfe8f8?w=100&q=80" class="product-thumb" alt="Blazer Silk" />
+                                <div>
+                                    <div class="fw-bold text-dark">Blazer Silk Suông Form Chuẩn</div>
+                                    <small class="text-muted">Chất liệu: Cotton pha tơ lụa</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="font-monospace text-secondary fw-semibold">BL-SILK-01</span></td>
+                        <td><span class="badge-category">Áo khoác & Blazer</span></td>
+                        <td><strong class="text-dark">2.250.000 ₫</strong></td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="variant-chip">4 SKU</span>
+                                <span class="text-muted small">Tồn: <strong class="text-dark">50</strong></span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle status-badge">Đang bán</span>
+                        </td>
+                        <td class="text-end">
+                            <a href="/Admin/Products/Edit/3" class="btn btn-outline-dark btn-sm px-2 py-1 me-1" title="Chỉnh sửa sản phẩm [A03]">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <button type="button" class="btn btn-outline-dark btn-sm px-2 py-1 me-1" onclick="viewVariants(3, 'Blazer Silk Suông Form Chuẩn', 'BL-SILK-01', 50, true)" title="Xem biến thể màu/size">
+                                <i class="fa-solid fa-boxes-stacked me-1"></i> Biến thể
+                            </button>
+                            <button type="button" class="btn btn-light btn-sm text-danger border px-2 py-1 toggle-status-btn" onclick="toggleSellStatus('prod-3', 'Blazer Silk Suông', 50, true)" title="Ngừng bán">
+                                <i class="fa-solid fa-ban"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- SP 4 -->
+                    <tr data-cat="Quần tây & Jeans" data-status="active" id="prod-4">
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?w=100&q=80" class="product-thumb" alt="Quần Pleated" />
+                                <div>
+                                    <div class="fw-bold text-dark">Quần Tây Pleated Dáng Suông</div>
+                                    <small class="text-muted">Chất liệu: Kaki cao cấp chống nhăn</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="font-monospace text-secondary fw-semibold">QT-PLEAT-04</span></td>
+                        <td><span class="badge-category">Quần tây & Jeans</span></td>
+                        <td><strong class="text-dark">890.000 ₫</strong></td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="variant-chip">3 SKU</span>
+                                <span class="text-muted small">Tồn: <strong class="text-dark">35</strong></span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle status-badge">Đang bán</span>
+                        </td>
+                        <td class="text-end">
+                            <a href="/Admin/Products/Edit/4" class="btn btn-outline-dark btn-sm px-2 py-1 me-1" title="Chỉnh sửa sản phẩm [A03]">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <button type="button" class="btn btn-outline-dark btn-sm px-2 py-1 me-1" onclick="viewVariants(4, 'Quần Tây Pleated Dáng Suông', 'QT-PLEAT-04', 35, true)" title="Xem biến thể màu/size">
+                                <i class="fa-solid fa-boxes-stacked me-1"></i> Biến thể
+                            </button>
+                            <button type="button" class="btn btn-light btn-sm text-danger border px-2 py-1 toggle-status-btn" onclick="toggleSellStatus('prod-4', 'Quần Tây Pleated', 35, true)" title="Ngừng bán">
+                                <i class="fa-solid fa-ban"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- SP 5 -->
+                    <tr data-cat="Áo sơ mi" data-status="active" id="prod-5">
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=100&q=80" class="product-thumb" alt="Áo Linen" />
+                                <div>
+                                    <div class="fw-bold text-dark">Áo Sơ Mi Linen Form Rộng</div>
+                                    <small class="text-muted">Chất liệu: 100% sợi Linen tự nhiên</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="font-monospace text-secondary fw-semibold">SM-LINEN-09</span></td>
+                        <td><span class="badge-category">Áo sơ mi</span></td>
+                        <td><strong class="text-dark">650.000 ₫</strong></td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="variant-chip">3 SKU</span>
+                                <span class="text-muted small">Tồn: <strong class="text-dark">28</strong></span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle status-badge">Đang bán</span>
+                        </td>
+                        <td class="text-end">
+                            <a href="/Admin/Products/Edit/5" class="btn btn-outline-dark btn-sm px-2 py-1 me-1" title="Chỉnh sửa sản phẩm [A03]">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <button type="button" class="btn btn-outline-dark btn-sm px-2 py-1 me-1" onclick="viewVariants(5, 'Áo Sơ Mi Linen Form Rộng', 'SM-LINEN-09', 28, true)" title="Xem biến thể màu/size">
+                                <i class="fa-solid fa-boxes-stacked me-1"></i> Biến thể
+                            </button>
+                            <button type="button" class="btn btn-light btn-sm text-danger border px-2 py-1 toggle-status-btn" onclick="toggleSellStatus('prod-5', 'Áo Sơ Mi Linen', 28, true)" title="Ngừng bán">
+                                <i class="fa-solid fa-ban"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- SP 6: Đã ngừng bán -->
+                    <tr data-cat="Đầm & Váy" data-status="paused" id="prod-6">
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=100&q=80" class="product-thumb opacity-75" alt="Váy Ren" />
+                                <div>
+                                    <div class="fw-bold text-secondary">Váy Ren Vintage Mùa Hè</div>
+                                    <small class="text-muted">Mẫu cũ năm 2025</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="font-monospace text-muted">VR-SUMMER-25</span></td>
+                        <td><span class="badge-category">Đầm & Váy</span></td>
+                        <td><span class="text-secondary">950.000 ₫</span></td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="variant-chip">2 SKU</span>
+                                <span class="text-muted small">Tồn: <strong>0</strong></span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary-subtle text-secondary border status-badge">Ngừng bán</span>
+                        </td>
+                        <td class="text-end">
+                            <a href="/Admin/Products/Edit/6" class="btn btn-outline-dark btn-sm px-2 py-1 me-1" title="Chỉnh sửa sản phẩm [A03]">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <button type="button" class="btn btn-outline-dark btn-sm px-2 py-1 me-1" onclick="viewVariants(6, 'Váy Ren Vintage Mùa Hè', 'VR-SUMMER-25', 0, false)" title="Xem biến thể màu/size">
+                                <i class="fa-solid fa-boxes-stacked me-1"></i> Biến thể
+                            </button>
+                            <button type="button" class="btn btn-light btn-sm text-success border px-2 py-1 toggle-status-btn" onclick="toggleSellStatus('prod-6', 'Váy Ren Vintage', 0, false)" title="Mở bán lại">
+                                <i class="fa-solid fa-play"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 4. Khung dưới: Phân trang & Thống kê hiển thị -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center text-muted small">
+        <div>
+            Đang hiển thị <strong class="text-dark" id="visibleCount">6</strong> trên tổng số 24 mẫu sản phẩm
+        </div>
+        <nav aria-label="Phân trang sản phẩm">
+            <ul class="pagination pagination-sm mb-0">
+                <li class="page-item disabled"><a class="page-link" href="#">Trước</a></li>
+                <li class="page-item active"><a class="page-link bg-dark border-dark text-white" href="#">1</a></li>
+                <li class="page-item"><a class="page-link text-dark" href="#">2</a></li>
+                <li class="page-item"><a class="page-link text-dark" href="#">3</a></li>
+                <li class="page-item"><a class="page-link text-dark" href="#">Sau</a></li>
+            </ul>
+        </nav>
+    </div>
+
+</div>
+
+<!-- MODAL: Khung chi tiết nhanh biến thể SKU (Màu - Size - Tồn - Giá vốn theo quyền Admin) -->
+<div class="modal fade" id="variantModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded-3 border-0 shadow">
+            <div class="modal-header border-bottom p-3">
+                <div>
+                    <h6 class="modal-title fw-bold text-dark mb-0" id="modalProdTitle">Chi tiết biến thể SKU</h6>
+                    <small class="text-muted" id="modalProdCode">Mã mẫu: --</small>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-3">
+                <!-- Bảng SKU -->
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0">
+                        <thead class="bg-light text-muted small">
+                            <tr>
+                                <th>Màu sắc</th>
+                                <th>Kích thước</th>
+                                <th>Mã SKU</th>
+                                <th>Mã Barcode</th>
+                                <th class="text-center">Tồn khả dụng</th>
+                                <th class="text-end">Giá bán</th>
+                                <th class="text-end text-primary" title="Chỉ Admin xem được giá vốn">Giá vốn (Admin)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="variantTableBody">
+                            <!-- Nạp động bằng JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer border-top p-3 d-flex justify-content-between">
+                <div>
+                    <button type="button" class="btn btn-outline-danger btn-sm" id="modalBtnTogglePause" onclick="handleModalDeactivate()">
+                        Ngừng kinh doanh mẫu này
+                    </button>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Đóng</button>
+                    <a id="modalEditLink" href="/Admin/Products/Edit/1" class="btn btn-dark btn-sm">
+                        <i class="fa-solid fa-pen-to-square me-1"></i> Chỉnh sửa sản phẩm 
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Tạo sản phẩm mới [A03] -->
+<div class="modal fade" id="createProductModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-3 border-0 shadow">
+            <div class="modal-header border-bottom p-3">
+                <h6 class="modal-title fw-bold text-dark">Thêm mẫu sản phẩm mới [A03]</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-3">
+                <div class="mb-3">
+                    <label class="form-label small text-muted">Tên mẫu sản phẩm</label>
+                    <input type="text" class="form-control form-control-sm" id="newProdName" placeholder="Ví dụ: Đầm Dạ Hội Silk Velvet..." />
+                </div>
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label class="form-label small text-muted">Mã mẫu (Duy nhất)</label>
+                        <input type="text" class="form-control form-control-sm font-monospace text-uppercase" id="newProdCode" placeholder="DH-SILK-01" />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small text-muted">Danh mục</label>
+                        <select class="form-select form-select-sm" id="newProdCat">
+                            <option value="Đầm & Váy">Đầm & Váy</option>
+                            <option value="Áo khoác & Blazer">Áo khoác & Blazer</option>
+                            <option value="Áo sơ mi">Áo sơ mi</option>
+                            <option value="Quần tây & Jeans">Quần tây & Jeans</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label class="form-label small text-muted">Giá bán dự kiến</label>
+                        <input type="text" class="form-control form-control-sm" id="newProdPrice" placeholder="1.250.000 ₫" />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small text-muted">Giá vốn nhập (Bảo mật)</label>
+                        <input type="text" class="form-control form-control-sm" id="newProdCost" placeholder="600.000 ₫" />
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label small text-muted">Kích thước mặc định sinh biến thể</label>
+                    <div class="d-flex gap-2">
+                        <span class="badge bg-light text-dark border p-2">S</span>
+                        <span class="badge bg-light text-dark border p-2">M</span>
+                        <span class="badge bg-light text-dark border p-2">L</span>
+                        <span class="badge bg-light text-dark border p-2">XL</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-top p-3">
+                <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Hủy bỏ</button>
+                <button type="button" class="btn btn-dark btn-sm px-3" onclick="saveNewProduct()">Tạo mẫu sản phẩm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Dữ liệu mẫu các biến thể SKU cho từng sản phẩm
+        var variantData = {
+            1: [
+                { color: 'Đen Noir', size: 'S', sku: 'AT-TW01-BLK-S', barcode: '89360010101', stock: 18, price: '1.850.000 ₫', cost: '950.000 ₫' },
+                { color: 'Đen Noir', size: 'M', sku: 'AT-TW01-BLK-M', barcode: '89360010102', stock: 24, price: '1.850.000 ₫', cost: '950.000 ₫' },
+                { color: 'Kem Be', size: 'S', sku: 'AT-TW01-BGE-S', barcode: '89360010103', stock: 14, price: '2.100.000 ₫', cost: '1.050.000 ₫' },
+                { color: 'Kem Be', size: 'M', sku: 'AT-TW01-BGE-M', barcode: '89360010104', stock: 12, price: '2.100.000 ₫', cost: '1.050.000 ₫' }
+            ],
+            2: [
+                { color: 'Kem Vani', size: 'S', sku: 'DL-ST02-CRM-S', barcode: '89360020101', stock: 1, price: '1.450.000 ₫', cost: '720.000 ₫' },
+                { color: 'Kem Vani', size: 'M', sku: 'DL-ST02-CRM-M', barcode: '89360020102', stock: 15, price: '1.450.000 ₫', cost: '720.000 ₫' },
+                { color: 'Hồng Nude', size: 'M', sku: 'DL-ST02-PNK-M', barcode: '89360020103', stock: 26, price: '1.450.000 ₫', cost: '720.000 ₫' }
+            ],
+            3: [
+                { color: 'Xám Khói', size: 'M', sku: 'BL-SL01-GRY-M', barcode: '89360030101', stock: 20, price: '2.250.000 ₫', cost: '1.100.000 ₫' },
+                { color: 'Xám Khói', size: 'L', sku: 'BL-SL01-GRY-L', barcode: '89360030102', stock: 15, price: '2.250.000 ₫', cost: '1.100.000 ₫' },
+                { color: 'Đen Titan', size: 'M', sku: 'BL-SL01-BLK-M', barcode: '89360030103', stock: 10, price: '2.250.000 ₫', cost: '1.100.000 ₫' },
+                { color: 'Đen Titan', size: 'L', sku: 'BL-SL01-BLK-L', barcode: '89360030104', stock: 5, price: '2.250.000 ₫', cost: '1.100.000 ₫' }
+            ],
+            4: [
+                { color: 'Be Sáng', size: '29', sku: 'QT-PL04-BGE-29', barcode: '89360040101', stock: 12, price: '890.000 ₫', cost: '420.000 ₫' },
+                { color: 'Be Sáng', size: '30', sku: 'QT-PL04-BGE-30', barcode: '89360040102', stock: 15, price: '890.000 ₫', cost: '420.000 ₫' },
+                { color: 'Đen', size: '30', sku: 'QT-PL04-BLK-30', barcode: '89360040103', stock: 8, price: '890.000 ₫', cost: '420.000 ₫' }
+            ],
+            5: [
+                { color: 'Trắng Sữa', size: 'S', sku: 'SM-LN09-WHT-S', barcode: '89360050101', stock: 10, price: '650.000 ₫', cost: '290.000 ₫' },
+                { color: 'Trắng Sữa', size: 'M', sku: 'SM-LN09-WHT-M', barcode: '89360050102', stock: 12, price: '650.000 ₫', cost: '290.000 ₫' },
+                { color: 'Xanh Mint', size: 'M', sku: 'SM-LN09-MNT-M', barcode: '89360050103', stock: 6, price: '650.000 ₫', cost: '290.000 ₫' }
+            ],
+            6: [
+                { color: 'Trắng Ngà', size: 'S', sku: 'VR-SM25-IVR-S', barcode: '89360060101', stock: 0, price: '950.000 ₫', cost: '450.000 ₫' },
+                { color: 'Trắng Ngà', size: 'M', sku: 'VR-SM25-IVR-M', barcode: '89360060102', stock: 0, price: '950.000 ₫', cost: '450.000 ₫' }
+            ]
+        };
+
+        var currentSelectedProdId = 1;
+
+        // Xem chi tiết biến thể SKU
+        function viewVariants(id, name, code, stock, isSelling) {
+            currentSelectedProdId = id;
+            document.getElementById('modalProdTitle').innerText = name;
+            document.getElementById('modalProdCode').innerText = 'Mã mẫu: ' + code + ' • Tổng tồn kho: ' + stock + ' chiếc';
+
+            var tbody = document.getElementById('variantTableBody');
+            var list = variantData[id] || [];
+            var html = '';
+
+            list.forEach(function(item) {
+                var stockClass = item.stock <= 2 ? (item.stock === 0 ? 'text-danger fw-bold' : 'text-warning-emphasis fw-bold') : 'text-dark';
+                html += `
+                    <tr>
+                        <td><strong>${item.color}</strong></td>
+                        <td><span class="badge bg-light text-dark border">${item.size}</span></td>
+                        <td><span class="font-monospace text-secondary small">${item.sku}</span></td>
+                        <td><span class="font-monospace text-muted small">${item.barcode}</span></td>
+                        <td class="text-center ${stockClass}">${item.stock}</td>
+                        <td class="text-end fw-semibold">${item.price}</td>
+                        <td class="text-end text-primary font-monospace">${item.cost}</td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+
+            var btnPause = document.getElementById('modalBtnTogglePause');
+            if (isSelling) {
+                btnPause.innerText = 'Ngừng kinh doanh mẫu này';
+                btnPause.className = 'btn btn-outline-danger btn-sm';
+            } else {
+                btnPause.innerText = 'Mở bán lại mẫu này';
+                btnPause.className = 'btn btn-outline-success btn-sm';
+            }
+
+            var editLink = document.getElementById('modalEditLink');
+            if (editLink) {
+                editLink.href = '/Admin/Products/Edit/' + id;
+            }
+
+            var modal = new bootstrap.Modal(document.getElementById('variantModal'));
+            modal.show();
+        }
+
+        // Chuyển trạng thái Ngừng bán / Đang bán (Quy tắc nghiệp vụ: Cảnh báo nếu còn tồn kho)
+        function toggleSellStatus(rowId, prodName, stock, isCurrentlySelling) {
+            var row = document.getElementById(rowId);
+            if (!row) return;
+
+            if (isCurrentlySelling) {
+                // Đang hoạt động -> Admin muốn ngắt (Ngừng bán)
+                var msg = 'Xác nhận NGỪNG BÁN sản phẩm: "' + prodName + '"?\n';
+                if (stock > 0) {
+                    msg += '\n⚠️ CẢNH BÁO NGHIỆP VỤ: Sản phẩm này hiện vẫn còn ' + stock + ' cái trong kho.\nKhi ngừng bán, POS sẽ không cho phép quét bán mới, nhưng dữ liệu hóa đơn cũ vẫn được bảo lưu an toàn.';
+                }
+                if (confirm(msg)) {
+                    updateRowStatus(row, false, prodName, stock);
+                }
+            } else {
+                // Đang ngắt -> Admin muốn mở bán lại
+                if (confirm('Kích hoạt MỞ BÁN LẠI cho sản phẩm: "' + prodName + '"?')) {
+                    updateRowStatus(row, true, prodName, stock);
+                }
+            }
+        }
+
+        function updateRowStatus(row, isSelling, prodName, stock) {
+            row.setAttribute('data-status', isSelling ? 'active' : 'paused');
+
+            // 1. Cập nhật Badge trạng thái
+            var badge = row.querySelector('.status-badge');
+            if (badge) {
+                if (isSelling) {
+                    badge.className = 'badge bg-success-subtle text-success border border-success-subtle status-badge';
+                    badge.innerText = 'Đang bán';
+                } else {
+                    badge.className = 'badge bg-secondary-subtle text-secondary border status-badge';
+                    badge.innerText = 'Ngừng bán';
+                }
+            }
+
+            // 2. Chuyển đổi Icon Nút (Ảnh 1: Ban đỏ <---> Ảnh 2: Play xanh lá)
+            var btn = row.querySelector('.toggle-status-btn');
+            if (btn) {
+                var rowId = row.id;
+                if (isSelling) {
+                    // Đang bán -> Biến thành Ảnh 1: Nút đỏ Ban
+                    btn.className = 'btn btn-light btn-sm text-danger border px-2 py-1 toggle-status-btn';
+                    btn.title = 'Ngừng bán';
+                    btn.innerHTML = '<i class="fa-solid fa-ban"></i>';
+                    btn.onclick = function() { toggleSellStatus(rowId, prodName, stock, true); };
+                } else {
+                    // Đang ngắt -> Biến thành Ảnh 2: Nút xanh Play
+                    btn.className = 'btn btn-light btn-sm text-success border px-2 py-1 toggle-status-btn';
+                    btn.title = 'Mở bán lại';
+                    btn.innerHTML = '<i class="fa-solid fa-play"></i>';
+                    btn.onclick = function() { toggleSellStatus(rowId, prodName, stock, false); };
+                }
+            }
+        }
+
+        function handleModalDeactivate() {
+            var row = document.getElementById('prod-' + currentSelectedProdId);
+            if (row) {
+                var isSelling = row.getAttribute('data-status') === 'active';
+                toggleSellStatus('prod-' + currentSelectedProdId, document.getElementById('modalProdTitle').innerText, 10, isSelling);
+                bootstrap.Modal.getInstance(document.getElementById('variantModal')).hide();
+            }
+        }
+
+        // Lọc danh sách
+        function applyFilter() {
+            var kw = document.getElementById('filterKeyword').value.toLowerCase().trim();
+            var cat = document.getElementById('filterCategory').value;
+            var st = document.getElementById('filterStatus').value;
+
+            var rows = document.querySelectorAll('#productTableBody tr');
+            var visible = 0;
+
+            rows.forEach(function(row) {
+                var rowCat = row.getAttribute('data-cat') || '';
+                var rowSt = row.getAttribute('data-status') || '';
+                var text = row.innerText.toLowerCase();
+
+                var matchKw = (kw === '' || text.includes(kw));
+                var matchCat = (cat === '' || rowCat === cat);
+                var matchSt = (st === '' || rowSt === st);
+
+                if (matchKw && matchCat && matchSt) {
+                    row.style.display = '';
+                    visible++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            document.getElementById('visibleCount').innerText = visible;
+        }
+
+        function resetFilter() {
+            document.getElementById('filterKeyword').value = '';
+            document.getElementById('filterCategory').value = '';
+            document.getElementById('filterStatus').value = '';
+            applyFilter();
+        }
+
+        // Modal tạo sản phẩm
+        function openCreateProductModal() {
+            var modal = new bootstrap.Modal(document.getElementById('createProductModal'));
+            modal.show();
+        }
+
+        function saveNewProduct() {
+            var name = document.getElementById('newProdName').value;
+            var code = document.getElementById('newProdCode').value;
+            if (!name || !code) {
+                alert('Vui lòng nhập đầy đủ tên và mã mẫu sản phẩm!');
+                return;
+            }
+            alert('Đã tạo mẫu sản phẩm: ' + name + ' (' + code + ') thành công!\nCác biến thể S/M/L/XL đã được khởi tạo tự động theo chuẩn A03.');
+            bootstrap.Modal.getInstance(document.getElementById('createProductModal')).hide();
+        }
+
+        function editProductA03() {
+            alert('Điều hướng sang màn hình A03 • Tạo / sửa sản phẩm và biến thể cho mẫu này.');
+        }
+
+        function exportProductList() {
+            alert('Đang trích xuất danh sách sản phẩm và tồn kho theo quyền hạn Admin...');
+        }
+    </script>
+}
+

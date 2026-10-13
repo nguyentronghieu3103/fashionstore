@@ -1,0 +1,31 @@
+:root {
+  /* Colors */
+  --base-bg: #F7F4EF;
+  --surface-bg: #FFFFFF;
+  --sub-bg: #EDE3D4;
+  --text-main: #201C1A;
+  --text-sub: #6B615A;
+  --border: #E7DFD5;
+  
+  --primary: #6F2438;
+  --primary-hover: #52172A;
+  --success: #276749;
+  --error: #B42318;
+
+  /* Typography */
+  --font-heading: 'Segoe UI', Arial, Helvetica, sans-serif;
+  --font-body: Arial, Helvetica, sans-serif;
+  
+  /* Geometry & Motion */
+  --radius: 8px;
+  --radius-sm: 6px;
+  --transition: 180ms ease;
+  --max-width: 1280px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition: 0ms;
+  }
+}
+

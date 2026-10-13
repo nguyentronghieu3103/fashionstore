@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Lighlife</title>
+    
+    <!-- Lighlife CSS -->
+    <link rel="stylesheet" href="~/css/lighlife-tokens.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/lighlife-ui.css" asp-append-version="true" />
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <header class="header flex items-center">
+        <div class="container flex items-center justify-between" style="width: 100%;">
+            <div class="nav-links flex gap-6" id="desktop-nav">
+                <a href="#">Sản phẩm</a>
+                <a href="#">Bộ sưu tập</a>
+                <a href="#">Hàng mới</a>
+            </div>
+            
+            <a href="/" class="logo">LIGHLIFE</a>
+            
+            <div class="flex items-center gap-4">
+                <a href="#" aria-label="Tìm kiếm"><i data-lucide="search" style="width: 20px; height: 20px;"></i></a>
+                <!-- Giao diện khách chưa đăng nhập / đã đăng nhập do backend xử lý, ở đây tĩnh -->
+                <a href="#" aria-label="Tài khoản"><i data-lucide="user" style="width: 20px; height: 20px;"></i></a>
+                <a href="#" aria-label="Giỏ hàng"><i data-lucide="shopping-bag" style="width: 20px; height: 20px;"></i></a>
+                <button type="button" class="mobile-menu-btn" aria-label="Menu" style="background:none; border:none; padding:0; cursor:pointer; color:var(--text-main);">
+                    <i data-lucide="menu" style="width: 24px; height: 24px;"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="mobile-nav" id="mobile-nav">
+            <a href="#">Sản phẩm</a>
+            <a href="#">Bộ sưu tập</a>
+            <a href="#">Hàng mới</a>
+        </div>
+    </header>
+
+    <main role="main">
+        @RenderBody()
+    </main>
+
+    <footer class="footer">
+        <div class="container grid grid-cols-4 gap-8">
+            <div class="footer-col">
+                <a href="/" class="logo" style="margin-bottom: 16px; display: block;">LIGHLIFE</a>
+                <p>Thương hiệu thời trang thanh lịch, hiện đại mang đến sự tự tin cho người mặc.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Mua Sắm</h4>
+                <a href="#">Thời trang Nữ</a>
+                <a href="#">Thời trang Nam</a>
+                <a href="#">Hàng mới về</a>
+                <a href="#">Bộ sưu tập</a>
+            </div>
+            <div class="footer-col">
+                <h4>Hỗ Trợ</h4>
+                <a href="#">Hướng dẫn chọn size</a>
+                <a href="#">Chính sách giao hàng</a>
+                <a href="#">Chính sách đổi trả</a>
+                <a href="#">Liên hệ</a>
+            </div>
+            <div class="footer-col">
+                <h4>Kết Nối</h4>
+                <div class="social-icons flex gap-4" style="margin-bottom: 16px;">
+                    <a href="#" aria-label="Facebook"><i data-lucide="facebook"></i></a>
+                    <a href="#" aria-label="Instagram"><i data-lucide="instagram"></i></a>
+                </div>
+                <p>Đăng ký nhận tin để cập nhật ưu đãi mới nhất.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Lighlife Scripts -->
+    <script src="~/js/lighlife-mock.js" asp-append-version="true"></script>
+    <script src="~/js/lighlife-ui.js" asp-append-version="true"></script>
+    
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

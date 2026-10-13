@@ -1,0 +1,374 @@
+@{
+    ViewData["Title"] = ViewData["Title"] ?? "Danh sách sản phẩm - LIGHT LIFE";
+}
+
+<!-- Link bổ sung CSS riêng cho Catalog Sản Phẩm -->
+<link rel="stylesheet" href="~/css/lightlife-products.css" asp-append-version="true" />
+
+<div class="ll-container">
+    <!-- 1. BREADCRUMB -->
+    <nav class="ll-breadcrumb" aria-label="Đường dẫn trang">
+        <a href="/" class="ll-breadcrumb-link">Trang chủ</a>
+        <i class="fa-solid fa-angle-right ll-breadcrumb-separator"></i>
+        <a href="/Products" class="ll-breadcrumb-link">Sản phẩm</a>
+        <i class="fa-solid fa-angle-right ll-breadcrumb-separator"></i>
+        <span class="ll-breadcrumb-current" id="llBreadcrumbCurrent">Tất Cả Sản Phẩm</span>
+    </nav>
+
+    <!-- 2. CATALOG HEADER & TOOLBAR -->
+    <div class="ll-catalog-header">
+        <div class="ll-catalog-toolbar">
+            <div class="ll-catalog-heading-wrap">
+                <h1 class="ll-catalog-title" id="llCatalogTitle">Tất Cả Sản Phẩm</h1>
+                <span class="ll-catalog-counter" id="llCatalogCount">Hiển thị 12 sản phẩm</span>
+            </div>
+
+            <div class="ll-catalog-actions">
+                <!-- Nút mở Drawer Lọc trên Mobile -->
+                <button type="button" class="ll-mobile-filter-btn" id="llMobileFilterBtn" aria-label="Mở bộ lọc">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>Bộ lọc</span>
+                    <span class="ll-filter-badge" id="llMobileFilterBadge" style="display: none;">0</span>
+                </button>
+
+                <!-- Dropdown Sắp xếp -->
+                <div class="ll-sort-wrap">
+                    <label for="llSortSelect" class="ll-sort-label">Sắp xếp:</label>
+                    <select id="llSortSelect" class="ll-sort-select" aria-label="Sắp xếp sản phẩm">
+                        <option value="newest">Mới nhất</option>
+                        <option value="price_asc">Giá: Thấp đến cao</option>
+                        <option value="price_desc">Giá: Cao đến thấp</option>
+                        <option value="bestseller">Bán chạy nhất</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. CHIP BỘ LỌC ĐANG ÁP DỤNG & XÓA TẤT CẢ -->
+        <div class="ll-active-filters-bar empty" id="llActiveChipsBar">
+            <div id="llActiveChips" style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <!-- Render tự động qua JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. LAYOUT CHÍNH: SIDEBAR 250PX + LƯỚI SẢN PHẨM -->
+    <div class="ll-catalog-layout">
+        <!-- SIDEBAR BỘ LỌC DESKTOP (250px) -->
+        <aside class="ll-catalog-sidebar" aria-label="Bộ lọc sản phẩm">
+            <!-- Nhóm 1: Danh mục -->
+            <div class="ll-filter-group">
+                <h3 class="ll-filter-heading">Danh Mục</h3>
+                <ul class="ll-filter-list">
+                    <li>
+                        <label class="ll-filter-item-label">
+                            <span class="ll-filter-radio-box">
+                                <input type="radio" name="cat_filter" value="all" checked />
+                                <span>Tất cả</span>
+                            </span>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="ll-filter-item-label">
+                            <span class="ll-filter-radio-box">
+                                <input type="radio" name="cat_filter" value="nu" />
+                                <span>Thời Trang Nữ</span>
+                            </span>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="ll-filter-item-label">
+                            <span class="ll-filter-radio-box">
+                                <input type="radio" name="cat_filter" value="nam" />
+                                <span>Thời Trang Nam</span>
+                            </span>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="ll-filter-item-label">
+                            <span class="ll-filter-radio-box">
+                                <input type="radio" name="cat_filter" value="phukien" />
+                                <span>Phụ Kiện</span>
+                            </span>
+                        </label>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Nhóm 2: Khoảng giá -->
+            <div class="ll-filter-group">
+                <h3 class="ll-filter-heading">Khoảng Giá</h3>
+                <ul class="ll-filter-list">
+                    <li>
+                        <label class="ll-filter-item-label">
+                            <span class="ll-filter-radio-box">
+                                <input type="radio" name="price_filter" value="all" checked />
+                                <span>Tất cả mức giá</span>
+                            </span>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="ll-filter-item-label">
+                            <span class="ll-filter-radio-box">
+                                <input type="radio" name="price_filter" value="under300" />
+                                <span>Dưới 300.000 đ</span>
+                            </span>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="ll-filter-item-label">
+                            <span class="ll-filter-radio-box">
+                                <input type="radio" name="price_filter" value="300-600" />
+                                <span>300.000 đ - 600.000 đ</span>
+                            </span>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="ll-filter-item-label">
+                            <span class="ll-filter-radio-box">
+                                <input type="radio" name="price_filter" value="600-1000" />
+                                <span>600.000 đ - 1.000.000 đ</span>
+                            </span>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="ll-filter-item-label">
+                            <span class="ll-filter-radio-box">
+                                <input type="radio" name="price_filter" value="over1000" />
+                                <span>Trên 1.000.000 đ</span>
+                            </span>
+                        </label>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Nhóm 3: Màu sắc -->
+            <div class="ll-filter-group">
+                <h3 class="ll-filter-heading">Màu Sắc</h3>
+                <div class="ll-swatches-grid">
+                    <button type="button" class="ll-color-swatch-btn" data-color="trang" style="background-color: #FFFFFF;" title="Trắng" aria-label="Màu Trắng"></button>
+                    <button type="button" class="ll-color-swatch-btn" data-color="den" style="background-color: #201C1A;" title="Đen" aria-label="Màu Đen"></button>
+                    <button type="button" class="ll-color-swatch-btn" data-color="be" style="background-color: #D6C3B1;" title="Be / Nâu" aria-label="Màu Be"></button>
+                    <button type="button" class="ll-color-swatch-btn" data-color="do" style="background-color: #6F2438;" title="Đỏ mận" aria-label="Màu Đỏ mận"></button>
+                    <button type="button" class="ll-color-swatch-btn" data-color="xanh" style="background-color: #4A6B82;" title="Xanh" aria-label="Màu Xanh"></button>
+                </div>
+            </div>
+
+            <!-- Nhóm 4: Kích cỡ (Size) -->
+            <div class="ll-filter-group">
+                <h3 class="ll-filter-heading">Kích Cỡ</h3>
+                <div class="ll-sizes-grid">
+                    <button type="button" class="ll-size-btn" data-size="S">S</button>
+                    <button type="button" class="ll-size-btn" data-size="M">M</button>
+                    <button type="button" class="ll-size-btn" data-size="L">L</button>
+                    <button type="button" class="ll-size-btn" data-size="XL">XL</button>
+                    <button type="button" class="ll-size-btn" data-size="Freesize" style="grid-column: span 2;">Freesize</button>
+                </div>
+            </div>
+
+            <!-- Nhóm 5: Trạng thái hàng -->
+            <div class="ll-filter-group">
+                <h3 class="ll-filter-heading">Tình Trạng</h3>
+                <label class="ll-filter-item-label">
+                    <span class="ll-filter-check-box">
+                        <input type="checkbox" name="stock_filter" id="llStockFilter" />
+                        <span>Chỉ còn hàng</span>
+                    </span>
+                </label>
+            </div>
+        </aside>
+
+        <!-- KHU VỰC CHÍNH: LƯỚI SẢN PHẨM & TRẠNG THÁI -->
+        <main class="ll-catalog-main">
+            <!-- Trạng thái Loading -->
+            <div class="ll-catalog-loading" id="llCatalogLoading">
+                <div class="ll-loading-spinner"></div>
+                <p style="color: var(--color-text-sub); font-size: 14px;">Đang tải danh sách sản phẩm...</p>
+            </div>
+
+            <!-- Trạng thái Không có kết quả (Empty State trang nhã) -->
+            <div class="ll-empty-state" id="llCatalogEmpty">
+                <p class="ll-empty-text">Không tìm thấy sản phẩm nào phù hợp với bộ lọc đã chọn.</p>
+                <button type="button" class="ll-btn ll-btn-secondary" onclick="clearAllFilters()">
+                    <i class="fa-solid fa-arrow-rotate-left"></i> Xóa tất cả bộ lọc
+                </button>
+            </div>
+
+            <!-- Trạng thái Lỗi tải (Error State) -->
+            <div class="ll-error-state" id="llCatalogError">
+                <p class="ll-error-title">Không thể tải dữ liệu sản phẩm</p>
+                <p class="ll-error-desc">Vui lòng kiểm tra kết nối mạng và thử lại.</p>
+                <button type="button" class="ll-btn ll-btn-secondary" onclick="renderCatalog()">
+                    <i class="fa-solid fa-arrow-rotate-right"></i> Thử lại
+                </button>
+            </div>
+
+            <!-- Lưới Sản Phẩm (3 cột Desktop, 2 cột Mobile) -->
+            <div class="ll-catalog-grid" id="llCatalogGrid">
+                <!-- Render động các card sản phẩm qua lightlife-products.js -->
+            </div>
+
+            <!-- Phân Trang (Pagination) -->
+            <div class="ll-pagination-wrap" id="llPaginationWrap">
+                <div class="ll-pagination-info" id="llPaginationInfo">
+                    Hiển thị 1 tới 6 trong 12 sản phẩm
+                </div>
+                <nav class="ll-pagination-nav" id="llPaginationNav" aria-label="Phân trang danh sách sản phẩm">
+                    <!-- Nút phân trang render qua JS -->
+                </nav>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- ==========================================================================
+     MOBILE FILTER DRAWER (Panel trượt từ bên trái cho Mobile / Tablet)
+     ========================================================================== -->
+<div class="ll-drawer-backdrop" id="llDrawerBackdrop"></div>
+<aside class="ll-filter-drawer" id="llFilterDrawer" aria-label="Bộ lọc di động">
+    <div class="ll-drawer-header">
+        <h2 class="ll-drawer-title">Bộ Lọc Sản Phẩm</h2>
+        <button type="button" class="ll-drawer-close" id="llDrawerCloseBtn" aria-label="Đóng bộ lọc">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <div class="ll-drawer-body">
+        <!-- Nhóm 1: Danh mục -->
+        <div class="ll-filter-group">
+            <h3 class="ll-filter-heading">Danh Mục</h3>
+            <ul class="ll-filter-list">
+                <li>
+                    <label class="ll-filter-item-label">
+                        <span class="ll-filter-radio-box">
+                            <input type="radio" name="cat_filter" value="all" checked />
+                            <span>Tất cả</span>
+                        </span>
+                    </label>
+                </li>
+                <li>
+                    <label class="ll-filter-item-label">
+                        <span class="ll-filter-radio-box">
+                            <input type="radio" name="cat_filter" value="nu" />
+                            <span>Thời Trang Nữ</span>
+                        </span>
+                    </label>
+                </li>
+                <li>
+                    <label class="ll-filter-item-label">
+                        <span class="ll-filter-radio-box">
+                            <input type="radio" name="cat_filter" value="nam" />
+                            <span>Thời Trang Nam</span>
+                        </span>
+                    </label>
+                </li>
+                <li>
+                    <label class="ll-filter-item-label">
+                        <span class="ll-filter-radio-box">
+                            <input type="radio" name="cat_filter" value="phukien" />
+                            <span>Phụ Kiện</span>
+                        </span>
+                    </label>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Nhóm 2: Khoảng giá -->
+        <div class="ll-filter-group">
+            <h3 class="ll-filter-heading">Khoảng Giá</h3>
+            <ul class="ll-filter-list">
+                <li>
+                    <label class="ll-filter-item-label">
+                        <span class="ll-filter-radio-box">
+                            <input type="radio" name="price_filter" value="all" checked />
+                            <span>Tất cả mức giá</span>
+                        </span>
+                    </label>
+                </li>
+                <li>
+                    <label class="ll-filter-item-label">
+                        <span class="ll-filter-radio-box">
+                            <input type="radio" name="price_filter" value="under300" />
+                            <span>Dưới 300.000 đ</span>
+                        </span>
+                    </label>
+                </li>
+                <li>
+                    <label class="ll-filter-item-label">
+                        <span class="ll-filter-radio-box">
+                            <input type="radio" name="price_filter" value="300-600" />
+                            <span>300.000 đ - 600.000 đ</span>
+                        </span>
+                    </label>
+                </li>
+                <li>
+                    <label class="ll-filter-item-label">
+                        <span class="ll-filter-radio-box">
+                            <input type="radio" name="price_filter" value="600-1000" />
+                            <span>600.000 đ - 1.000.000 đ</span>
+                        </span>
+                    </label>
+                </li>
+                <li>
+                    <label class="ll-filter-item-label">
+                        <span class="ll-filter-radio-box">
+                            <input type="radio" name="price_filter" value="over1000" />
+                            <span>Trên 1.000.000 đ</span>
+                        </span>
+                    </label>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Nhóm 3: Màu sắc -->
+        <div class="ll-filter-group">
+            <h3 class="ll-filter-heading">Màu Sắc</h3>
+            <div class="ll-swatches-grid">
+                <button type="button" class="ll-color-swatch-btn" data-color="trang" style="background-color: #FFFFFF;" title="Trắng" aria-label="Màu Trắng"></button>
+                <button type="button" class="ll-color-swatch-btn" data-color="den" style="background-color: #201C1A;" title="Đen" aria-label="Màu Đen"></button>
+                <button type="button" class="ll-color-swatch-btn" data-color="be" style="background-color: #D6C3B1;" title="Be / Nâu" aria-label="Màu Be"></button>
+                <button type="button" class="ll-color-swatch-btn" data-color="do" style="background-color: #6F2438;" title="Đỏ mận" aria-label="Màu Đỏ mận"></button>
+                <button type="button" class="ll-color-swatch-btn" data-color="xanh" style="background-color: #4A6B82;" title="Xanh" aria-label="Màu Xanh"></button>
+            </div>
+        </div>
+
+        <!-- Nhóm 4: Size -->
+        <div class="ll-filter-group">
+            <h3 class="ll-filter-heading">Kích Cỡ</h3>
+            <div class="ll-sizes-grid">
+                <button type="button" class="ll-size-btn" data-size="S">S</button>
+                <button type="button" class="ll-size-btn" data-size="M">M</button>
+                <button type="button" class="ll-size-btn" data-size="L">L</button>
+                <button type="button" class="ll-size-btn" data-size="XL">XL</button>
+                <button type="button" class="ll-size-btn" data-size="Freesize" style="grid-column: span 2;">Freesize</button>
+            </div>
+        </div>
+
+        <!-- Nhóm 5: Chỉ còn hàng -->
+        <div class="ll-filter-group">
+            <h3 class="ll-filter-heading">Tình Trạng</h3>
+            <label class="ll-filter-item-label">
+                <span class="ll-filter-check-box">
+                    <input type="checkbox" name="stock_filter" />
+                    <span>Chỉ còn hàng</span>
+                </span>
+            </label>
+        </div>
+    </div>
+
+    <!-- Nút hành động trong Drawer -->
+    <div class="ll-drawer-footer">
+        <button type="button" class="ll-btn ll-btn-secondary" id="llDrawerResetBtn">
+            Đặt lại
+        </button>
+        <button type="button" class="ll-btn ll-btn-primary" id="llDrawerApplyBtn">
+            Áp dụng
+        </button>
+    </div>
+</aside>
+
+@section Scripts {
+    <!-- Script Quản lý Catalog & Lọc Đa Chiều -->
+    <script src="~/js/lightlife-products.js" asp-append-version="true"></script>
+}
+

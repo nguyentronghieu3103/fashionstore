@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LIGHT LIFE - Thời Trang Nam Nữ & Phụ Kiện Cao Cấp</title>
+    
+    <!-- FontAwesome 6.5.1 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <!-- Storefront Design System CSS Tách Riêng -->
+    <link rel="stylesheet" href="wwwroot/css/lightlife-storefront.css" />
+</head>
+<body>
+    <!-- ==========================================================================
+         KHUNG 1: HEADER NAVIGATION
+         ========================================================================== -->
+    <header class="ll-header">
+        <div class="ll-container">
+            <div class="ll-header-inner">
+                <!-- 1.1. Logo Thương Hiệu LIGHT LIFE -->
+                <a class="ll-brand" href="storefront-home.html" title="LIGHT LIFE - Trang chủ">
+                    <img src="wwwroot/images/logo.png" alt="LIGHT LIFE Logo" class="ll-brand-img" />
+                    <div class="ll-brand-text">
+                        <span class="ll-brand-title">LIGHT LIFE</span>
+                        <span class="ll-brand-subtitle">FASHION STUDIO</span>
+                    </div>
+                </a>
+
+                <!-- 1.2. Menu Điều Hướng (Trang chủ, Sản phẩm, Hàng mới, Chính sách) -->
+                <nav>
+                    <ul class="ll-nav-list">
+                        <li>
+                            <a href="storefront-home.html" class="ll-nav-link active">
+                                <i class="fa-solid fa-house-chimney me-1" style="font-size: 13px;"></i> Trang chủ
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/Products" class="ll-nav-link">
+                                <i class="fa-solid fa-shirt me-1" style="font-size: 13px;"></i> Sản phẩm
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/Products?sort=newest" class="ll-nav-link">
+                                <i class="fa-solid fa-sparkles me-1" style="font-size: 13px;"></i> Hàng mới
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#policies" class="ll-nav-link">
+                                <i class="fa-solid fa-shield-halved me-1" style="font-size: 13px;"></i> Chính sách
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <!-- 1.3. Tiện ích: Tìm kiếm, Giỏ hàng có số lượng & Tài khoản -->
+                <div class="ll-header-actions">
+                    <!-- Form Tìm kiếm -->
+                    <div class="ll-search-wrapper">
+                        <form id="llSearchForm" class="ll-search-form" action="/Products" method="get">
+                            <input type="text" id="llSearchInput" name="search" class="ll-search-input" placeholder="Tìm trang phục, blazer..." aria-label="Tìm kiếm sản phẩm" />
+                            <button type="submit" class="ll-search-btn" title="Tìm kiếm" aria-label="Tìm kiếm">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Giỏ hàng có badge số lượng (Chưa đăng nhập vẫn dùng giỏ) -->
+                    <a href="/Cart" class="ll-cart-btn" id="llCartBtn" title="Xem giỏ hàng" aria-label="Giỏ hàng">
+                        <i class="fa-solid fa-bag-shopping" style="font-size: 18px;"></i>
+                        <span class="ll-cart-badge" id="llCartBadge">0</span>
+                    </a>
+
+                    <!-- Tài khoản: Chưa đăng nhập hiện Đăng nhập; Đã đăng nhập hiện Avatar/Tên + Menu -->
+                    <div class="ll-auth-area">
+                        <!-- Trạng thái CHƯA ĐĂNG NHẬP -->
+                        <a href="/Account/Login" class="ll-btn ll-btn-primary ll-btn-sm" id="llLoginBtn">
+                            <i class="fa-solid fa-arrow-right-to-bracket"></i> Đăng nhập
+                        </a>
+
+                        <!-- Trạng thái ĐÃ ĐĂNG NHẬP (Bật qua auth hook) -->
+                        <div class="ll-user-wrapper" id="llUserWrapper" style="display: none;">
+                            <button type="button" class="ll-user-btn" onclick="LightLifeAuth.toggleDropdown();" aria-expanded="false" aria-label="Menu tài khoản">
+                                <div class="ll-user-avatar" id="llUserAvatar">K</div>
+                                <span class="ll-user-name" id="llUserName">Khách hàng</span>
+                                <i class="fa-solid fa-angle-down" style="font-size: 11px; color: var(--color-text-sub);"></i>
+                            </button>
+
+                            <!-- Dropdown Menu tài khoản (Không tạo dashboard riêng) -->
+                            <div class="ll-dropdown-menu" id="llUserDropdownMenu">
+                                <a href="storefront-orders.html" class="ll-dropdown-item">
+                                    <i class="fa-solid fa-user"></i> Tài khoản của tôi
+                                </a>
+                                <a href="storefront-orders.html" class="ll-dropdown-item">
+                                    <i class="fa-solid fa-box-open"></i> Đơn hàng của tôi
+                                </a>
+                                <div class="ll-dropdown-divider"></div>
+                                <a href="javascript:void(0)" class="ll-dropdown-item text-danger" onclick="LightLifeAuth.logout();">
+                                    <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nút mở Menu Di Động -->
+                    <button type="button" class="ll-mobile-toggle" id="llMobileToggle" aria-label="Mở menu di động">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Drawer Menu Di Động -->
+            <div class="ll-mobile-nav" id="llMobileNav">
+                <a href="storefront-home.html" class="ll-nav-link active">Trang chủ</a>
+                <a href="storefront-products.html" class="ll-nav-link">Sản phẩm</a>
+                <a href="storefront-products.html?sort=newest" class="ll-nav-link">Hàng mới</a>
+                <a href="storefront-orders.html" class="ll-nav-link">Đơn hàng của tôi</a>
+                <a href="#policies" class="ll-nav-link">Chính sách</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- ==========================================================================
+             KHUNG 2: HERO GIỚI THIỆU BỘ SƯU TẬP
+             ========================================================================== -->
+        <section class="ll-hero">
+            <div class="ll-container">
+                <div class="ll-hero-grid">
+                    <div>
+                        <span class="ll-hero-badge">Bộ Sưu Tập Mới 2026</span>
+                        <h1 class="ll-hero-title">Phong Cách Thời Trang Tinh Tế & Hiện Đại</h1>
+                        <p class="ll-hero-desc">
+                            Khám phá các thiết kế mới nhất với chất liệu cao cấp, đường may tỉ mỉ và phong cách dẫn đầu xu hướng. Tự tin khẳng định khí chất trong mọi khoảnh khắc thường nhật.
+                        </p>
+                        <div class="ll-hero-actions">
+                            <a href="/Products" class="ll-btn ll-btn-primary">
+                                <i class="fa-solid fa-compass"></i> Khám phá ngay
+                            </a>
+                            <a href="/Products?sort=newest" class="ll-btn ll-btn-secondary">
+                                <i class="fa-solid fa-sparkles"></i> Hàng mới về
+                            </a>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="ll-hero-banner-card">
+                            <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1000&auto=format&fit=crop" 
+                                 alt="Bộ sưu tập thời trang Light Life 2026" 
+                                 class="ll-hero-img" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+             KHUNG 3: DANH MỤC THỜI TRANG (Nam / Nữ / Phụ kiện)
+             ========================================================================== -->
+        <section class="ll-section">
+            <div class="ll-container">
+                <div class="ll-section-header">
+                    <div class="ll-section-title-wrap">
+                        <span class="ll-section-eyebrow">Khám Phá Theo Nhóm Hàng</span>
+                        <h2 class="ll-section-title">Danh Mục Yêu Thích</h2>
+                    </div>
+                </div>
+
+                <div class="ll-categories-grid">
+                    <a href="/Products?category=nu" class="ll-category-card" title="Xem thời trang nữ">
+                        <img src="https://images.unsplash.com/photo-1550639525-c97d455acf70?q=80&w=800&auto=format&fit=crop" 
+                             alt="Thời Trang Nữ" 
+                             class="ll-category-img" 
+                             loading="lazy" />
+                        <div class="ll-category-overlay">
+                            <h3 class="ll-category-name">Thời Trang Nữ</h3>
+                            <span class="ll-category-sub">Khám phá bộ sưu tập <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    </a>
+
+                    <a href="/Products?category=nam" class="ll-category-card" title="Xem thời trang nam">
+                        <img src="https://images.unsplash.com/photo-1617137968427-85924c800a22?q=80&w=800&auto=format&fit=crop" 
+                             alt="Thời Trang Nam" 
+                             class="ll-category-img" 
+                             loading="lazy" />
+                        <div class="ll-category-overlay">
+                            <h3 class="ll-category-name">Thời Trang Nam</h3>
+                            <span class="ll-category-sub">Khám phá bộ sưu tập <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    </a>
+
+                    <a href="/Products?category=phukien" class="ll-category-card" title="Xem phụ kiện">
+                        <img src="https://images.unsplash.com/photo-1591561954557-26941169b49e?q=80&w=800&auto=format&fit=crop" 
+                             alt="Phụ Kiện Thời Trang" 
+                             class="ll-category-img" 
+                             loading="lazy" />
+                        <div class="ll-category-overlay">
+                            <h3 class="ll-category-name">Phụ Kiện</h3>
+                            <span class="ll-category-sub">Khám phá bộ sưu tập <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+             KHUNG 4: HÀNG MỚI VỀ (Sản phẩm mới 4:5, link Xem tất cả màu #6F2438)
+             ========================================================================== -->
+        <section class="ll-section" style="padding-top: 0;">
+            <div class="ll-container">
+                <div class="ll-section-header">
+                    <div class="ll-section-title-wrap">
+                        <span class="ll-section-eyebrow">Thiết Kế Mới Nhất</span>
+                        <h2 class="ll-section-title">Hàng Mới Về</h2>
+                    </div>
+                    <a href="/Products?sort=newest" class="ll-link-all">
+                        Xem tất cả <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="ll-products-grid" id="llNewArrivalsGrid">
+                    <!-- Được render tự động qua JS hoặc SSR -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+             KHUNG 5: SẢN PHẨM BÁN CHẠY (Best Sellers)
+             ========================================================================== -->
+        <section class="ll-section" style="background-color: #F1ECE3; border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);">
+            <div class="ll-container">
+                <div class="ll-section-header">
+                    <div class="ll-section-title-wrap">
+                        <span class="ll-section-eyebrow">Được Yêu Thích Nhất</span>
+                        <h2 class="ll-section-title">Sản Phẩm Bán Chạy</h2>
+                    </div>
+                    <a href="/Products?filter=bestseller" class="ll-link-all">
+                        Xem tất cả <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="ll-products-grid" id="llBestSellersGrid">
+                    <!-- Được render tự động qua JS hoặc SSR -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================================================
+             KHUNG 6: THÔNG TIN CHÍNH SÁCH
+             ========================================================================== -->
+        <section class="ll-section" id="policies">
+            <div class="ll-container">
+                <div class="ll-section-header" style="justify-content: center; text-align: center; margin-bottom: 40px;">
+                    <div class="ll-section-title-wrap">
+                        <span class="ll-section-eyebrow">Cam Kết Khách Hàng</span>
+                        <h2 class="ll-section-title">Chính Sách & Dịch Vụ Của Light Life</h2>
+                    </div>
+                </div>
+
+                <div class="ll-policies-grid">
+                    <div class="ll-policy-card">
+                        <div class="ll-policy-icon-box">
+                            <i class="fa-solid fa-truck-fast"></i>
+                        </div>
+                        <h3 class="ll-policy-title">Giao Hàng Toàn Quốc</h3>
+                        <p class="ll-policy-desc">
+                            Miễn phí giao hàng cho đơn từ 500.000 đ. Nhận hàng kiểm tra thanh toán COD hoặc chuyển khoản.
+                        </p>
+                    </div>
+
+                    <div class="ll-policy-card">
+                        <div class="ll-policy-icon-box">
+                            <i class="fa-solid fa-arrow-rotate-left"></i>
+                        </div>
+                        <h3 class="ll-policy-title">Đổi Trả Trong 7 Ngày</h3>
+                        <p class="ll-policy-desc">
+                            Hỗ trợ đổi size hoặc đổi mẫu linh hoạt và tiện lợi nếu sản phẩm còn nguyên tem mác.
+                        </p>
+                    </div>
+
+                    <div class="ll-policy-card">
+                        <div class="ll-policy-icon-box">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <h3 class="ll-policy-title">Cam Kết Chất Lượng 100%</h3>
+                        <p class="ll-policy-desc">
+                            Chất liệu vải tinh tuyển cao cấp với tiêu chuẩn may tỉ mỉ, phom dáng chuẩn mực người Việt.
+                        </p>
+                    </div>
+
+                    <div class="ll-policy-card">
+                        <div class="ll-policy-icon-box">
+                            <i class="fa-solid fa-headset"></i>
+                        </div>
+                        <h3 class="ll-policy-title">Tư Vấn Tận Tâm 24/7</h3>
+                        <p class="ll-policy-desc">
+                            Hotline 1900 6868 luôn sẵn sàng hỗ trợ chọn size, tư vấn phối đồ và theo dõi hành trình đơn hàng.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ==========================================================================
+         KHUNG 7: FOOTER
+         ========================================================================== -->
+    <footer class="ll-footer">
+        <div class="ll-container">
+            <div class="ll-footer-grid">
+                <div>
+                    <span class="ll-footer-brand-title">LIGHT LIFE</span>
+                    <span class="ll-footer-brand-subtitle">FASHION STUDIO</span>
+                    <p class="ll-footer-desc">
+                        Thương hiệu thời trang cao cấp Light Life mang đến nguồn cảm hứng thanh lịch, hiện đại với chất liệu tinh tuyển và form dáng chuẩn mực cho mọi khoảnh khắc.
+                    </p>
+                    <div class="ll-footer-contact">
+                        <div class="ll-footer-contact-item">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span>123 Đường Thời Trang, Quận 1, TP. Hồ Chí Minh</span>
+                        </div>
+                        <div class="ll-footer-contact-item">
+                            <i class="fa-solid fa-phone"></i>
+                            <span>Hotline mua hàng: <strong style="color: #FFFFFF;">1900 6868</strong></span>
+                        </div>
+                        <div class="ll-footer-contact-item">
+                            <i class="fa-solid fa-envelope"></i>
+                            <span>Email: cskh@lightlife.vn</span>
+                        </div>
+                    </div>
+                    <div class="ll-footer-socials">
+                        <a href="#" class="ll-social-btn" title="Facebook" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="ll-social-btn" title="Instagram" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="ll-social-btn" title="TikTok" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+                        <a href="#" class="ll-social-btn" title="YouTube" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="ll-footer-col-title">Chính Sách & Hỗ Trợ</h4>
+                    <ul class="ll-footer-links">
+                        <li><a href="#policies" class="ll-footer-link"><i class="fa-solid fa-angle-right" style="font-size: 11px;"></i> Giao hàng toàn quốc & COD</a></li>
+                        <li><a href="#policies" class="ll-footer-link"><i class="fa-solid fa-angle-right" style="font-size: 11px;"></i> Chính sách đổi trả trong 7 ngày</a></li>
+                        <li><a href="#policies" class="ll-footer-link"><i class="fa-solid fa-angle-right" style="font-size: 11px;"></i> Cam kết chất lượng 100%</a></li>
+                        <li><a href="#" class="ll-footer-link"><i class="fa-solid fa-angle-right" style="font-size: 11px;"></i> Hướng dẫn chọn size chi tiết</a></li>
+                        <li><a href="#" class="ll-footer-link"><i class="fa-solid fa-angle-right" style="font-size: 11px;"></i> Bảo mật thông tin khách hàng</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="ll-footer-col-title">Về Light Life</h4>
+                    <ul class="ll-footer-links">
+                        <li><a href="#" class="ll-footer-link"><i class="fa-solid fa-angle-right" style="font-size: 11px;"></i> Về chúng tôi</a></li>
+                        <li><a href="/Products?sort=newest" class="ll-footer-link"><i class="fa-solid fa-angle-right" style="font-size: 11px;"></i> Bộ sưu tập 2026</a></li>
+                        <li><a href="#" class="ll-footer-link"><i class="fa-solid fa-angle-right" style="font-size: 11px;"></i> Hệ thống cửa hàng toàn quốc</a></li>
+                        <li><a href="#policies" class="ll-footer-link"><i class="fa-solid fa-angle-right" style="font-size: 11px;"></i> Cam kết dịch vụ khách hàng</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="ll-footer-bottom">
+                <span>&copy; 2026 LIGHT LIFE FASHION STUDIO. Bản quyền đã được bảo lưu.</span>
+                <span>Thiết kế tiêu chuẩn UI/UX Khách hàng.</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Storefront Core JS Tách Riêng -->
+    <script src="wwwroot/js/lightlife-storefront.js"></script>
+</body>
+</html>
+

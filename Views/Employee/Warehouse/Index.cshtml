@@ -1,0 +1,1724 @@
+﻿@{
+    ViewData["Title"] = "Công việc kho";
+}
+
+@section Styles {
+    <style>
+        .warehouse-page {
+            max-width: 1260px;
+            margin: 0 auto;
+        }
+
+        .wh-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+            padding: 1.25rem 1.4rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .section-header {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #4b5563;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #f3f4f6;
+            padding-bottom: 0.6rem;
+        }
+
+        /* 4 KPI card gọn gàng, không giật */
+        .kpi-stat-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            transition: border-color 0.15s ease, background-color 0.15s ease;
+            cursor: pointer;
+            height: 100%;
+        }
+
+        .kpi-stat-card:hover {
+            border-color: #18181b;
+            background-color: #fafbfc;
+        }
+
+        .kpi-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .kpi-val {
+            font-size: 1.65rem;
+            font-weight: 700;
+            color: #111827;
+            line-height: 1.2;
+            margin-top: 0.25rem;
+        }
+
+        .quick-btn {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            color: #374151;
+            padding: 0.45rem 0.95rem;
+            border-radius: 30px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .quick-btn:hover {
+            border-color: #18181b;
+            color: #18181b;
+            background: #f4f4f5;
+        }
+
+        /* Bảng dữ liệu chuẩn */
+        .clean-table th {
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: #6b7280;
+            background: #fafafa;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 0.75rem 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .clean-table td {
+            font-size: 0.86rem;
+            padding: 0.8rem 0.85rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .clean-table tbody tr:hover {
+            background-color: #fafbfc;
+        }
+
+        .sku-link {
+            font-family: monospace;
+            font-weight: 700;
+            color: #18181b;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .sku-link:hover {
+            color: #c5a880;
+            text-decoration: underline;
+        }
+
+        .product-thumb-box {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: #f4f5f7;
+            border: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .nav-tabs-clean .nav-link {
+            border: none;
+            color: #6b7280;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 0.45rem 0.85rem;
+            border-radius: 6px;
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+
+        .nav-tabs-clean .nav-link:hover {
+            color: #18181b;
+            background: #f4f4f5;
+        }
+
+        .nav-tabs-clean .nav-link.active {
+            color: #ffffff;
+            background: #18181b;
+        }
+
+        .history-row {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .history-row:last-child {
+            border-bottom: none;
+        }
+    </style>
+}
+
+<div class="warehouse-page">
+
+    <!-- ============================================================== -->
+    <!-- 1. MÀN HÌNH: CÔNG VIỆC KHO -->
+    <!-- ============================================================== -->
+    <div id="view-n08-section">
+        <!-- KHUNG CHÀO & ĐIỀU HƯỚNG -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <a asp-area="Employee" asp-controller="Dashboard" asp-action="Index" class="text-decoration-none text-muted small me-1">
+                        <i class="fa-solid fa-arrow-left me-1"></i>Tổng quan ca
+                    </a>
+                    <span class="text-muted">/</span>
+                    <h4 class="fw-bold mb-0 text-dark">Công việc kho</h4>
+                </div>
+                <p class="text-muted small mb-0">
+                    Nhân viên: <strong class="text-dark">Lê Minh Nhật (NV-0284)</strong> · Kho: <strong class="text-dark">Kho Cửa Hàng (Tầng 1)</strong>
+                </p>
+            </div>
+
+            <!-- Nút tác vụ nhanh -->
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-outline-dark btn-sm rounded-pill px-3 py-2 fw-semibold" onclick="switchWarehouseView('stock')">
+                    <i class="fa-solid fa-boxes-stacked me-1"></i>Tra cứu tồn kho
+                </button>
+                <button type="button" class="btn btn-dark btn-sm rounded-pill px-3 py-2 fw-semibold" onclick="switchWarehouseView('imports')">
+                    <i class="fa-solid fa-plus me-1"></i>Tạo phiếu nhập
+                </button>
+            </div>
+        </div>
+
+        <!-- CHỈ SỐ KPI KHO: 4 Card tinh gọn, không mô tả thừa -->
+        <div class="row g-3 mb-3">
+            <div class="col-6 col-lg-3">
+                <div class="kpi-stat-card" onclick="scrollToLowStockSection()">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="kpi-label">SKU dưới ngưỡng</span>
+                        <i class="fa-solid fa-triangle-exclamation text-warning" style="font-size: 0.9rem;"></i>
+                    </div>
+                    <div class="kpi-val text-warning-emphasis">4 <span class="fs-6 fw-normal text-muted">mã</span></div>
+                </div>
+            </div>
+
+            <div class="col-6 col-lg-3">
+                <div class="kpi-stat-card" onclick="filterSlipTab('import')">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="kpi-label">Phiếu nhập chờ nhận</span>
+                        <i class="fa-solid fa-box text-primary" style="font-size: 0.9rem;"></i>
+                    </div>
+                    <div class="kpi-val text-primary">2 <span class="fs-6 fw-normal text-muted">phiếu</span></div>
+                </div>
+            </div>
+
+            <div class="col-6 col-lg-3">
+                <div class="kpi-stat-card" onclick="filterSlipTab('export')">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="kpi-label">Phiếu xuất chờ xử lý</span>
+                        <i class="fa-solid fa-truck-ramp-box text-info" style="font-size: 0.9rem;"></i>
+                    </div>
+                    <div class="kpi-val text-dark">1 <span class="fs-6 fw-normal text-muted">phiếu</span></div>
+                </div>
+            </div>
+
+            <div class="col-6 col-lg-3">
+                <div class="kpi-stat-card" onclick="filterSlipTab('audit')">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="kpi-label">Đợt kiểm kê mở</span>
+                        <i class="fa-solid fa-clipboard-check text-success" style="font-size: 0.9rem;"></i>
+                    </div>
+                    <div class="kpi-val text-success">1 <span class="fs-6 fw-normal text-muted">đợt</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- THANH THAO TÁC NHANH -->
+        <div class="wh-card p-3 mb-3">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <span class="small fw-bold text-dark me-1"><i class="fa-solid fa-bolt me-1 text-warning"></i>Thao tác:</span>
+                    <button type="button" class="quick-btn" onclick="switchWarehouseView('stock')">
+                        <i class="fa-solid fa-magnifying-glass"></i>Tra tồn kho & Lịch sử
+                    </button>
+                    <button type="button" class="quick-btn" onclick="switchWarehouseView('imports')">
+                        <i class="fa-solid fa-arrow-down"></i>Quản lý phiếu nhập
+                    </button>
+                    <button type="button" class="quick-btn" onclick="openCreateSlipModal('export')">
+                        <i class="fa-solid fa-arrow-up"></i>Tạo phiếu xuất
+                    </button>
+                    <button type="button" class="quick-btn" onclick="openCreateSlipModal('audit')">
+                        <i class="fa-solid fa-list-check"></i>Mở kiểm kê
+                    </button>
+                </div>
+
+                <div class="input-group input-group-sm" style="max-width: 250px;">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" id="slipSearchInput" class="form-control border-start-0" placeholder="Tìm mã chứng từ..." oninput="handleSearchSlips()" />
+                </div>
+            </div>
+        </div>
+
+        <!-- DANH SÁCH PHIẾU CẦN XỬ LÝ (Không có đối tác, không có mã kệ) -->
+        <div class="wh-card mb-3">
+            <div class="d-flex flex-wrap justify-content-between align-items-center pb-2 mb-2 border-bottom gap-2">
+                <span class="section-header border-0 mb-0 p-0">Phiếu kho cần xử lý</span>
+
+                <!-- Tabs lọc phân loại -->
+                <ul class="nav nav-tabs-clean gap-1" id="slipFilterTabs">
+                    <li class="nav-item">
+                        <button class="nav-link active" onclick="applySlipTab('all', this)">Tất cả (4)</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" onclick="applySlipTab('import', this)">Phiếu nhập (2)</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" onclick="applySlipTab('export', this)">Phiếu xuất (1)</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" onclick="applySlipTab('audit', this)">Kiểm kê (1)</button>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table clean-table mb-0 align-middle" id="slipTable">
+                    <thead>
+                        <tr>
+                            <th>Mã chứng từ</th>
+                            <th>Loại phiếu</th>
+                            <th>Nội dung</th>
+                            <th>Số lượng mặt hàng</th>
+                            <th>Hạn xử lý</th>
+                            <th>Trạng thái</th>
+                            <th class="text-end">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="slipTableBody">
+                        <tr class="slip-row" data-type="import" data-search="PNK-2026-042 Vải lụa Satin">
+                            <td><span class="font-monospace fw-bold text-dark">PNK-2026-042</span></td>
+                            <td><span class="badge bg-primary-subtle text-primary border border-primary-subtle"><i class="fa-solid fa-arrow-down me-1"></i>Nhập kho</span></td>
+                            <td><div class="fw-semibold text-dark">Vải lụa Satin & Phụ liệu may</div></td>
+                            <td><strong>40 cây vải</strong> <small class="text-muted">(1.200m)</small></td>
+                            <td><small class="text-danger fw-semibold">Trước 12:00</small></td>
+                            <td><span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">Chờ kiểm đếm</span></td>
+                            <td class="text-end">
+                                <button type="button" class="btn btn-sm btn-dark rounded-pill px-3" onclick="openSlipActionModal('PNK-2026-042', 'import')">Kiểm đếm</button>
+                            </td>
+                        </tr>
+                        <tr class="slip-row" data-type="import" data-search="PNK-2026-041 Áo Tweed Đầm">
+                            <td><span class="font-monospace fw-bold text-dark">PNK-2026-041</span></td>
+                            <td><span class="badge bg-primary-subtle text-primary border border-primary-subtle"><i class="fa-solid fa-arrow-down me-1"></i>Điều chuyển</span></td>
+                            <td><div class="fw-semibold text-dark">Bổ sung hàng Thu Đông đợt 2</div></td>
+                            <td><strong>25 sản phẩm</strong> <small class="text-muted">(Blazer & Đầm)</small></td>
+                            <td><small class="text-secondary">Hôm nay</small></td>
+                            <td><span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">Chờ kiểm đếm</span></td>
+                            <td class="text-end">
+                                <button type="button" class="btn btn-sm btn-dark rounded-pill px-3" onclick="openSlipActionModal('PNK-2026-041', 'import_transfer')">Kiểm đếm</button>
+                            </td>
+                        </tr>
+                        <tr class="slip-row" data-type="export" data-search="PXK-2026-018 Hàng lỗi cúc khóa">
+                            <td><span class="font-monospace fw-bold text-dark">PXK-2026-018</span></td>
+                            <td><span class="badge bg-info-subtle text-info-emphasis border border-info-subtle"><i class="fa-solid fa-arrow-up me-1"></i>Xuất sửa lỗi</span></td>
+                            <td><div class="fw-semibold text-dark">Hàng lỗi cúc & khóa kéo từ khách đổi</div></td>
+                            <td><strong>3 sản phẩm</strong></td>
+                            <td><small class="text-muted">Trước 17:00</small></td>
+                            <td><span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">Chờ đóng gói</span></td>
+                            <td class="text-end">
+                                <button type="button" class="btn btn-sm btn-outline-dark rounded-pill px-3" onclick="openSlipActionModal('PXK-2026-018', 'export')">Xuất kho</button>
+                            </td>
+                        </tr>
+                        <tr class="slip-row" data-type="audit" data-search="PKK-2026-005 Kiểm kê Áo khoác Blazer">
+                            <td><span class="font-monospace fw-bold text-dark">PKK-2026-005</span></td>
+                            <td><span class="badge bg-success-subtle text-success border border-success-subtle"><i class="fa-solid fa-clipboard-check me-1"></i>Kiểm kê</span></td>
+                            <td><div class="fw-semibold text-dark">Kiểm kê định kỳ Áo khoác & Blazer</div></td>
+                            <td><strong>48 / 50 cái</strong> <small class="text-danger fw-semibold">(Lệch -2)</small></td>
+                            <td><small class="text-warning-emphasis fw-semibold">Đang kiểm</small></td>
+                            <td><span class="badge bg-info-subtle text-info border border-info-subtle">Đang kiểm kê</span></td>
+                            <td class="text-end">
+                                <button type="button" class="btn btn-sm btn-outline-success rounded-pill px-3" onclick="openSlipActionModal('PKK-2026-005', 'audit')">Tiếp tục</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- BẢNG BIẾN THỂ SẮP HẾT HÀNG -->
+        <div class="wh-card" id="lowStockSection">
+            <div class="section-header">
+                <span>Biến thể sắp hết hàng & Cần bổ sung</span>
+                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fw-semibold">4 biến thể dưới ngưỡng</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table clean-table mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th>Sản phẩm / Biến thể</th>
+                            <th>Mã SKU</th>
+                            <th class="text-center">Tồn bán được</th>
+                            <th class="text-center">Hàng lỗi</th>
+                            <th class="text-center">Giữ Online</th>
+                            <th class="text-center">Định mức</th>
+                            <th class="text-end">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="fw-bold text-dark">Áo Blazer Linen Signature</div>
+                                <div class="text-muted small">Be / Size XS</div>
+                            </td>
+                            <td><span class="sku-link" onclick="inspectSkuInStock('BLZ-BE-XS')">BLZ-BE-XS</span></td>
+                            <td class="text-center"><span class="badge bg-danger text-white fw-bold">0 cái</span></td>
+                            <td class="text-center text-muted">0</td>
+                            <td class="text-center text-primary fw-semibold">2</td>
+                            <td class="text-center text-muted">5</td>
+                            <td class="text-end">
+                                <button type="button" class="btn btn-sm btn-outline-dark rounded-pill px-2 py-1 small" onclick="proposeRestock('BLZ-BE-XS', 'Áo Blazer Linen (Be/XS)', 10)">
+                                    Đề xuất nhập
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="fw-bold text-dark">Áo Khoác Dạ Tweed Tay Lỡ</div>
+                                <div class="text-muted small">Đen / Size M</div>
+                            </td>
+                            <td><span class="sku-link" onclick="inspectSkuInStock('TWD-BLK-M')">TWD-BLK-M</span></td>
+                            <td class="text-center"><span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fw-bold">2 cái</span></td>
+                            <td class="text-center text-danger fw-semibold">1</td>
+                            <td class="text-center text-primary fw-semibold">1</td>
+                            <td class="text-center text-muted">6</td>
+                            <td class="text-end">
+                                <button type="button" class="btn btn-sm btn-outline-dark rounded-pill px-2 py-1 small" onclick="proposeRestock('TWD-BLK-M', 'Áo Dạ Tweed (Đen/M)', 15)">
+                                    Đề xuất nhập
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="fw-bold text-dark">Đầm Lụa Satin Cúp Ngực</div>
+                                <div class="text-muted small">Đỏ rượu / Size M</div>
+                            </td>
+                            <td><span class="sku-link" onclick="inspectSkuInStock('DRS-RED-M')">DRS-RED-M</span></td>
+                            <td class="text-center"><span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fw-bold">2 cái</span></td>
+                            <td class="text-center text-muted">0</td>
+                            <td class="text-center text-primary fw-semibold">2</td>
+                            <td class="text-center text-muted">5</td>
+                            <td class="text-end">
+                                <button type="button" class="btn btn-sm btn-outline-dark rounded-pill px-2 py-1 small" onclick="proposeRestock('DRS-RED-M', 'Đầm Satin (Đỏ rượu/M)', 8)">
+                                    Đề xuất nhập
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="fw-bold text-dark">Quần Âu Ống Suông Lưng Cao</div>
+                                <div class="text-muted small">Kem / Size S</div>
+                            </td>
+                            <td><span class="sku-link" onclick="inspectSkuInStock('PNT-CRM-S')">PNT-CRM-S</span></td>
+                            <td class="text-center"><span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fw-bold">3 cái</span></td>
+                            <td class="text-center text-muted">0</td>
+                            <td class="text-center text-muted">0</td>
+                            <td class="text-center text-muted">8</td>
+                            <td class="text-end">
+                                <button type="button" class="btn btn-sm btn-outline-dark rounded-pill px-2 py-1 small" onclick="proposeRestock('PNT-CRM-S', 'Quần Âu (Kem/S)', 12)">
+                                    Đề xuất nhập
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 2. MÀN HÌNH: TRA CỨU TỒN KHO & LỊCH SỬ (Đã bỏ nhãn N09) -->
+    <!-- ============================================================== -->
+    <div id="view-stock-section" class="d-none">
+        <!-- ĐIỀU HƯỚNG QUAY VỀ -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 fw-semibold" onclick="switchWarehouseView('tasks')">
+                        <i class="fa-solid fa-arrow-left me-1"></i>Quay lại Công việc kho
+                    </button>
+                    <span class="text-muted">/</span>
+                    <h4 class="fw-bold mb-0 text-dark">Tra cứu tồn kho & Lịch sử</h4>
+                </div>
+                <div class="text-muted small">
+                    <span>Kho: <strong class="text-dark">Kho Cửa Hàng (Tầng 1)</strong></span>
+                    <span class="mx-2">·</span>
+                    <span>Cập nhật: <strong class="text-dark">Thời gian thực</strong></span>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-dark btn-sm rounded-pill px-3 py-2 fw-semibold" onclick="switchWarehouseView('imports')">
+                    <i class="fa-solid fa-plus me-1"></i>Tạo phiếu nhập
+                </button>
+            </div>
+        </div>
+
+        <!-- BỘ LỌC TỒN KHO -->
+        <div class="wh-card mb-3 p-3">
+            <div class="row g-2 align-items-center">
+                <div class="col-12 col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <input type="text" id="filterKeyword" class="form-control border-start-0" placeholder="Tên sản phẩm, mã SKU, barcode..." oninput="applyStockFilters()" />
+                        <button class="btn btn-outline-secondary" type="button" title="Quét barcode" onclick="triggerBarcodeScan()">
+                            <i class="fa-solid fa-barcode"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-2">
+                    <select id="filterCategory" class="form-select" onchange="applyStockFilters()">
+                        <option value="">Tất cả danh mục</option>
+                        <option value="Blazer">Áo Blazer</option>
+                        <option value="Tweed">Áo Dạ Tweed</option>
+                        <option value="Đầm">Đầm lụa</option>
+                        <option value="Quần">Quần âu</option>
+                    </select>
+                </div>
+
+                <div class="col-6 col-md-2">
+                    <select id="filterColor" class="form-select" onchange="applyStockFilters()">
+                        <option value="">Tất cả màu</option>
+                        <option value="Be">Be</option>
+                        <option value="Đen">Đen</option>
+                        <option value="Đỏ rượu">Đỏ rượu</option>
+                        <option value="Kem">Kem</option>
+                    </select>
+                </div>
+
+                <div class="col-6 col-md-1">
+                    <select id="filterSize" class="form-select" onchange="applyStockFilters()">
+                        <option value="">Size</option>
+                        <option value="XS">XS</option>
+                        <option value="S">S</option>
+                        <option value="M">M</option>
+                    </select>
+                </div>
+
+                <div class="col-6 col-md-2">
+                    <select id="filterStatus" class="form-select" onchange="applyStockFilters()">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="low">Dưới ngưỡng</option>
+                        <option value="out">Hết hàng (Khả dụng 0)</option>
+                        <option value="reserved">Đang có giữ chỗ</option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-1 text-end">
+                    <button type="button" class="btn btn-outline-secondary w-100" onclick="resetStockFilters()" title="Đặt lại">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- BẢNG TỒN KHO CHI TIẾT -->
+        <div class="wh-card p-0 overflow-hidden mb-3">
+            <div class="table-responsive">
+                <table class="table clean-table mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th style="width: 44px;">#</th>
+                            <th>Mã SKU</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Màu</th>
+                            <th class="text-center">Size</th>
+                            <th class="text-center">Tồn bán được</th>
+                            <th class="text-center">Giữ chỗ</th>
+                            <th class="text-center bg-light fw-bold text-dark">Khả dụng</th>
+                            <th class="text-center">Hàng lỗi</th>
+                            <th class="text-end" style="width: 90px;">Lịch sử</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stockTableBody">
+                        <tr class="stock-row" data-name="Áo Blazer Linen Signature" data-sku="BLZ-BE-XS" data-cat="Blazer" data-color="Be" data-size="XS" data-avail="0" data-reserved="2" data-low="true">
+                            <td><div class="product-thumb-box"><i class="fa-solid fa-shirt"></i></div></td>
+                            <td><span class="sku-link" onclick="openHistoryDrawer('BLZ-BE-XS', 'Áo Blazer Linen Signature', 'Be', 'XS', 0, 2, 0, 0)">BLZ-BE-XS</span></td>
+                            <td><div class="fw-semibold text-dark">Áo Blazer Linen Signature</div></td>
+                            <td>Be</td>
+                            <td class="text-center">XS</td>
+                            <td class="text-center">0</td>
+                            <td class="text-center text-primary fw-semibold">2</td>
+                            <td class="text-center bg-light"><span class="badge bg-danger text-white fw-bold">0 cái</span></td>
+                            <td class="text-center text-muted">0</td>
+                            <td class="text-end">
+                                <button type="button" class="btn btn-outline-dark btn-sm rounded-pill px-2 py-1 small" onclick="openHistoryDrawer('BLZ-BE-XS', 'Áo Blazer Linen Signature', 'Be', 'XS', 0, 2, 0, 0)">Xem</button>
+                            </td>
+                        </tr>
+                        <tr class="stock-row" data-name="Áo Blazer Linen Signature" data-sku="BLZ-BE-S" data-cat="Blazer" data-color="Be" data-size="S" data-avail="5" data-reserved="0" data-low="false">
+                            <td><div class="product-thumb-box"><i class="fa-solid fa-shirt"></i></div></td>
+                            <td><span class="sku-link" onclick="openHistoryDrawer('BLZ-BE-S', 'Áo Blazer Linen Signature', 'Be', 'S', 5, 0, 5, 0)">BLZ-BE-S</span></td>
+                            <td><div class="fw-semibold text-dark">Áo Blazer Linen Signature</div></td>
+                            <td>Be</td>
+                            <td class="text-center">S</td>
+                            <td class="text-center">5</td>
+                            <td class="text-center text-muted">0</td>
+                            <td class="text-center bg-light"><span class="fw-bold text-dark">5 cái</span></td>
+                            <td class="text-center text-muted">0</td>
+                            <td class="text-end">
+                                <button type="button" class="btn btn-outline-dark btn-sm rounded-pill px-2 py-1 small" onclick="openHistoryDrawer('BLZ-BE-S', 'Áo Blazer Linen Signature', 'Be', 'S', 5, 0, 5, 0)">Xem</button>
+                            </td>
+                        </tr>
+                        <tr class="stock-row" data-name="Áo Blazer Linen Signature" data-sku="BLZ-BE-M" data-cat="Blazer" data-color="Be" data-size="M" data-avail="7" data-reserved="1" data-low="false">
+                            <td><div class="product-thumb-box"><i class="fa-solid fa-shirt"></i></div></td>
+                            <td><span class="sku-link" onclick="openHistoryDrawer('BLZ-BE-M', 'Áo Blazer Linen Signature', 'Be', 'M', 8, 1, 7, 0)">BLZ-BE-M</span></td>
+                            <td><div class="fw-semibold text-dark">Áo Blazer Linen Signature</div></td>
+                            <td>Be</td>
+                            <td class="text-center">M</td>
+                            <td class="text-center">8</td>
+                            <td class="text-center text-primary fw-semibold">1</td>
+                            <td class="text-center bg-light"><span class="fw-bold text-dark">7 cái</span></td>
+                            <td class="text-center text-muted">0</td>
+                            <td class="text-end">
+                                <button type="button" class="btn btn-outline-dark btn-sm rounded-pill px-2 py-1 small" onclick="openHistoryDrawer('BLZ-BE-M', 'Áo Blazer Linen Signature', 'Be', 'M', 8, 1, 7, 0)">Xem</button>
+                            </td>
+                        </tr>
+                        <tr class="stock-row" data-name="Áo Khoác Dạ Tweed Tay Lỡ" data-sku="TWD-BLK-M" data-cat="Tweed" data-color="Đen" data-size="M" data-avail="1" data-reserved="1" data-low="true">
+                            <td><div class="product-thumb-box"><i class="fa-solid fa-vest"></i></div></td>
+                            <td><span class="sku-link" onclick="openHistoryDrawer('TWD-BLK-M', 'Áo Khoác Dạ Tweed Tay Lỡ', 'Đen', 'M', 2, 1, 1, 1)">TWD-BLK-M</span></td>
+                            <td><div class="fw-semibold text-dark">Áo Khoác Dạ Tweed Tay Lỡ</div></td>
+                            <td>Đen</td>
+                            <td class="text-center">M</td>
+                            <td class="text-center">2</td>
+                            <td class="text-center text-primary fw-semibold">1</td>
+                            <td class="text-center bg-light"><span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fw-bold">1 cái</span></td>
+                            <td class="text-center text-danger fw-semibold">1</td>
+                            <td class="text-end">
+                                <button type="button" class="btn btn-outline-dark btn-sm rounded-pill px-2 py-1 small" onclick="openHistoryDrawer('TWD-BLK-M', 'Áo Khoác Dạ Tweed Tay Lỡ', 'Đen', 'M', 2, 1, 1, 1)">Xem</button>
+                            </td>
+                        </tr>
+                        <tr class="stock-row" data-name="Đầm Lụa Satin Cúp Ngực" data-sku="DRS-RED-M" data-cat="Đầm" data-color="Đỏ rượu" data-size="M" data-avail="0" data-reserved="2" data-low="true">
+                            <td><div class="product-thumb-box"><i class="fa-solid fa-person-dress"></i></div></td>
+                            <td><span class="sku-link" onclick="openHistoryDrawer('DRS-RED-M', 'Đầm Lụa Satin Cúp Ngực', 'Đỏ rượu', 'M', 2, 2, 0, 0)">DRS-RED-M</span></td>
+                            <td><div class="fw-semibold text-dark">Đầm Lụa Satin Cúp Ngực</div></td>
+                            <td>Đỏ rượu</td>
+                            <td class="text-center">M</td>
+                            <td class="text-center">2</td>
+                            <td class="text-center text-primary fw-semibold">2</td>
+                            <td class="text-center bg-light"><span class="badge bg-danger text-white fw-bold">0 cái</span></td>
+                            <td class="text-center text-muted">0</td>
+                            <td class="text-end">
+                                <button type="button" class="btn btn-outline-dark btn-sm rounded-pill px-2 py-1 small" onclick="openHistoryDrawer('DRS-RED-M', 'Đầm Lụa Satin Cúp Ngực', 'Đỏ rượu', 'M', 2, 2, 0, 0)">Xem</button>
+                            </td>
+                        </tr>
+                        <tr class="stock-row" data-name="Quần Âu Ống Suông Lưng Cao" data-sku="PNT-CRM-S" data-cat="Quần" data-color="Kem" data-size="S" data-avail="3" data-reserved="0" data-low="true">
+                            <td><div class="product-thumb-box"><i class="fa-solid fa-socks"></i></div></td>
+                            <td><span class="sku-link" onclick="openHistoryDrawer('PNT-CRM-S', 'Quần Âu Ống Suông Lưng Cao', 'Kem', 'S', 3, 0, 3, 0)">PNT-CRM-S</span></td>
+                            <td><div class="fw-semibold text-dark">Quần Âu Ống Suông Lưng Cao</div></td>
+                            <td>Kem</td>
+                            <td class="text-center">S</td>
+                            <td class="text-center">3</td>
+                            <td class="text-center text-muted">0</td>
+                            <td class="text-center bg-light"><span class="fw-bold text-dark">3 cái</span></td>
+                            <td class="text-center text-muted">0</td>
+                            <td class="text-end">
+                                <button type="button" class="btn btn-outline-dark btn-sm rounded-pill px-2 py-1 small" onclick="openHistoryDrawer('PNT-CRM-S', 'Quần Âu Ống Suông Lưng Cao', 'Kem', 'S', 3, 0, 3, 0)">Xem</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 pt-1">
+            <div class="text-muted small">
+                <i class="fa-solid fa-circle-info me-1"></i>
+                <span><strong>Khả dụng</strong> = Tồn bán được – Số đã giữ chỗ (cho đơn online).</span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="text-muted small">Hiển thị 6 biến thể</span>
+                <button type="button" class="btn btn-sm btn-outline-dark rounded-pill px-3" onclick="alert('Đã xuất báo cáo ra file Excel!')">
+                    <i class="fa-solid fa-file-excel me-1 text-success"></i>Xuất Excel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 3. MÀN HÌNH N10: DANH SÁCH VÀ TẠO PHIẾU NHẬP (Chuẩn Spec N10) -->
+    <!-- ============================================================== -->
+    <div id="view-imports-section" class="d-none">
+        <!-- KHUNG ĐẦU N10 -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 fw-semibold" onclick="switchWarehouseView('tasks')">
+                        <i class="fa-solid fa-arrow-left me-1"></i>Quay lại Công việc kho
+                    </button>
+                    <span class="text-muted">/</span>
+                    <h4 class="fw-bold mb-0 text-dark">Danh sách và tạo phiếu nhập</h4>
+                </div>
+                <div class="text-muted small">
+                    Mục đích: <strong class="text-dark">Ghi nhận hàng thực nhận từ nhà cung cấp</strong> · Kho nhận: <strong class="text-dark">Kho Cửa Hàng (Tầng 1)</strong>
+                </div>
+            </div>
+
+            <!-- Nút bật form tạo phiếu mới -->
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-outline-dark btn-sm rounded-pill px-3 py-2 fw-semibold" id="btnToggleImportForm" onclick="toggleCreateImportForm()">
+                    <i class="fa-solid fa-plus me-1"></i>Lập phiếu nhập mới
+                </button>
+            </div>
+        </div>
+
+        <!-- FORM TẠO PHIẾU NHẬP MỚI (N10) -->
+        <div class="wh-card mb-3 d-none border-2 border-dark" id="boxCreateImportForm">
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-file-circle-plus text-primary"></i>
+                    Lập phiếu nhập hàng thực nhận
+                </h6>
+                <button type="button" class="btn-close" onclick="toggleCreateImportForm()"></button>
+            </div>
+
+            <!-- Khung thông tin phiếu -->
+            <div class="p-3 bg-light rounded-3 border mb-3">
+                <div class="row g-3">
+                    <div class="col-12 col-md-4">
+                        <label class="form-label small fw-bold text-dark mb-1">Nhà cung cấp (*):</label>
+                        <select class="form-select form-select-sm" id="inpSupplier">
+                            <option value="Bảo Nam Silk" selected>NCC Bảo Nam Silk (Hà Nội)</option>
+                            <option value="Tân Bình Fashion">Công ty May Tân Bình (TP.HCM)</option>
+                            <option value="Dệt May Phong Phú">Dệt May Phong Phú</option>
+                            <option value="Kho Tổng Bình Tân">Kho tổng Bình Tân (Nội bộ)</option>
+                        </select>
+                    </div>
+
+                    <div class="col-6 col-md-3">
+                        <label class="form-label small fw-bold text-dark mb-1">Ngày nhận hàng (*):</label>
+                        <input type="date" class="form-control form-control-sm" id="inpReceiveDate" value="2026-10-10" />
+                    </div>
+
+                    <div class="col-6 col-md-3">
+                        <label class="form-label small fw-bold text-dark mb-1">Số chứng từ tham chiếu:</label>
+                        <input type="text" class="form-control form-control-sm" id="inpRefCode" placeholder="Số hóa đơn GTGT / Phiếu giao hàng" value="HD-NCC-8921" />
+                    </div>
+
+                    <div class="col-12 col-md-2">
+                        <label class="form-label small fw-bold text-dark mb-1">Người lập:</label>
+                        <input type="text" class="form-control form-control-sm bg-white" value="Lê Minh Nhật" readonly />
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label small fw-bold text-dark mb-1">Ghi chú phiếu nhập:</label>
+                        <input type="text" class="form-control form-control-sm" id="inpSlipNote" placeholder="Ví dụ: Đợt hàng bổ sung theo hợp đồng quý 4..." />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Khung dòng hàng (SKU & Số lượng thực nhận) -->
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="small fw-bold text-dark">Danh sách mặt hàng kiểm đếm thực nhận:</span>
+                    <button type="button" class="btn btn-sm btn-outline-dark rounded-pill px-3" onclick="addNewItemRow()">
+                        <i class="fa-solid fa-plus me-1"></i>Thêm dòng SKU
+                    </button>
+                </div>
+
+                <div class="table-responsive border rounded">
+                    <table class="table clean-table mb-0 align-middle">
+                        <thead>
+                            <tr>
+                                <th style="width: 320px;">Sản phẩm / Mã SKU</th>
+                                <th>Màu & Size</th>
+                                <th class="text-center" style="width: 140px;">Số thực nhận (*)</th>
+                                <th class="text-center" style="width: 130px;">Hàng lỗi</th>
+                                <th>Ghi chú kiểm hàng</th>
+                                <th class="text-center" style="width: 60px;">Xóa</th>
+                            </tr>
+                        </thead>
+                        <tbody id="importItemTableBody">
+                            <!-- Dòng hàng mẫu 1 -->
+                            <tr class="import-item-row">
+                                <td>
+                                    <select class="form-select form-select-sm sku-selector" onchange="onSkuChange(this)">
+                                        <option value="BLZ-BE-XS" data-color="Be" data-size="XS">BLZ-BE-XS - Áo Blazer Linen</option>
+                                        <option value="BLZ-BE-M" data-color="Be" data-size="M" selected>BLZ-BE-M - Áo Blazer Linen</option>
+                                        <option value="TWD-BLK-M" data-color="Đen" data-size="M">TWD-BLK-M - Áo Dạ Tweed</option>
+                                        <option value="DRS-RED-M" data-color="Đỏ rượu" data-size="M">DRS-RED-M - Đầm Lụa Satin</option>
+                                        <option value="PNT-CRM-S" data-color="Kem" data-size="S">PNT-CRM-S - Quần Âu Ống Suông</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <span class="sku-color-size-text badge bg-light text-dark border">Be / Size M</span>
+                                </td>
+                                <td>
+                                    <input type="number" class="form-control form-control-sm text-center fw-bold inp-qty-receive" value="10" min="1" oninput="calcImportTotals()" />
+                                </td>
+                                <td>
+                                    <input type="number" class="form-control form-control-sm text-center inp-qty-defect text-danger" value="0" min="0" oninput="calcImportTotals()" />
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control form-control-sm" placeholder="Nguyên đai nguyên kiện..." />
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="removeItemRow(this)">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <!-- Dòng hàng mẫu 2 -->
+                            <tr class="import-item-row">
+                                <td>
+                                    <select class="form-select form-select-sm sku-selector" onchange="onSkuChange(this)">
+                                        <option value="BLZ-BE-XS" data-color="Be" data-size="XS" selected>BLZ-BE-XS - Áo Blazer Linen</option>
+                                        <option value="BLZ-BE-M" data-color="Be" data-size="M">BLZ-BE-M - Áo Blazer Linen</option>
+                                        <option value="TWD-BLK-M" data-color="Đen" data-size="M">TWD-BLK-M - Áo Dạ Tweed</option>
+                                        <option value="DRS-RED-M" data-color="Đỏ rượu" data-size="M">DRS-RED-M - Đầm Lụa Satin</option>
+                                        <option value="PNT-CRM-S" data-color="Kem" data-size="S">PNT-CRM-S - Quần Âu Ống Suông</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <span class="sku-color-size-text badge bg-light text-dark border">Be / Size XS</span>
+                                </td>
+                                <td>
+                                    <input type="number" class="form-control form-control-sm text-center fw-bold inp-qty-receive" value="15" min="1" oninput="calcImportTotals()" />
+                                </td>
+                                <td>
+                                    <input type="number" class="form-control form-control-sm text-center inp-qty-defect text-danger" value="1" min="0" oninput="calcImportTotals()" />
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control form-control-sm" placeholder="1 cái xước chỉ nhẹ..." />
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="removeItemRow(this)">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Khung tổng kết -->
+            <div class="p-3 bg-light rounded border mb-3">
+                <div class="row align-items-center g-2 small">
+                    <div class="col-6 col-md-4">
+                        <span class="text-muted">Tổng số lượng thực nhận:</span>
+                        <strong class="fs-6 text-dark ms-1" id="totalReceiveDisplay">25 sản phẩm</strong>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <span class="text-muted">Tổng hàng lỗi kiểm đếm:</span>
+                        <strong class="fs-6 text-danger ms-1" id="totalDefectDisplay">1 cái</strong>
+                    </div>
+                    <div class="col-12 col-md-4 text-md-end text-muted" style="font-size: 0.74rem;">
+                        <i class="fa-solid fa-circle-info me-1"></i>Phiếu nhập ở bước này chưa tăng tồn kho.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Khung cuối: Trạng thái & Nút hành động -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <div class="small text-muted">
+                    Trạng thái: <span class="badge bg-secondary-subtle text-secondary border">Bản nháp</span>
+                    <span class="mx-2">·</span>
+                    Người phụ trách: <strong class="text-dark">Lê Minh Nhật</strong>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-3" onclick="toggleCreateImportForm()">Hủy</button>
+                    <button type="button" class="btn btn-outline-dark rounded-pill px-3" onclick="saveDraftImportSlip()">Lưu bản nháp</button>
+                    <button type="button" class="btn btn-dark rounded-pill px-4 fw-semibold" onclick="submitImportSlipForReview()">
+                        <i class="fa-solid fa-paper-plane me-1"></i>Gửi kiểm tra & Duyệt
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- DANH SÁCH CÁC PHIẾU NHẬP ĐÃ LẬP -->
+        <div class="wh-card">
+            <div class="d-flex flex-wrap justify-content-between align-items-center pb-2 mb-2 border-bottom gap-2">
+                <span class="section-header border-0 mb-0 p-0">Lịch sử phiếu nhập gần đây</span>
+
+                <!-- Lọc trạng thái phiếu -->
+                <div class="d-flex align-items-center gap-2">
+                    <select class="form-select form-select-sm" style="width: 180px;" onchange="filterImportList(this.value)">
+                        <option value="all">Tất cả trạng thái</option>
+                        <option value="draft">Bản nháp</option>
+                        <option value="pending">Chờ quản lý duyệt</option>
+                        <option value="completed">Đã ghi sổ cộng tồn</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table clean-table mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th>Mã phiếu</th>
+                            <th>Nhà cung cấp</th>
+                            <th>Ngày nhận</th>
+                            <th>Số lượng</th>
+                            <th>Người tạo</th>
+                            <th>Trạng thái</th>
+                            <th class="text-end">Chi tiết</th>
+                        </tr>
+                    </thead>
+                    <tbody id="importHistoryTableBody">
+                        <!-- Phiếu 1 -->
+                        <tr class="import-history-row" data-status="pending" id="importRow_PNK-2026-042">
+                            <td><span class="font-monospace fw-bold text-dark">PNK-2026-042</span></td>
+                            <td><div class="fw-semibold text-dark">NCC Bảo Nam Silk</div></td>
+                            <td>10/10/2026</td>
+                            <td><strong>40 cây vải</strong></td>
+                            <td>Lê Minh Nhật</td>
+                            <td><span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle status-cell">Chờ duyệt</span></td>
+                            <td class="text-end">
+                                <button type="button" class="btn btn-sm btn-outline-dark rounded-pill px-3" onclick="openImportDetail('PNK-2026-042')">Xem</button>
+                            </td>
+                        </tr>
+
+                        <!-- Phiếu 2 -->
+                        <tr class="import-history-row" data-status="completed" id="importRow_PNK-2026-041">
+                            <td><span class="font-monospace fw-bold text-dark">PNK-2026-041</span></td>
+                            <td><div class="fw-semibold text-dark">Kho tổng Bình Tân</div></td>
+                            <td>09/10/2026</td>
+                            <td><strong>25 sản phẩm</strong></td>
+                            <td>Lê Minh Nhật</td>
+                            <td><span class="badge bg-success-subtle text-success border border-success-subtle status-cell">Đã ghi sổ</span></td>
+                            <td class="text-end">
+                                <button type="button" class="btn btn-sm btn-outline-dark rounded-pill px-3" onclick="openImportDetail('PNK-2026-041')">Xem</button>
+                            </td>
+                        </tr>
+
+                        <!-- Phiếu 3 -->
+                        <tr class="import-history-row" data-status="draft" id="importRow_PNK-2026-040">
+                            <td><span class="font-monospace fw-bold text-dark">PNK-2026-040</span></td>
+                            <td><div class="fw-semibold text-dark">May Tân Bình</div></td>
+                            <td>08/10/2026</td>
+                            <td><strong>15 sản phẩm</strong></td>
+                            <td>Lê Minh Nhật</td>
+                            <td><span class="badge bg-secondary-subtle text-secondary border status-cell">Bản nháp</span></td>
+                            <td class="text-end">
+                                <button type="button" class="btn btn-sm btn-outline-dark rounded-pill px-3" onclick="openImportDetail('PNK-2026-040')">Xem</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 4. MÀN HÌNH N11: CHI TIẾT VÀ GHI SỔ PHIẾU NHẬP (Chuẩn Spec N11) -->
+    <!-- ============================================================== -->
+    <div id="view-import-detail-section" class="d-none">
+        <!-- KHUNG ĐẦU: TIÊU ĐỀ, MÃ PHIẾU, TRẠNG THÁI & ĐIỀU HƯỚNG -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 fw-semibold" onclick="switchWarehouseView('imports')">
+                        <i class="fa-solid fa-arrow-left me-1"></i>Quay lại Danh sách phiếu
+                    </button>
+                    <span class="text-muted">/</span>
+                    <h4 class="fw-bold mb-0 text-dark">Chi tiết và ghi sổ phiếu nhập</h4>
+                </div>
+                <div class="text-muted small">
+                    Mã phiếu: <strong class="text-dark font-monospace" id="n11SlipCode">PNK-2026-042</strong> · 
+                    Người lập: <strong class="text-dark" id="n11Creator">Lê Minh Nhật</strong> · 
+                    Ngày tạo: <strong class="text-dark" id="n11CreateDate">10/10/2026</strong>
+                </div>
+            </div>
+
+            <!-- CỤM TRẠNG THÁI & NÚT IN -->
+            <div class="d-flex align-items-center gap-2">
+                <span id="n11StatusBadge" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-2 fs-6">
+                    Chờ duyệt / Ghi sổ
+                </span>
+                <button type="button" class="btn btn-outline-dark btn-sm rounded-pill px-3 py-2 fw-semibold" onclick="printImportSlip()">
+                    <i class="fa-solid fa-print me-1"></i>In phiếu
+                </button>
+            </div>
+        </div>
+
+        <!-- KHUNG THÔNG BÁO KHI ĐÃ GHI SỔ -->
+        <div id="n11CompletedAlert" class="alert alert-success d-none py-2 px-3 mb-3 small d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div>
+                <i class="fa-solid fa-circle-check me-2 text-success"></i>
+                <strong>Phiếu nhập đã được ghi sổ kho.</strong> Lượng tồn thực tế đã được cộng tăng vào hệ thống. Phiếu đã khóa chỉnh sửa.
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-success rounded-pill px-3 py-1" onclick="switchWarehouseView('stock')">
+                <i class="fa-solid fa-magnifying-glass me-1"></i>Xem tồn kho 
+            </button>
+        </div>
+
+        <!-- KHUNG THÔNG BÁO TỪ CHỐI -->
+        <div id="n11RejectedAlert" class="alert alert-danger d-none py-2 px-3 mb-3 small">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i>
+            <strong>Phiếu đã bị từ chối:</strong> <span id="n11RejectReason">Lệch số lượng thực tế kiểm đếm.</span>
+        </div>
+
+        <div class="row g-3">
+            <!-- CỘT TRÁI (8/12): THÔNG TIN ĐỐI TÁC & BẢNG HÀNG THỰC NHẬN -->
+            <div class="col-12 col-xl-8">
+                <!-- KHUNG ĐỐI TÁC & CHỨNG TỪ THAM CHIẾU -->
+                <div class="wh-card p-3 mb-3">
+                    <div class="section-header border-0 p-0 mb-2">
+                        <i class="fa-solid fa-building me-1 text-primary"></i>Thông tin đối tác & chứng từ nhận hàng
+                    </div>
+                    <div class="row g-3 small">
+                        <div class="col-12 col-md-6">
+                            <span class="text-muted d-block mb-1">Nhà cung cấp:</span>
+                            <strong class="fs-6 text-dark" id="n11Supplier">NCC Bảo Nam Silk (Hà Nội)</strong>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <span class="text-muted d-block mb-1">Chứng từ tham chiếu:</span>
+                            <span class="badge bg-light text-dark border px-2 py-1 font-monospace" id="n11RefDoc">HĐ-NCC-8921</span>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <span class="text-muted d-block mb-1">Ngày thực nhận:</span>
+                            <strong class="text-dark" id="n11ReceiveDate">10/10/2026</strong>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <span class="text-muted d-block mb-1">Kho tiếp nhận:</span>
+                            <span class="text-dark fw-medium">Kho Cửa Hàng (Tầng 1)</span>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <span class="text-muted d-block mb-1">Ghi chú phiếu:</span>
+                            <span class="text-dark" id="n11Notes">Giao bổ sung hàng đợt 1 tháng 10, kiểm hàng nguyên kiện.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KHUNG HÀNG HÓA THỰC NHẬN (ĐỐI CHIẾU THỰC TẾ) -->
+                <div class="wh-card p-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="section-header border-0 p-0 mb-0">
+                            <i class="fa-solid fa-boxes-stacked me-1 text-primary"></i>Danh sách hàng thực nhận đối chiếu
+                        </div>
+                        <span class="badge bg-light text-muted border small">Hàng lỗi không vào tồn bán được</span>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table clean-table mb-0 align-middle small">
+                            <thead>
+                                <tr>
+                                    <th>Mã SKU</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Màu / Size</th>
+                                    <th class="text-center">Số thực nhận</th>
+                                    <th class="text-center">Hàng lỗi</th>
+                                    <th class="text-center bg-light">Tồn sẽ tăng</th>
+                                </tr>
+                            </thead>
+                            <tbody id="n11ItemTableBody">
+                                <!-- Dòng hàng động sinh bởi JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- KHUNG LỊCH SỬ THAO TÁC / QUY TRÌNH PHIẾU -->
+                <div class="wh-card p-3">
+                    <div class="section-header border-0 p-0 mb-2">
+                        <i class="fa-solid fa-clock-rotate-left me-1 text-muted"></i>Lịch sử xử lý phiếu
+                    </div>
+                    <div class="small" id="n11Timeline">
+                        <div class="d-flex align-items-center gap-2 mb-2 text-muted">
+                            <i class="fa-regular fa-circle-check text-success"></i>
+                            <span><strong>08:30 10/10/2026:</strong> Lê Minh Nhật lập phiếu nhập thực nhận.</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mb-2 text-muted">
+                            <i class="fa-regular fa-circle-check text-success"></i>
+                            <span><strong>09:15 10/10/2026:</strong> Đã đối chiếu số lượng thực nhận tại kho.</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 text-muted" id="n11ApprovedLog">
+                            <i class="fa-regular fa-clock"></i>
+                            <span>Chờ quản lý kiểm tra và ghi sổ cộng tồn kho.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CỘT PHẢI (4/12): KHUNG XÁC NHẬN VÀ THAO TÁC GHI SỔ -->
+            <div class="col-12 col-xl-4">
+                <div class="wh-card p-3 mb-3 border-2" id="n11ActionCard">
+                    <h6 class="fw-bold text-dark mb-3 pb-2 border-bottom d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-clipboard-check text-dark"></i>
+                        Xác nhận và Ghi sổ kho
+                    </h6>
+
+                    <!-- TỔNG KẾT SỐ LƯỢNG -->
+                    <div class="p-3 bg-light rounded-3 border mb-3 small">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-muted">Tổng thực nhận:</span>
+                            <strong class="fs-6 text-dark" id="n11TotalReceived">40 cái</strong>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-muted">Hàng lỗi phân loại:</span>
+                            <strong class="fs-6 text-danger" id="n11TotalDefect">1 cái</strong>
+                        </div>
+                        <hr class="my-2" />
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold text-dark">Cộng tồn khả dụng:</span>
+                            <span class="badge bg-success text-white px-2 py-1 fs-6 fw-bold" id="n11TotalAvailIncrease">+39 cái</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 small">
+                        <label class="form-label fw-bold text-dark mb-1">Người kiểm nhận:</label>
+                        <input type="text" class="form-control form-control-sm bg-light" value="Lê Minh Nhật" readonly />
+                    </div>
+
+                    <div class="mb-3 small" id="n11NotesInputGroup">
+                        <label class="form-label fw-bold text-dark mb-1">Ghi chú xác nhận ghi sổ:</label>
+                        <textarea class="form-control form-control-sm" id="n11ApproveNotes" rows="2" placeholder="Ghi chú xác nhận kiểm đếm thực tế..."></textarea>
+                    </div>
+
+                    <!-- NÚT THAO TÁC GHI SỔ / TỪ CHỐI -->
+                    <div id="n11ActionButtonsGroup" class="d-grid gap-2">
+                        <button type="button" class="btn btn-dark py-2 fw-semibold rounded-pill" id="btnExecuteBookStock" onclick="executeBookStock()">
+                            <i class="fa-solid fa-check-double me-1"></i>Duyệt & Ghi sổ kho
+                        </button>
+                        <button type="button" class="btn btn-outline-danger btn-sm rounded-pill" id="btnRejectSlip" onclick="rejectImportSlip()">
+                            <i class="fa-solid fa-xmark me-1"></i>Từ chối (Yêu cầu sửa)
+                        </button>
+                    </div>
+
+                    <!-- THÔNG BÁO KHI ĐÃ KHÓA PHIẾU -->
+                    <div id="n11LockedNotice" class="d-none text-center p-3 bg-light rounded-3 border small">
+                        <i class="fa-solid fa-lock text-muted mb-2 fs-5"></i>
+                        <div class="fw-bold text-dark">Phiếu đã ghi sổ và khóa</div>
+                        <div class="text-muted" style="font-size: 0.74rem;">Không cho phép chỉnh sửa hoặc xóa phiếu đã ghi sổ để đảm bảo toàn vẹn sổ kho.</div>
+                    </div>
+                </div>
+
+                <!-- CHỨNG TỪ ĐẢO KHI CẦN ĐIỀU CHỈNH -->
+                <div class="wh-card p-3 small text-muted">
+                    <div class="fw-semibold text-dark mb-1"><i class="fa-solid fa-circle-info me-1"></i>Quy định nghiệp vụ:</div>
+                    <ul class="ps-3 mb-0" style="font-size: 0.74rem; line-height: 1.5;">
+                        <li>Chỉ phiếu hợp lệ mới được ghi sổ cộng tồn kho.</li>
+                        <li>Hàng lỗi được đưa vào khu cách ly lỗi, không vào tồn bán được.</li>
+                        <li>Bấm lặp không ghi tăng lần hai. Muốn sửa phiếu đã ghi sổ cần lập chứng từ điều chỉnh.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- OFFCANVAS DRAWER: LỊCH SỬ BIẾN ĐỘNG TỒN KHO -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="stockHistoryDrawer" style="width: 420px;">
+    <div class="offcanvas-header bg-dark text-white p-3">
+        <div>
+            <h6 class="offcanvas-title fw-bold mb-0">Lịch sử biến động tồn kho</h6>
+            <small class="text-secondary font-monospace" id="drawerSku">BLZ-BE-M</small>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body p-3">
+        <div class="p-3 bg-light rounded-3 border mb-3 small">
+            <div class="fw-bold text-dark mb-1" id="drawerProductName">Áo Blazer Linen Signature</div>
+            <div class="text-muted mb-2" id="drawerVariant">Màu: Be · Size: M</div>
+            <div class="row g-2 text-center pt-2 border-top">
+                <div class="col-3">
+                    <div class="text-muted" style="font-size: 0.72rem;">Tồn bán</div>
+                    <strong class="text-dark" id="drawerOnHand">8</strong>
+                </div>
+                <div class="col-3">
+                    <div class="text-muted" style="font-size: 0.72rem;">Giữ chỗ</div>
+                    <strong class="text-primary" id="drawerReserved">1</strong>
+                </div>
+                <div class="col-3">
+                    <div class="text-muted" style="font-size: 0.72rem;">Khả dụng</div>
+                    <strong class="text-success" id="drawerAvail">7</strong>
+                </div>
+                <div class="col-3">
+                    <div class="text-muted" style="font-size: 0.72rem;">Hàng lỗi</div>
+                    <strong class="text-danger" id="drawerDefect">0</strong>
+                </div>
+            </div>
+        </div>
+
+        <h6 class="fw-bold text-dark small mb-2">Nhật ký biến động gần nhất:</h6>
+
+        <div class="history-row">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="badge bg-light text-dark border">Bán tại quầy POS</span>
+                <small class="text-muted">09:45 hôm nay</small>
+            </div>
+            <div class="d-flex justify-content-between align-items-center small">
+                <span>Số lượng: <strong class="text-danger">-1</strong> (Tồn 9 → 8)</span>
+                <a href="javascript:void(0)" onclick="alert('Mở hóa đơn HD-0145')" class="text-decoration-none fw-semibold">
+                    HD-0145 <i class="fa-solid fa-arrow-up-right-from-square small ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="history-row">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Giữ đơn online</span>
+                <small class="text-muted">09:10 hôm nay</small>
+            </div>
+            <div class="d-flex justify-content-between align-items-center small">
+                <span>Giữ chỗ: <strong class="text-primary">+1</strong> (Khả dụng 8 → 7)</span>
+                <a href="javascript:void(0)" onclick="alert('Mở đơn online ONL-9821')" class="text-decoration-none fw-semibold">
+                    ONL-9821 <i class="fa-solid fa-arrow-up-right-from-square small ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="history-row">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="badge bg-success-subtle text-success border border-success-subtle">Nhập kho bổ sung</span>
+                <small class="text-muted">08:30 hôm nay</small>
+            </div>
+            <div class="d-flex justify-content-between align-items-center small">
+                <span>Số lượng: <strong class="text-success">+10</strong> (Tồn 0 → 10)</span>
+                <a href="javascript:void(0)" onclick="alert('Mở phiếu nhập PNK-041')" class="text-decoration-none fw-semibold">
+                    PNK-041 <i class="fa-solid fa-arrow-up-right-from-square small ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Chuyển đổi giữa 3 view: tasks (Công việc kho), stock (Tra cứu tồn kho), imports (Phiếu nhập)
+        function switchWarehouseView(targetView) {
+            var vN08 = document.getElementById('view-n08-section');
+            var vStock = document.getElementById('view-stock-section');
+            var vImports = document.getElementById('view-imports-section');
+            var vDetail = document.getElementById('view-import-detail-section');
+
+            vN08.classList.add('d-none');
+            vStock.classList.add('d-none');
+            vImports.classList.add('d-none');
+            if (vDetail) vDetail.classList.add('d-none');
+
+            if (targetView === 'stock' || targetView === 'n09') {
+                vStock.classList.remove('d-none');
+                window.history.replaceState(null, '', '?view=stock');
+            } else if (targetView === 'imports' || targetView === 'n10') {
+                vImports.classList.remove('d-none');
+                window.history.replaceState(null, '', '?view=imports');
+            } else if (targetView === 'import-detail' || targetView === 'n11') {
+                if (vDetail) vDetail.classList.remove('d-none');
+                window.history.replaceState(null, '', '?view=import-detail');
+            } else {
+                vN08.classList.remove('d-none');
+                window.history.replaceState(null, '', '?view=tasks');
+            }
+            window.scrollTo({ top: 0, behavior: 'instant' });
+        }
+
+        // Tự động kiểm tra URL khi tải trang
+        window.addEventListener('DOMContentLoaded', function() {
+            var params = new URLSearchParams(window.location.search);
+            var v = params.get('view');
+            if (v === 'stock' || v === 'n09') {
+                switchWarehouseView('stock');
+            } else if (v === 'imports' || v === 'n10') {
+                switchWarehouseView('imports');
+            } else if (v === 'import-detail' || v === 'n11') {
+                openImportDetail('PNK-2026-042');
+            } else {
+                switchWarehouseView('tasks');
+            }
+        });
+
+        // ==========================================
+        // JS CHO MÀN HÌNH N10 (PHIẾU NHẬP)
+        // ==========================================
+        function toggleCreateImportForm() {
+            var box = document.getElementById('boxCreateImportForm');
+            box.classList.toggle('d-none');
+            if (!box.classList.contains('d-none')) {
+                box.scrollIntoView({ behavior: 'smooth' });
+                calcImportTotals();
+            }
+        }
+
+        function onSkuChange(selectEl) {
+            var opt = selectEl.options[selectEl.selectedIndex];
+            var color = opt.getAttribute('data-color') || '';
+            var size = opt.getAttribute('data-size') || '';
+            var row = selectEl.closest('tr');
+            var textBadge = row.querySelector('.sku-color-size-text');
+            if (textBadge) {
+                textBadge.innerText = color + ' / Size ' + size;
+            }
+            calcImportTotals();
+        }
+
+        function addNewItemRow() {
+            var tbody = document.getElementById('importItemTableBody');
+            var newRow = document.createElement('tr');
+            newRow.className = 'import-item-row';
+            newRow.innerHTML = `
+                <td>
+                    <select class="form-select form-select-sm sku-selector" onchange="onSkuChange(this)">
+                        <option value="BLZ-BE-M" data-color="Be" data-size="M" selected>BLZ-BE-M - Áo Blazer Linen</option>
+                        <option value="BLZ-BE-XS" data-color="Be" data-size="XS">BLZ-BE-XS - Áo Blazer Linen</option>
+                        <option value="TWD-BLK-M" data-color="Đen" data-size="M">TWD-BLK-M - Áo Dạ Tweed</option>
+                        <option value="DRS-RED-M" data-color="Đỏ rượu" data-size="M">DRS-RED-M - Đầm Lụa Satin</option>
+                        <option value="PNT-CRM-S" data-color="Kem" data-size="S">PNT-CRM-S - Quần Âu Ống Suông</option>
+                    </select>
+                </td>
+                <td>
+                    <span class="sku-color-size-text badge bg-light text-dark border">Be / Size M</span>
+                </td>
+                <td>
+                    <input type="number" class="form-control form-control-sm text-center fw-bold inp-qty-receive" value="5" min="1" oninput="calcImportTotals()" />
+                </td>
+                <td>
+                    <input type="number" class="form-control form-control-sm text-center inp-qty-defect text-danger" value="0" min="0" oninput="calcImportTotals()" />
+                </td>
+                <td>
+                    <input type="text" class="form-control form-control-sm" placeholder="Ghi chú thêm..." />
+                </td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="removeItemRow(this)">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(newRow);
+            calcImportTotals();
+        }
+
+        function removeItemRow(btn) {
+            var rows = document.querySelectorAll('#importItemTableBody .import-item-row');
+            if (rows.length <= 1) {
+                alert('Phiếu nhập phải có ít nhất 1 dòng sản phẩm!');
+                return;
+            }
+            btn.closest('tr').remove();
+            calcImportTotals();
+        }
+
+        function calcImportTotals() {
+            var totalRec = 0;
+            var totalDef = 0;
+            document.querySelectorAll('#importItemTableBody .inp-qty-receive').forEach(function(inp) {
+                totalRec += Number(inp.value || 0);
+            });
+            document.querySelectorAll('#importItemTableBody .inp-qty-defect').forEach(function(inp) {
+                totalDef += Number(inp.value || 0);
+            });
+            document.getElementById('totalReceiveDisplay').innerText = totalRec + ' sản phẩm';
+            document.getElementById('totalDefectDisplay').innerText = totalDef + ' cái';
+        }
+
+        function saveDraftImportSlip() {
+            var supp = document.getElementById('inpSupplier').value;
+            alert('✅ ĐÃ LƯU BẢN NHÁP THÀNH CÔNG:\n- Nhà cung cấp: ' + supp + '\n- Trạng thái: Bản nháp\nPhiếu đã được lưu để nhân viên tiếp tục chỉnh sửa trước khi gửi duyệt.');
+            toggleCreateImportForm();
+        }
+
+        function submitImportSlipForReview() {
+            // Kiểm tra trùng SKU
+            var skuSelects = document.querySelectorAll('#importItemTableBody .sku-selector');
+            var skuSet = new Set();
+            var hasDuplicate = false;
+            skuSelects.forEach(function(s) {
+                if (skuSet.has(s.value)) {
+                    hasDuplicate = true;
+                }
+                skuSet.add(s.value);
+            });
+
+            if (hasDuplicate) {
+                alert('⚠️ LỖI TRÙNG MÃ: Danh sách dòng hàng có sản phẩm bị trùng SKU! Vui lòng cộng gộp số lượng hoặc chọn SKU khác.');
+                return;
+            }
+
+            var supp = document.getElementById('inpSupplier').value;
+            var totalRec = document.getElementById('totalReceiveDisplay').innerText;
+            alert('✅ ĐÃ GỬI PHIẾU NHẬP LÊN QUẢN LÝ DUYỆT :\n\n- NCC: ' + supp + '\n- Tổng nhận: ' + totalRec + '\n- Trạng thái: Chờ duyệt / Ghi sổ\n\nTồn kho sẽ được tự động cộng vào hệ thống sau khi Admin duyệt phiếu!');
+            toggleCreateImportForm();
+        }
+
+        function filterImportList(status) {
+            var rows = document.querySelectorAll('#importHistoryTableBody .import-history-row');
+            rows.forEach(function(r) {
+                if (status === 'all' || r.dataset.status === status) {
+                    r.classList.remove('d-none');
+                } else {
+                    r.classList.add('d-none');
+                }
+            });
+        }
+
+        // ==========================================
+        // JS CHO MÀN HÌNH TRA CỨU TỒN KHO & CÔNG VIỆC KHO
+        // ==========================================
+        function inspectSkuInStock(sku) {
+            switchWarehouseView('stock');
+            document.getElementById('filterKeyword').value = sku;
+            applyStockFilters();
+        }
+
+        function openHistoryDrawer(sku, name, color, size, onHand, reserved, avail, defect) {
+            document.getElementById('drawerSku').innerText = sku;
+            document.getElementById('drawerProductName').innerText = name;
+            document.getElementById('drawerVariant').innerText = 'Màu: ' + color + ' · Size: ' + size;
+            document.getElementById('drawerOnHand').innerText = onHand;
+            document.getElementById('drawerReserved').innerText = reserved;
+            document.getElementById('drawerAvail').innerText = avail;
+            document.getElementById('drawerDefect').innerText = defect;
+
+            var drawerEl = document.getElementById('stockHistoryDrawer');
+            var bsDrawer = bootstrap.Offcanvas.getOrCreateInstance(drawerEl);
+            bsDrawer.show();
+        }
+
+        function applyStockFilters() {
+            var kw = (document.getElementById('filterKeyword').value || '').trim().toLowerCase();
+            var cat = document.getElementById('filterCategory').value;
+            var color = document.getElementById('filterColor').value;
+            var size = document.getElementById('filterSize').value;
+            var status = document.getElementById('filterStatus').value;
+
+            var rows = document.querySelectorAll('#view-stock-section .stock-row');
+            rows.forEach(function(row) {
+                var rName = (row.dataset.name || '').toLowerCase();
+                var rSku = (row.dataset.sku || '').toLowerCase();
+                var rCat = row.dataset.cat || '';
+                var rColor = row.dataset.color || '';
+                var rSize = row.dataset.size || '';
+                var rAvail = Number(row.dataset.avail || 0);
+                var rReserved = Number(row.dataset.reserved || 0);
+                var rLow = row.dataset.low === 'true';
+
+                var matchKw = !kw || rName.indexOf(kw) !== -1 || rSku.indexOf(kw) !== -1;
+                var matchCat = !cat || rCat === cat;
+                var matchColor = !color || rColor === color;
+                var matchSize = !size || rSize === size;
+
+                var matchStatus = true;
+                if (status === 'low') matchStatus = rLow;
+                else if (status === 'out') matchStatus = (rAvail === 0);
+                else if (status === 'reserved') matchStatus = (rReserved > 0);
+
+                if (matchKw && matchCat && matchColor && matchSize && matchStatus) {
+                    row.classList.remove('d-none');
+                } else {
+                    row.classList.add('d-none');
+                }
+            });
+        }
+
+        function resetStockFilters() {
+            document.getElementById('filterKeyword').value = '';
+            document.getElementById('filterCategory').value = '';
+            document.getElementById('filterColor').value = '';
+            document.getElementById('filterSize').value = '';
+            document.getElementById('filterStatus').value = '';
+            applyStockFilters();
+        }
+
+        function triggerBarcodeScan() {
+            document.getElementById('filterKeyword').value = 'BLZ-BE-M';
+            applyStockFilters();
+        }
+
+        function applySlipTab(type, btnEl) {
+            var btns = document.querySelectorAll('#slipFilterTabs .nav-link');
+            btns.forEach(function(b) { b.classList.remove('active'); });
+            if (btnEl) btnEl.classList.add('active');
+
+            var rows = document.querySelectorAll('#slipTableBody .slip-row');
+            rows.forEach(function(r) {
+                if (type === 'all' || r.dataset.type === type) {
+                    r.classList.remove('d-none');
+                } else {
+                    r.classList.add('d-none');
+                }
+            });
+        }
+
+        function filterSlipTab(type) {
+            var btns = document.querySelectorAll('#slipFilterTabs .nav-link');
+            var idx = (type === 'import' ? 1 : type === 'export' ? 2 : type === 'audit' ? 3 : 0);
+            if (btns[idx]) applySlipTab(type, btns[idx]);
+        }
+
+        function handleSearchSlips() {
+            var kw = (document.getElementById('slipSearchInput').value || '').trim().toLowerCase();
+            var rows = document.querySelectorAll('#slipTableBody .slip-row');
+            rows.forEach(function(r) {
+                var search = (r.dataset.search || '').toLowerCase();
+                r.classList.toggle('d-none', kw && search.indexOf(kw) === -1);
+            });
+        }
+
+        function scrollToLowStockSection() {
+            var el = document.getElementById('lowStockSection');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function openCreateSlipModal(type) {
+            if (type === 'import') {
+                switchWarehouseView('imports');
+                toggleCreateImportForm();
+            } else {
+                alert('Mở biểu mẫu Lập ' + (type === 'export' ? 'phiếu xuất kho' : 'đợt kiểm kê') + ' mới.');
+            }
+        }
+
+        function openSlipActionModal(code, type) {
+            if (type && type.indexOf('import') !== -1) {
+                openImportDetail(code);
+            } else {
+                alert('Xem và xử lý phiếu chứng từ: ' + code);
+            }
+        }
+
+        function proposeRestock(sku, name, qty) {
+            alert('Đã gửi đề xuất nhập bổ sung ' + qty + ' sản phẩm cho ' + name + ' (' + sku + ')!');
+        }
+
+        // ==========================================
+        // JS CHO MÀN HÌNH N11 (CHI TIẾT VÀ GHI SỔ PHIẾU NHẬP)
+        // ==========================================
+        var importSlipsDatabase = {
+            'PNK-2026-042': {
+                code: 'PNK-2026-042',
+                supplier: 'NCC Bảo Nam Silk (Hà Nội)',
+                refDoc: 'HĐ-NCC-8921',
+                receiveDate: '10/10/2026',
+                createDate: '10/10/2026',
+                creator: 'Lê Minh Nhật',
+                status: 'pending',
+                notes: 'Giao bổ sung hàng đợt 1 tháng 10, kiểm hàng nguyên đai nguyên kiện.',
+                totalReceived: 40,
+                totalDefect: 1,
+                items: [
+                    { sku: 'BLZ-BE-M', name: 'Áo Blazer Linen Signature', variant: 'Be / Size M', received: 20, defect: 0, increase: 20 },
+                    { sku: 'BLZ-BE-S', name: 'Áo Blazer Linen Signature', variant: 'Be / Size S', received: 10, defect: 0, increase: 10 },
+                    { sku: 'DRS-RED-M', name: 'Đầm Lụa Satin Cúp Ngực', variant: 'Đỏ rượu / Size M', received: 10, defect: 1, increase: 9 }
+                ]
+            },
+            'PNK-2026-041': {
+                code: 'PNK-2026-041',
+                supplier: 'Kho tổng Bình Tân (Điều chuyển nội bộ)',
+                refDoc: 'PXK-TONG-1102',
+                receiveDate: '09/10/2026',
+                createDate: '09/10/2026',
+                creator: 'Lê Minh Nhật',
+                status: 'completed',
+                notes: 'Hàng điều chuyển nội bộ Thu Đông đợt 2, đã kiểm đếm và ghi sổ kho.',
+                totalReceived: 25,
+                totalDefect: 0,
+                items: [
+                    { sku: 'TWD-BLK-M', name: 'Áo Khoác Dạ Tweed Tay Lỡ', variant: 'Đen / Size M', received: 15, defect: 0, increase: 15 },
+                    { sku: 'PNT-CRM-S', name: 'Quần Âu Ống Suông Lưng Cao', variant: 'Kem / Size S', received: 10, defect: 0, increase: 10 }
+                ]
+            },
+            'PNK-2026-040': {
+                code: 'PNK-2026-040',
+                supplier: 'Công ty May Tân Bình (TP.HCM)',
+                refDoc: 'HD-TB-7741',
+                receiveDate: '08/10/2026',
+                createDate: '08/10/2026',
+                creator: 'Lê Minh Nhật',
+                status: 'draft',
+                notes: 'Phiếu nháp đang đối chiếu với biên bản giao nhận của nhà xe.',
+                totalReceived: 15,
+                totalDefect: 0,
+                items: [
+                    { sku: 'BLZ-BE-XS', name: 'Áo Blazer Linen Signature', variant: 'Be / Size XS', received: 15, defect: 0, increase: 15 }
+                ]
+            }
+        };
+
+        var currentActiveSlipCode = null;
+
+        function openImportDetail(code) {
+            var slip = importSlipsDatabase[code];
+            if (!slip) {
+                slip = {
+                    code: code,
+                    supplier: 'Nhà cung cấp đối tác',
+                    refDoc: 'HD-VAT-001',
+                    receiveDate: '10/10/2026',
+                    createDate: '10/10/2026',
+                    creator: 'Lê Minh Nhật',
+                    status: 'pending',
+                    notes: 'Phiếu nhập đối chiếu thực tế.',
+                    totalReceived: 10,
+                    totalDefect: 0,
+                    items: [
+                        { sku: 'BLZ-BE-M', name: 'Áo Blazer Linen Signature', variant: 'Be / Size M', received: 10, defect: 0, increase: 10 }
+                    ]
+                };
+                importSlipsDatabase[code] = slip;
+            }
+
+            currentActiveSlipCode = code;
+
+            // Đổ dữ liệu khung đầu & đối tác
+            document.getElementById('n11SlipCode').innerText = slip.code;
+            document.getElementById('n11Creator').innerText = slip.creator;
+            document.getElementById('n11CreateDate').innerText = slip.createDate;
+            document.getElementById('n11Supplier').innerText = slip.supplier;
+            document.getElementById('n11RefDoc').innerText = slip.refDoc;
+            document.getElementById('n11ReceiveDate').innerText = slip.receiveDate;
+            document.getElementById('n11Notes').innerText = slip.notes || 'Không có ghi chú.';
+
+            // Đổ tổng số
+            var totalAvail = slip.totalReceived - slip.totalDefect;
+            document.getElementById('n11TotalReceived').innerText = slip.totalReceived + ' cái';
+            document.getElementById('n11TotalDefect').innerText = slip.totalDefect + ' cái';
+            document.getElementById('n11TotalAvailIncrease').innerText = '+' + totalAvail + ' cái';
+
+            // Đổ bảng hàng hóa
+            var tbody = document.getElementById('n11ItemTableBody');
+            tbody.innerHTML = '';
+            slip.items.forEach(function(it) {
+                var tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><span class="font-monospace fw-bold text-dark">${it.sku}</span></td>
+                    <td><div class="fw-semibold text-dark">${it.name}</div></td>
+                    <td><span class="badge bg-light text-dark border">${it.variant}</span></td>
+                    <td class="text-center fw-bold">${it.received}</td>
+                    <td class="text-center ${it.defect > 0 ? 'text-danger fw-bold' : 'text-muted'}">${it.defect}</td>
+                    <td class="text-center bg-light"><span class="badge bg-success-subtle text-success border border-success-subtle fw-bold">+${it.increase} cái</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Cập nhật trạng thái & giao diện nút
+            var badgeEl = document.getElementById('n11StatusBadge');
+            var alertComp = document.getElementById('n11CompletedAlert');
+            var alertRej = document.getElementById('n11RejectedAlert');
+            var btnGroup = document.getElementById('n11ActionButtonsGroup');
+            var lockedNotice = document.getElementById('n11LockedNotice');
+            var notesInputGroup = document.getElementById('n11NotesInputGroup');
+            var approvedLog = document.getElementById('n11ApprovedLog');
+
+            if (slip.status === 'completed') {
+                badgeEl.className = 'badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-6';
+                badgeEl.innerText = 'Đã ghi sổ kho';
+                alertComp.classList.remove('d-none');
+                alertRej.classList.add('d-none');
+                btnGroup.classList.add('d-none');
+                lockedNotice.classList.remove('d-none');
+                notesInputGroup.classList.add('d-none');
+                approvedLog.innerHTML = '<i class="fa-regular fa-circle-check text-success"></i><span><strong>09:40 10/10/2026:</strong> Quản lý ghi sổ kho thành công, đã cộng tồn vào hệ thống.</span>';
+            } else if (slip.status === 'draft') {
+                badgeEl.className = 'badge bg-secondary-subtle text-secondary border px-3 py-2 fs-6';
+                badgeEl.innerText = 'Bản nháp';
+                alertComp.classList.add('d-none');
+                btnGroup.classList.remove('d-none');
+                lockedNotice.classList.add('d-none');
+                notesInputGroup.classList.remove('d-none');
+                document.getElementById('btnExecuteBookStock').innerHTML = '<i class="fa-solid fa-paper-plane me-1"></i>Gửi duyệt & Ghi sổ';
+                approvedLog.innerHTML = '<i class="fa-regular fa-clock text-secondary"></i><span>Phiếu nháp đang chờ hoàn thiện số lượng.</span>';
+            } else {
+                // Pending
+                badgeEl.className = 'badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-2 fs-6';
+                badgeEl.innerText = 'Chờ duyệt / Ghi sổ';
+                alertComp.classList.add('d-none');
+                alertRej.classList.add('d-none');
+                btnGroup.classList.remove('d-none');
+                lockedNotice.classList.add('d-none');
+                notesInputGroup.classList.remove('d-none');
+                document.getElementById('btnExecuteBookStock').innerHTML = '<i class="fa-solid fa-check-double me-1"></i>Duyệt & Ghi sổ kho';
+                approvedLog.innerHTML = '<i class="fa-regular fa-clock text-warning"></i><span>Đang chờ quản lý kiểm tra chứng từ và bấm Ghi sổ kho.</span>';
+            }
+
+            switchWarehouseView('import-detail');
+        }
+
+        function executeBookStock() {
+            if (!currentActiveSlipCode) return;
+            var slip = importSlipsDatabase[currentActiveSlipCode];
+            if (!slip) return;
+
+            // Ngoại lệ: Bấm lặp không ghi tăng lần hai
+            if (slip.status === 'completed') {
+                alert('⚠️ THÔNG BÁO: Phiếu ' + slip.code + ' đã được ghi sổ kho trước đó rồi!\nHệ thống không cho phép bấm lặp ghi tăng lần hai.');
+                return;
+            }
+
+            var totalAvail = slip.totalReceived - slip.totalDefect;
+            var confirmMsg = 'XÁC NHẬN GHI SỔ PHIẾU ' + slip.code + ':\n\n'
+                + '- Nhà cung cấp: ' + slip.supplier + '\n'
+                + '- Lượng tồn bán được sẽ tăng: +' + totalAvail + ' sản phẩm\n'
+                + '- Hàng lỗi phân loại cách ly: ' + slip.totalDefect + ' sản phẩm\n\n'
+                + 'Sau khi ghi sổ, phiếu sẽ được khóa hoàn toàn để bảo đảm toàn vẹn số liệu sổ kho. Bạn có chắc chắn muốn ghi sổ?';
+
+            if (!confirm(confirmMsg)) return;
+
+            // Cập nhật trạng thái
+            slip.status = 'completed';
+
+            // Cập nhật dòng bảng N10
+            var rowEl = document.getElementById('importRow_' + slip.code);
+            if (rowEl) {
+                rowEl.setAttribute('data-status', 'completed');
+                var cell = rowEl.querySelector('.status-cell');
+                if (cell) {
+                    cell.className = 'badge bg-success-subtle text-success border border-success-subtle status-cell';
+                    cell.innerText = 'Đã ghi sổ';
+                }
+            }
+
+            // Đồng bộ lại màn hình chi tiết
+            openImportDetail(slip.code);
+
+            alert('✅ GHI SỔ KHO THÀNH CÔNG:\n\nPhiếu nhập ' + slip.code + ' đã ghi tăng tồn kho chính thức.\nTrạng thái đã chuyển sang "Đã ghi sổ" và đã khóa phiếu.');
+        }
+
+        function rejectImportSlip() {
+            if (!currentActiveSlipCode) return;
+            var slip = importSlipsDatabase[currentActiveSlipCode];
+            if (!slip) return;
+
+            if (slip.status === 'completed') {
+                alert('Phiếu đã ghi sổ kho, không thể từ chối. Muốn điều chỉnh cần lập chứng từ đảo/điều chỉnh!');
+                return;
+            }
+
+            var reason = prompt('Nhập lý do từ chối phiếu (VD: Lệch số lượng thực nhận so với hóa đơn):', 'Lệch 2 sản phẩm so với biên bản giao nhận.');
+            if (reason === null) return;
+            if (!reason.trim()) reason = 'Lệch số lượng thực tế kiểm đếm.';
+
+            slip.status = 'draft';
+            document.getElementById('n11RejectReason').innerText = reason;
+            document.getElementById('n11RejectedAlert').classList.remove('d-none');
+
+            // Cập nhật bảng N10
+            var rowEl = document.getElementById('importRow_' + slip.code);
+            if (rowEl) {
+                rowEl.setAttribute('data-status', 'draft');
+                var cell = rowEl.querySelector('.status-cell');
+                if (cell) {
+                    cell.className = 'badge bg-secondary-subtle text-secondary border status-cell';
+                    cell.innerText = 'Bản nháp (Cần sửa)';
+                }
+            }
+
+            openImportDetail(slip.code);
+            alert('⚠️ Đã trả phiếu về trạng thái "Bản nháp" để nhân viên sửa đổi theo lý do:\n' + reason);
+        }
+
+        function printImportSlip() {
+            window.print();
+        }
+    </script>
+}
+

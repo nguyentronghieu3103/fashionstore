@@ -1,0 +1,192 @@
+@* Views/Account/Addresses.cshtml *@
+@{
+    Layout = "_StoreLayout";
+    ViewData["Title"] = "Sổ địa chỉ nhận hàng - LIGHT LIFE";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/lightlife-account.css" asp-append-version="true" />
+}
+
+<div class="ll-account-page">
+    <div class="ll-container">
+        <!-- BREADCRUMB -->
+        <nav class="ll-account-breadcrumb" aria-label="Đường dẫn trang">
+            <a href="/">Trang chủ</a>
+            <span class="ll-account-breadcrumb__sep">/</span>
+            <a href="/Account/Profile">Tài khoản</a>
+            <span class="ll-account-breadcrumb__sep">/</span>
+            <span class="ll-account-breadcrumb__current" aria-current="page">Sổ địa chỉ nhận hàng</span>
+        </nav>
+
+        <div class="ll-account-layout">
+            <!-- CỘT 1: SIDEBAR TÀI KHOẢN (280px) -->
+            <aside class="ll-account-sidebar" aria-label="Menu tài khoản cá nhân">
+                <div class="ll-account-user-card">
+                    <div class="ll-account-user-avatar" id="accountUserAvatar">T</div>
+                    <div class="ll-account-user-info">
+                        <span class="ll-account-user-name" id="accountUserName">Nguyễn Thu Trang</span>
+                        <span class="ll-account-user-email" id="accountUserEmail">thutrang@lightlife.vn</span>
+                        <span class="ll-account-user-tag">Khách hàng</span>
+                    </div>
+                </div>
+
+                <nav>
+                    <ul class="ll-account-nav-list">
+                        <li class="ll-account-nav-item">
+                            <a href="/Account/Profile"><i class="fa-regular fa-user"></i> Hồ sơ cá nhân</a>
+                        </li>
+                        <li class="ll-account-nav-item active">
+                            <a href="/Account/Addresses"><i class="fa-solid fa-location-dot"></i> Sổ địa chỉ</a>
+                        </li>
+                        <li class="ll-account-nav-item">
+                            <a href="/Account/Orders"><i class="fa-solid fa-box-open"></i> Đơn hàng của tôi</a>
+                        </li>
+                        <li class="ll-account-nav-item">
+                            <a href="/Account/ChangePassword"><i class="fa-solid fa-key"></i> Đổi mật khẩu</a>
+                        </li>
+                        <li class="ll-account-nav-item ll-account-nav-item--logout">
+                            <a href="javascript:void(0)" onclick="LightLifeAuth.logout();">
+                                <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- CỘT 2: NỘI DUNG SỔ ĐỊA CHỈ -->
+            <main class="ll-account-content-card">
+                <div class="ll-account-header">
+                    <div>
+                        <h1 class="ll-account-title">
+                            <i class="fa-solid fa-location-dot" style="color: var(--color-brand);"></i>
+                            Sổ địa chỉ nhận hàng
+                        </h1>
+                        <p class="ll-account-desc">
+                            Quản lý các địa chỉ giao hàng để tiện lựa chọn nhanh khi thanh toán đặt hàng.
+                        </p>
+                    </div>
+                    <button type="button" class="ll-btn-add-address" onclick="openAddAddressModal()">
+                        <i class="fa-solid fa-plus"></i> Thêm địa chỉ mới
+                    </button>
+                </div>
+
+                <!-- Lưới danh sách địa chỉ (Render bằng JS) -->
+                <div class="ll-address-grid" id="addressGridContainer"></div>
+
+                <!-- Trạng thái trống (Empty State khi chưa có địa chỉ) -->
+                <div class="ll-address-empty" id="addressEmptyState" style="display: none;">
+                    <div class="ll-address-empty__icon">
+                        <i class="fa-solid fa-map-location-dot"></i>
+                    </div>
+                    <h2 class="ll-address-empty__title">Bạn chưa có địa chỉ nhận hàng nào</h2>
+                    <p class="ll-address-empty__desc">
+                        Lưu địa chỉ giao hàng ngay để tiết kiệm thời gian điền thông tin trong các lần mua sắm tiếp theo tại LIGHT LIFE.
+                    </p>
+                    <button type="button" class="ll-btn-add-address" onclick="openAddAddressModal()">
+                        <i class="fa-solid fa-plus"></i> Thêm địa chỉ đầu tiên
+                    </button>
+                </div>
+            </main>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================================================
+     MODAL: THÊM / SỬA ĐỊA CHỈ NHẬN HÀNG
+     ========================================================================== -->
+<div class="ll-modal-overlay" id="addressModal" role="dialog" aria-modal="true" aria-labelledby="addressModalTitle">
+    <div class="ll-modal-dialog--address">
+        <div class="ll-modal-header">
+            <h3 class="ll-modal-title" id="addressModalTitle">Thêm địa chỉ nhận hàng mới</h3>
+            <button type="button" class="ll-modal-close-btn" onclick="closeAddressModal()" aria-label="Đóng">&times;</button>
+        </div>
+
+        <form id="addressForm" novalidate>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="ll-form-group">
+                    <label class="ll-form-label" for="addrRecipientName">
+                        Họ và tên người nhận <span class="req">*</span>
+                    </label>
+                    <input type="text" id="addrRecipientName" class="ll-form-input" placeholder="Ví dụ: Nguyễn Thu Trang" required />
+                </div>
+                <div class="ll-form-group">
+                    <label class="ll-form-label" for="addrPhone">
+                        Số điện thoại <span class="req">*</span>
+                    </label>
+                    <input type="tel" id="addrPhone" class="ll-form-input" placeholder="0908 123 456" required />
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem;">
+                <div class="ll-form-group">
+                    <label class="ll-form-label" for="addrProvince">
+                        Tỉnh / Thành <span class="req">*</span>
+                    </label>
+                    <input type="text" id="addrProvince" class="ll-form-input" placeholder="TP. Hồ Chí Minh" required />
+                </div>
+                <div class="ll-form-group">
+                    <label class="ll-form-label" for="addrDistrict">
+                        Quận / Huyện <span class="req">*</span>
+                    </label>
+                    <input type="text" id="addrDistrict" class="ll-form-input" placeholder="Quận Bình Thạnh" required />
+                </div>
+                <div class="ll-form-group">
+                    <label class="ll-form-label" for="addrWard">
+                        Phường / Xã <span class="req">*</span>
+                    </label>
+                    <input type="text" id="addrWard" class="ll-form-input" placeholder="Phường 22" required />
+                </div>
+            </div>
+
+            <div class="ll-form-group">
+                <label class="ll-form-label" for="addrDetail">
+                    Địa chỉ chi tiết (Số nhà, tên đường, tòa nhà...) <span class="req">*</span>
+                </label>
+                <textarea id="addrDetail" class="ll-form-textarea" placeholder="Ví dụ: Phòng 1204, Tòa Park 3, Vinhomes Central Park, 208 Nguyễn Hữu Cảnh" required></textarea>
+            </div>
+
+            <div class="ll-form-group">
+                <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; font-weight: 600; cursor: pointer;">
+                    <input type="checkbox" id="addrIsDefault" style="width: 18px; height: 18px; accent-color: var(--color-brand);" />
+                    <span>Đặt làm địa chỉ giao hàng mặc định</span>
+                </label>
+            </div>
+
+            <div class="ll-modal-actions">
+                <button type="button" class="ll-modal-btn-cancel" onclick="closeAddressModal()">Hủy bỏ</button>
+                <button type="submit" class="ll-modal-btn-confirm" id="saveAddressBtn">Lưu địa chỉ</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ==========================================================================
+     MODAL: XÁC NHẬN XÓA ĐỊA CHỈ
+     ========================================================================== -->
+<div class="ll-modal-overlay" id="deleteAddressModal" role="dialog" aria-modal="true" aria-labelledby="deleteAddrTitle">
+    <div class="ll-modal-dialog--address" style="max-width: 460px;">
+        <div class="ll-modal-header">
+            <h3 class="ll-modal-title" style="color: var(--color-error);" id="deleteAddrTitle">
+                <i class="fa-solid fa-triangle-exclamation me-1"></i> Xóa địa chỉ nhận hàng
+            </h3>
+            <button type="button" class="ll-modal-close-btn" onclick="closeDeleteAddressConfirm()" aria-label="Đóng">&times;</button>
+        </div>
+
+        <p style="font-size: 0.9375rem; color: var(--color-text-sub); line-height: 1.6; margin: 0 0 1.5rem 0;">
+            Bạn có chắc chắn muốn xóa địa chỉ này khỏi sổ địa chỉ của mình? Thao tác này không thể hoàn tác.
+        </p>
+
+        <div class="ll-modal-actions">
+            <button type="button" class="ll-modal-btn-cancel" onclick="closeDeleteAddressConfirm()">Không, giữ lại</button>
+            <button type="button" class="ll-modal-btn-confirm ll-modal-btn-confirm--danger" onclick="handleConfirmDeleteAddress()">
+                <i class="fa-regular fa-trash-can"></i> Xác nhận xóa
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/lightlife-account.js" asp-append-version="true"></script>
+}
+

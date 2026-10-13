@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng nhập tài khoản - LIGHT LIFE FASHION STUDIO</title>
+    
+    <!-- FontAwesome 6.5.1 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <!-- LIGHT LIFE Storefront & Auth Design System CSS (Thuần CSS3, Không Bootstrap, Không Tailwind, Không Font Serif) -->
+    <link rel="stylesheet" href="wwwroot/css/lightlife-storefront.css" />
+    <link rel="stylesheet" href="wwwroot/css/lightlife-auth.css" />
+</head>
+<body class="ll-auth-body">
+    <div class="ll-auth-card">
+        <!-- CỘT 1: ẢNH EDITORIAL THỜI TRANG (DESKTOP) -->
+        <div class="ll-auth-visual">
+            <div>
+                <a href="storefront-home.html" class="ll-auth-brand" title="Về trang chủ LIGHT LIFE">
+                    <img src="wwwroot/images/logo.png" alt="LIGHT LIFE Logo" class="ll-auth-brand__img" />
+                    <div>
+                        <span class="ll-auth-brand__title">LIGHT LIFE</span>
+                        <span class="ll-auth-brand__sub">FASHION STUDIO</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="ll-auth-quote">
+                <p class="ll-auth-quote__text">
+                    "Phong cách là cách nói lên bạn là ai mà không cần mở lời."
+                </p>
+                <span class="ll-auth-quote__author">— Rachel Zoe</span>
+            </div>
+
+            <div>
+                <a href="storefront-home.html" class="ll-auth-back-link">
+                    <i class="fa-solid fa-arrow-left"></i> Quay lại cửa hàng
+                </a>
+            </div>
+        </div>
+
+        <!-- CỘT 2: BIỂU MẪU ĐĂNG NHẬP -->
+        <div class="ll-auth-form-wrap">
+            <div>
+                <!-- Logo hiển thị trên Mobile khi ảnh bị ẩn -->
+                <a href="storefront-home.html" class="ll-auth-mobile-brand">
+                    <img src="wwwroot/images/logo.png" alt="LIGHT LIFE Logo" />
+                    <span class="fw-bold fs-5">LIGHT LIFE</span>
+                </a>
+
+                <div class="ll-auth-header">
+                    <h1 class="ll-auth-header__title">Đăng Nhập</h1>
+                    <p class="ll-auth-header__subtitle">
+                        Đăng nhập tài khoản để theo dõi đơn hàng và hoàn tất thanh toán nhanh chóng.
+                    </p>
+                </div>
+
+                <!-- Banner thông báo lỗi / thành công chung -->
+                <div class="ll-auth-alert" id="authAlert" role="alert">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span id="authAlertText">Thông báo lỗi đăng nhập.</span>
+                </div>
+
+                <!-- Biểu mẫu đăng nhập -->
+                <form id="loginForm" novalidate>
+                    <!-- 1. Email hoặc Tên đăng nhập -->
+                    <div class="ll-form-group">
+                        <label for="loginEmail" class="ll-form-label">Email hoặc Tên đăng nhập *</label>
+                        <div class="ll-input-wrapper">
+                            <span class="ll-input-icon"><i class="fa-regular fa-user"></i></span>
+                            <input type="text" 
+                                   id="loginEmail" 
+                                   name="email"
+                                   class="ll-input-field" 
+                                   placeholder="VD: khachhang@lightlife.vn" 
+                                   autocomplete="username" 
+                                   required />
+                        </div>
+                        <span class="ll-field-error" id="loginEmailError"></span>
+                    </div>
+
+                    <!-- 2. Mật khẩu + Nút mắt hiện/ẩn -->
+                    <div class="ll-form-group">
+                        <div class="ll-form-label-row">
+                            <label for="loginPassword" class="ll-form-label">Mật khẩu *</label>
+                            <a href="storefront-forgot-password.html" class="ll-form-label__link">Quên mật khẩu?</a>
+                        </div>
+                        <div class="ll-input-wrapper">
+                            <span class="ll-input-icon"><i class="fa-solid fa-lock"></i></span>
+                            <input type="password" 
+                                   id="loginPassword" 
+                                   name="password"
+                                   class="ll-input-field ll-input-field--has-toggle" 
+                                   placeholder="Nhập mật khẩu của bạn" 
+                                   autocomplete="current-password" 
+                                   required />
+                            <button type="button" 
+                                    class="ll-password-toggle-btn" 
+                                    data-target="loginPassword" 
+                                    aria-label="Hiện mật khẩu">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
+                        <span class="ll-field-error" id="loginPasswordError"></span>
+                    </div>
+
+                    <!-- 3. Ghi nhớ đăng nhập -->
+                    <label class="ll-checkbox-group">
+                        <input type="checkbox" id="loginRemember" name="rememberMe" class="ll-checkbox-input" />
+                        <span>Ghi nhớ đăng nhập trên thiết bị này</span>
+                    </label>
+
+                    <!-- 4. Nút Đăng nhập chính -->
+                    <button type="submit" class="ll-auth-submit-btn" id="loginSubmitBtn">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i> Đăng nhập
+                    </button>
+                </form>
+
+                <!-- Phân cách hoặc -->
+                <div class="ll-auth-divider">
+                    <span>hoặc tiếp tục với</span>
+                </div>
+
+                <!-- 5. Nút Đăng nhập bằng Google (Chuẩn bị sẵn cho tích hợp OAuth Backend) -->
+                <button type="button" class="ll-google-btn" id="googleAuthBtn" title="Đăng nhập nhanh qua tài khoản Google">
+                    <svg width="20" height="20" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+                        <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+                        <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.14-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.98 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+                        <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                    </svg>
+                    <span>Đăng nhập bằng Google</span>
+                </button>
+            </div>
+
+            <!-- Chân form: Liên kết Đăng ký -->
+            <footer class="ll-auth-footer">
+                <span>Chưa có tài khoản khách hàng? </span>
+                <a href="storefront-register.html">Đăng ký ngay</a>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Core Scripts -->
+    <script src="wwwroot/js/lightlife-storefront.js"></script>
+    <script src="wwwroot/js/lightlife-auth.js"></script>
+</body>
+</html>
+

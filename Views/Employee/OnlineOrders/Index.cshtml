@@ -1,0 +1,162 @@
+@{
+    ViewData["Title"] = "Quản lý đơn Online";
+}
+
+@section Styles {
+    <style>
+        .page-container { max-width: 1400px; margin: 0 auto; height: calc(100vh - 100px); display: flex; flex-direction: column; }
+        .kanban-board { flex: 1; display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem; }
+        .kanban-column { flex: 0 0 320px; background: #f3f4f6; border-radius: 12px; display: flex; flex-direction: column; padding: 0.75rem; }
+        .kanban-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; padding: 0 0.5rem; }
+        .kanban-header h6 { margin: 0; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: #4b5563; letter-spacing: 0.5px; }
+        
+        .kanban-cards { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem; }
+        .order-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); cursor: pointer; transition: all 0.15s; }
+        .order-card:hover { border-color: #cbd5e1; transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .order-card.urgent { border-left: 3px solid #ef4444; }
+        
+        .card-header-info { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; }
+        .order-code { font-family: monospace; font-weight: 700; font-size: 0.95rem; color: #111827; }
+        .platform-badge { font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 4px; text-transform: uppercase; }
+        .platform-shopee { background: #ffede8; color: #ee4d2d; }
+        .platform-web { background: #e0f2fe; color: #0369a1; }
+        
+        .customer-info { font-size: 0.8rem; color: #4b5563; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 6px; }
+        .items-info { font-size: 0.82rem; font-weight: 600; color: #111827; padding-top: 0.5rem; border-top: 1px dashed #e5e7eb; }
+        .action-bar { margin-top: 0.75rem; display: flex; justify-content: flex-end; }
+    </style>
+}
+
+<div class="page-container">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+        <div>
+            <h4 class="fw-bold mb-0 text-dark">Xử lý đơn Online</h4>
+            <div class="text-muted small mt-1">
+                Kéo thả hoặc nhấn vào đơn để xử lý. Tồn kho tự động <strong>giữ chỗ</strong> khi có đơn, và <strong>trừ tồn bán được</strong> khi giao Shipper.
+            </div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <input type="text" class="form-control form-control-sm rounded-pill px-3" placeholder="Tìm mã đơn, SĐT..." style="width: 250px;" />
+            <button class="btn btn-dark btn-sm rounded-pill px-3 py-2 fw-semibold"><i class="fa-solid fa-rotate-right me-1"></i>Làm mới</button>
+        </div>
+    </div>
+
+    <div class="kanban-board">
+        <!-- Cột 1: Chờ xác nhận -->
+        <div class="kanban-column">
+            <div class="kanban-header">
+                <h6>Chờ xác nhận & Lấy hàng</h6>
+                <span class="badge bg-secondary rounded-pill">1</span>
+            </div>
+            <div class="kanban-cards">
+                <div class="order-card urgent" onclick="openOrderActionModal('ONL-9821')">
+                    <div class="card-header-info">
+                        <span class="order-code">ONL-9821</span>
+                        <span class="platform-badge platform-shopee">Shopee</span>
+                    </div>
+                    <div class="customer-info"><i class="fa-regular fa-user"></i> Lê Thu Hà - TP.HCM</div>
+                    <div class="customer-info text-danger fw-semibold"><i class="fa-solid fa-bolt"></i> Giao hỏa tốc trước 10:30</div>
+                    <div class="items-info">1 x Blazer Silk (M-Đen)</div>
+                    <div class="text-muted small mt-1">Hệ thống đã giữ chỗ: 1 cái</div>
+                    <div class="action-bar">
+                        <button class="btn btn-sm btn-dark rounded-pill px-3" onclick="event.stopPropagation(); changeStatus('ONL-9821', 'preparing')">Nhặt hàng</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cột 2: Đang chuẩn bị (Checklist) -->
+        <div class="kanban-column">
+            <div class="kanban-header">
+                <h6>Đang đóng gói</h6>
+                <span class="badge bg-secondary rounded-pill">1</span>
+            </div>
+            <div class="kanban-cards">
+                <div class="order-card" onclick="openOrderActionModal('ONL-9819')">
+                    <div class="card-header-info">
+                        <span class="order-code">ONL-9819</span>
+                        <span class="platform-badge platform-web">Website</span>
+                    </div>
+                    <div class="customer-info"><i class="fa-regular fa-user"></i> Trần Văn A - Hà Nội</div>
+                    <div class="items-info">2 x Áo Sơ Mi Linen (L-Be)</div>
+                    <div class="text-success small mt-1"><i class="fa-solid fa-check me-1"></i> Đã nhặt đủ hàng</div>
+                    <div class="action-bar">
+                        <button class="btn btn-sm btn-primary rounded-pill px-3" onclick="event.stopPropagation(); changeStatus('ONL-9819', 'shipping')">Giao Shipper</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cột 3: Đã giao vận -->
+        <div class="kanban-column">
+            <div class="kanban-header">
+                <h6>Đã giao Shipper</h6>
+                <span class="badge bg-secondary rounded-pill">0</span>
+            </div>
+            <div class="kanban-cards" id="shippingColumn">
+                <!-- Trống -->
+            </div>
+        </div>
+
+        <!-- Cột 4: Hoàn tất (COD) -->
+        <div class="kanban-column">
+            <div class="kanban-header">
+                <h6>Hoàn tất (Ghi Doanh Thu)</h6>
+                <span class="badge bg-secondary rounded-pill">0</span>
+            </div>
+            <div class="kanban-cards" id="completedColumn">
+                <!-- Trống -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Checklist Đóng gói -->
+<div class="modal fade" id="orderActionModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-header bg-dark text-white p-3">
+                <h6 class="modal-title fw-bold mb-0">Checklist Đóng Gói - <span id="modalOrderCode" class="font-monospace">ONL-9821</span></h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="alert alert-info py-2 small mb-3">
+                    <i class="fa-solid fa-circle-info me-1"></i> Khi giao Shipper, hệ thống sẽ tự động trừ Tồn bán được.
+                </div>
+                
+                <h6 class="fw-bold text-dark small mb-2">Danh sách mặt hàng cần nhặt:</h6>
+                <div class="list-group mb-3">
+                    <label class="list-group-item d-flex align-items-center gap-2 border-0 bg-light rounded mb-1">
+                        <input class="form-check-input flex-shrink-0" type="checkbox" value="" checked>
+                        <div>
+                            <div class="fw-semibold text-dark small">Blazer Silk Suông Form Chuẩn</div>
+                            <div class="text-muted" style="font-size:0.75rem;">Màu: Đen - Size: M | Số lượng: 1</div>
+                        </div>
+                    </label>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-dark" onclick="alert('Đã in tem vận chuyển mã vận đơn: GHTK123456')"><i class="fa-solid fa-print me-1"></i> In tem vận chuyển</button>
+                    <button class="btn btn-primary" onclick="alert('Chuyển trạng thái sang Giao Shipper và trừ tồn!'); $('#orderActionModal').modal('hide');"><i class="fa-solid fa-truck-fast me-1"></i> Xác nhận Giao Shipper</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function openOrderActionModal(code) {
+            document.getElementById('modalOrderCode').innerText = code;
+            var myModal = new bootstrap.Modal(document.getElementById('orderActionModal'));
+            myModal.show();
+        }
+        function changeStatus(code, status) {
+            if(status === 'preparing') {
+                alert('Đã chuyển đơn ' + code + ' sang Đang đóng gói.');
+            } else if (status === 'shipping') {
+                alert('Đã giao đơn ' + code + ' cho Shipper.\nHệ thống tự động trừ Tồn bán được (và giảm số giữ chỗ).');
+            }
+        }
+    </script>
+}

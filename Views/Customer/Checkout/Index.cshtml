@@ -1,0 +1,252 @@
+@* Views/Checkout/Index.cshtml *@
+@{
+    Layout = "_CheckoutLayout";
+    ViewData["Title"] = "Thanh toán & Đặt hàng - LIGHT LIFE";
+}
+
+<div class="ll-checkout-page">
+    <div class="ll-container">
+        <!-- Banner cảnh báo lỗi nếu có -->
+        <div class="ll-checkout-alert" id="checkoutAlert" role="alert">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span id="checkoutAlertText">Vui lòng kiểm tra lại thông tin đặt hàng.</span>
+        </div>
+
+        <!-- Bố cục 2 cột (Desktop) / 1 cột (Mobile) -->
+        <div class="ll-checkout-layout">
+            <!-- CỘT TRÁI (~60%): FORM THÔNG TIN ĐẶT HÀNG -->
+            <div class="ll-checkout-main">
+                <!-- PHẦN 1: ĐỊA CHỈ NHẬN HÀNG -->
+                <section class="ll-checkout-section" aria-labelledby="sectionAddressTitle">
+                    <h2 class="ll-checkout-section__title" id="sectionAddressTitle">
+                        <span class="ll-checkout-section__number">1</span>
+                        Thông tin & Địa chỉ nhận hàng
+                    </h2>
+
+                    <!-- Tabs chọn địa chỉ đã lưu hoặc nhập mới -->
+                    <div class="ll-address-tabs" role="tablist">
+                        <button type="button" class="ll-address-tab-btn active" id="tabSavedAddressBtn">
+                            <i class="fa-solid fa-address-book"></i> Địa chỉ đã lưu
+                        </button>
+                        <button type="button" class="ll-address-tab-btn" id="tabNewAddressBtn">
+                            <i class="fa-solid fa-plus"></i> Giao đến địa chỉ mới
+                        </button>
+                    </div>
+
+                    <!-- Khung địa chỉ đã lưu của khách hàng -->
+                    <div id="savedAddressSection">
+                        <div class="ll-saved-addresses-list" id="savedAddressesList">
+                            <!-- Render bằng lightlife-checkout.js -->
+                        </div>
+                    </div>
+
+                    <!-- Khung nhập địa chỉ mới (Mặc định ẩn, bật khi bấm tab) -->
+                    <div id="newAddressSection" style="display: none;">
+                        <div class="ll-form-grid">
+                            <div class="ll-input-group">
+                                <label for="newRecipientName">Họ và tên người nhận *</label>
+                                <input type="text" id="newRecipientName" placeholder="VD: Nguyễn Thu Trang" autocomplete="name" />
+                                <span class="ll-field-error-msg" id="newRecipientNameError"></span>
+                            </div>
+
+                            <div class="ll-input-group">
+                                <label for="newRecipientPhone">Số điện thoại nhận hàng *</label>
+                                <input type="tel" id="newRecipientPhone" placeholder="VD: 0908 123 456" autocomplete="tel" />
+                                <span class="ll-field-error-msg" id="newRecipientPhoneError"></span>
+                            </div>
+
+                            <div class="ll-input-group">
+                                <label for="newRecipientCity">Tỉnh / Thành phố *</label>
+                                <select id="newRecipientCity">
+                                    <option value="">-- Chọn Tỉnh / Thành phố --</option>
+                                    <option value="TP. Hồ Chí Minh" selected>TP. Hồ Chí Minh</option>
+                                    <option value="Hà Nội">Hà Nội</option>
+                                    <option value="Đà Nẵng">Đà Nẵng</option>
+                                    <option value="Hải Phòng">Hải Phòng</option>
+                                    <option value="Cần Thơ">Cần Thơ</option>
+                                </select>
+                                <span class="ll-field-error-msg" id="newRecipientCityError"></span>
+                            </div>
+
+                            <div class="ll-input-group">
+                                <label for="newRecipientDistrict">Quận / Huyện *</label>
+                                <input type="text" id="newRecipientDistrict" placeholder="VD: Quận Bình Thạnh" />
+                                <span class="ll-field-error-msg" id="newRecipientDistrictError"></span>
+                            </div>
+
+                            <div class="ll-input-group ll-form-grid--full">
+                                <label for="newRecipientDetail">Địa chỉ chi tiết (Số nhà, tên đường, tòa nhà...) *</label>
+                                <input type="text" id="newRecipientDetail" placeholder="VD: Phòng 1204, Tòa Park 3, 208 Nguyễn Hữu Cảnh, Phường 22" />
+                                <span class="ll-field-error-msg" id="newRecipientDetailError"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ghi chú đơn hàng (Tùy chọn) -->
+                    <div class="ll-input-group" style="margin-top: 1.25rem; margin-bottom: 0;">
+                        <label for="orderNotes">Ghi chú cho đơn hàng (Tùy chọn):</label>
+                        <textarea id="orderNotes" placeholder="VD: Giao giờ hành chính, gọi điện thoại trước 15 phút khi giao..."></textarea>
+                    </div>
+                </section>
+
+                <!-- PHẦN 2: PHƯƠNG THỨC VẬN CHUYỂN -->
+                <section class="ll-checkout-section" aria-labelledby="sectionShippingTitle">
+                    <h2 class="ll-checkout-section__title" id="sectionShippingTitle">
+                        <span class="ll-checkout-section__number">2</span>
+                        Phương thức vận chuyển
+                    </h2>
+
+                    <div class="ll-options-grid">
+                        <!-- Tiêu chuẩn -->
+                        <div class="ll-option-card ll-shipping-option selected" id="shipping_standard" onclick="handleShippingChange('standard')">
+                            <input type="radio" name="shippingMethodRadio" id="ship_standard" value="standard" checked />
+                            <div class="ll-option-card__content">
+                                <div class="ll-option-card__header">
+                                    <span class="ll-option-card__name">
+                                        <i class="fa-solid fa-truck" style="color: var(--color-brand);"></i>
+                                        Giao hàng tiêu chuẩn
+                                    </span>
+                                    <span class="ll-option-card__price">30.000 đ</span>
+                                </div>
+                                <p class="ll-option-card__desc">Thời gian dự kiến từ 2 - 4 ngày làm việc trên toàn quốc.</p>
+                            </div>
+                        </div>
+
+                        <!-- Hỏa tốc -->
+                        <div class="ll-option-card ll-shipping-option" id="shipping_express" onclick="handleShippingChange('express')">
+                            <input type="radio" name="shippingMethodRadio" id="ship_express" value="express" />
+                            <div class="ll-option-card__content">
+                                <div class="ll-option-card__header">
+                                    <span class="ll-option-card__name">
+                                        <i class="fa-solid fa-bolt" style="color: #D97706;"></i>
+                                        Giao hàng hỏa tốc (Nội thành)
+                                    </span>
+                                    <span class="ll-option-card__price">50.000 đ</span>
+                                </div>
+                                <p class="ll-option-card__desc">Nhận hàng trong vòng 24 - 48 giờ đối với khu vực TP.HCM & Hà Nội.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PHẦN 3: PHƯƠNG THỨC THANH TOÁN -->
+                <section class="ll-checkout-section" aria-labelledby="sectionPaymentTitle">
+                    <h2 class="ll-checkout-section__title" id="sectionPaymentTitle">
+                        <span class="ll-checkout-section__number">3</span>
+                        Phương thức thanh toán
+                    </h2>
+
+                    <div class="ll-options-grid">
+                        <!-- COD -->
+                        <div class="ll-option-card ll-payment-option selected" id="payment_COD" onclick="handlePaymentChange('COD')">
+                            <input type="radio" name="paymentMethodRadio" id="pay_cod" value="COD" checked />
+                            <div class="ll-option-card__content">
+                                <div class="ll-option-card__header">
+                                    <span class="ll-option-card__name">
+                                        <i class="fa-solid fa-money-bill-wave" style="color: var(--color-success);"></i>
+                                        Thanh toán khi nhận hàng (COD)
+                                    </span>
+                                </div>
+                                <p class="ll-option-card__desc">
+                                    Khách hàng được quyền kiểm tra sản phẩm trước khi thanh toán tiền mặt cho nhân viên giao vận.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Chuyển khoản ngân hàng -->
+                        <div class="ll-option-card ll-payment-option" id="payment_BANK_TRANSFER" onclick="handlePaymentChange('BANK_TRANSFER')">
+                            <input type="radio" name="paymentMethodRadio" id="pay_bank" value="BANK_TRANSFER" />
+                            <div class="ll-option-card__content">
+                                <div class="ll-option-card__header">
+                                    <span class="ll-option-card__name">
+                                        <i class="fa-solid fa-qrcode" style="color: var(--color-brand);"></i>
+                                        Chuyển khoản qua Ngân hàng / Quét mã QR
+                                    </span>
+                                </div>
+                                <p class="ll-option-card__desc">
+                                    Quét mã VietQR hoặc chuyển khoản trực tiếp. Đơn hàng được tự động xác nhận ngay khi hệ thống nhận được giao dịch.
+                                </p>
+
+                                <!-- Hộp hướng dẫn chuyển khoản -->
+                                <div class="ll-bank-instructions" id="bankInstructions">
+                                    <strong>Thông tin tài khoản nhận thanh toán:</strong>
+                                    <div class="ll-bank-grid">
+                                        <div class="ll-bank-qr">
+                                            <!-- Mã QR Demo -->
+                                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=LIGHTLIFE_DEMO_ORDER" alt="QR Ngân hàng" />
+                                        </div>
+                                        <div>
+                                            <p style="margin: 0 0 0.35rem 0;">Ngân hàng: <strong>MB Bank (Ngân hàng Quân Đội)</strong></p>
+                                            <p style="margin: 0 0 0.35rem 0;">Số tài khoản: <strong>999988886666</strong></p>
+                                            <p style="margin: 0 0 0.35rem 0;">Chủ tài khoản: <strong>LIGHT LIFE FASHION STUDIO</strong></p>
+                                            <p style="margin: 0; color: var(--color-text-sub); font-size: 0.8125rem;">Nội dung: <em>Mã đơn hàng + Số điện thoại</em></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- CỘT PHẢI (~40%): TÓM TẮT ĐƠN HÀNG (STICKY SIDEBAR) -->
+            <aside class="ll-checkout-sidebar" aria-label="Tóm tắt đơn hàng">
+                <div class="ll-checkout-summary">
+                    <h3 class="ll-checkout-summary__title">
+                        <span>Đơn hàng của bạn</span>
+                        <span class="ll-checkout-summary__count" id="checkoutItemCount">(2 món)</span>
+                    </h3>
+
+                    <!-- Danh sách món hàng thu nhỏ -->
+                    <div class="ll-checkout-items-list" id="checkoutItemsList">
+                        <!-- Render từ JS -->
+                    </div>
+
+                    <!-- Bảng tính tiền chi tiết -->
+                    <div class="ll-checkout-calc-rows">
+                        <div class="ll-checkout-calc-row">
+                            <span class="ll-checkout-calc-row__label">Tiền hàng tạm tính:</span>
+                            <span class="ll-checkout-calc-row__value" id="summarySubtotal">0 đ</span>
+                        </div>
+                        <div class="ll-checkout-calc-row ll-checkout-calc-row--discount" id="summaryDiscountRow" style="display: none;">
+                            <span class="ll-checkout-calc-row__label">Giảm giá voucher:</span>
+                            <span class="ll-checkout-calc-row__value" id="summaryDiscountValue">-0 đ</span>
+                        </div>
+                        <div class="ll-checkout-calc-row">
+                            <span class="ll-checkout-calc-row__label">Phí vận chuyển:</span>
+                            <span class="ll-checkout-calc-row__value" id="summaryShippingFee">30.000 đ</span>
+                        </div>
+                    </div>
+
+                    <!-- Tổng thanh toán cuối cùng -->
+                    <div class="ll-checkout-total-row">
+                        <span class="ll-checkout-total-row__label">Tổng thanh toán:</span>
+                        <span class="ll-checkout-total-row__value" id="summaryTotal">0 đ</span>
+                    </div>
+
+                    <!-- Nút Đặt hàng -->
+                    <button type="button" class="ll-checkout-submit-btn" id="submitOrderBtn">
+                        <i class="fa-solid fa-lock"></i> Đặt hàng ngay
+                    </button>
+
+                    <!-- Cam kết & chính sách -->
+                    <div class="ll-checkout-perks">
+                        <div class="ll-checkout-perk-item">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>Hỗ trợ đồng kiểm tra sản phẩm trước khi thanh toán</span>
+                        </div>
+                        <div class="ll-checkout-perk-item">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            <span>Đổi mẫu hoặc đổi size miễn phí trong 07 ngày</span>
+                        </div>
+                        <div class="ll-checkout-perk-item">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <span>Cam kết bảo mật thông tin khách hàng tuyệt đối</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</div>
+

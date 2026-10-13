@@ -1,0 +1,185 @@
+@* Views/Account/Orders.cshtml *@
+@{
+    Layout = "_StoreLayout";
+    ViewData["Title"] = "Đơn hàng của tôi - LIGHT LIFE";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/lightlife-orders.css" asp-append-version="true" />
+}
+
+<div class="ll-account-page">
+    <div class="ll-container">
+        <!-- BREADCRUMB ĐIỀU HƯỚNG -->
+        <nav class="ll-account-breadcrumb" aria-label="Đường dẫn trang">
+            <a href="/">Trang chủ</a>
+            <span class="ll-account-breadcrumb__sep">/</span>
+            <a href="/Account/Profile">Tài khoản</a>
+            <span class="ll-account-breadcrumb__sep">/</span>
+            <span class="ll-account-breadcrumb__current" aria-current="page">Đơn hàng của tôi</span>
+        </nav>
+
+        <!-- BỐ CỤC 2 CỘT TÀI KHOẢN KHÁCH HÀNG -->
+        <div class="ll-account-layout">
+            <!-- CỘT 1: SIDEBAR TÀI KHOẢN KHÁCH HÀNG (280px) -->
+            <aside class="ll-account-sidebar" aria-label="Menu tài khoản cá nhân">
+                <!-- Thẻ Tóm Tắt Thông Tin Khách Hàng -->
+                <div class="ll-account-user-card">
+                    <div class="ll-account-user-avatar" id="accountUserAvatar">T</div>
+                    <div class="ll-account-user-info">
+                        <span class="ll-account-user-name" id="accountUserName">Nguyễn Thu Trang</span>
+                        <span class="ll-account-user-email" id="accountUserEmail">thutrang@lightlife.vn</span>
+                        <span class="ll-account-user-tag">Khách hàng</span>
+                    </div>
+                </div>
+
+                <!-- Danh Sách Điều Hướng Tài Khoản Khách Hàng -->
+                <nav>
+                    <ul class="ll-account-nav-list">
+                        <li class="ll-account-nav-item">
+                            <a href="/Account/Profile">
+                                <i class="fa-regular fa-user"></i> Hồ sơ cá nhân
+                            </a>
+                        </li>
+                        <li class="ll-account-nav-item">
+                            <a href="/Account/Addresses">
+                                <i class="fa-solid fa-location-dot"></i> Sổ địa chỉ
+                            </a>
+                        </li>
+                        <li class="ll-account-nav-item active">
+                            <a href="/Account/Orders">
+                                <i class="fa-solid fa-box-open"></i> Đơn hàng của tôi
+                            </a>
+                        </li>
+                        <li class="ll-account-nav-item">
+                            <a href="/Account/ChangePassword">
+                                <i class="fa-solid fa-key"></i> Đổi mật khẩu
+                            </a>
+                        </li>
+                        <li class="ll-account-nav-item ll-account-nav-item--logout">
+                            <a href="javascript:void(0)" onclick="LightLifeAuth.logout();">
+                                <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- CỘT 2: NỘI DUNG QUẢN LÝ ĐƠN HÀNG CHÍNH -->
+            <main class="ll-orders-main">
+                <!-- Tiêu Đề Mục -->
+                <div class="ll-orders-main-header">
+                    <h1 class="ll-orders-title">
+                        <i class="fa-solid fa-box-open" style="color: var(--color-brand); font-size: 1.45rem;"></i>
+                        Đơn hàng của tôi
+                        <span class="ll-orders-count-badge" id="totalOrdersCountBadge">0 đơn hàng</span>
+                    </h1>
+                </div>
+
+                <!-- Thanh Công Cụ: Lọc Trạng Thái & Tìm Kiếm -->
+                <div class="ll-orders-toolbar">
+                    <!-- Tabs Trạng Thái Đơn Hàng (Pills Nav) -->
+                    <div class="ll-order-status-tabs" role="tablist" aria-label="Bộ lọc trạng thái đơn hàng">
+                        <button type="button" class="ll-order-tab-btn active" id="tab_all" onclick="handleFilterTabClick('all')">
+                            Tất cả <span class="ll-order-tab-counter" id="counter_all">0</span>
+                        </button>
+                        <button type="button" class="ll-order-tab-btn" id="tab_pending" onclick="handleFilterTabClick('pending')">
+                            Chờ xác nhận <span class="ll-order-tab-counter" id="counter_pending">0</span>
+                        </button>
+                        <button type="button" class="ll-order-tab-btn" id="tab_shipping" onclick="handleFilterTabClick('shipping')">
+                            Đang giao <span class="ll-order-tab-counter" id="counter_shipping">0</span>
+                        </button>
+                        <button type="button" class="ll-order-tab-btn" id="tab_completed" onclick="handleFilterTabClick('completed')">
+                            Hoàn thành <span class="ll-order-tab-counter" id="counter_completed">0</span>
+                        </button>
+                        <button type="button" class="ll-order-tab-btn" id="tab_cancelled" onclick="handleFilterTabClick('cancelled')">
+                            Đã hủy <span class="ll-order-tab-counter" id="counter_cancelled">0</span>
+                        </button>
+                    </div>
+
+                    <!-- Ô Tìm Kiếm Theo Mã Đơn Hàng -->
+                    <form class="ll-order-search-form" id="orderSearchForm" novalidate>
+                        <i class="fa-solid fa-magnifying-glass ll-order-search-icon" aria-hidden="true"></i>
+                        <input type="text" 
+                               id="orderSearchInput" 
+                               class="ll-order-search-input" 
+                               placeholder="Tìm theo mã đơn (VD: LL-893124) hoặc tên món..." 
+                               aria-label="Tìm kiếm mã đơn hàng" />
+                    </form>
+                </div>
+
+                <!-- Danh Sách Thẻ Đơn Hàng -->
+                <div class="ll-orders-list" id="ordersListContainer">
+                    <!-- Render bằng lightlife-orders.js -->
+                </div>
+
+                <!-- Trạng Thái Khi Không Có Đơn Hàng Nào (Empty State) -->
+                <div class="ll-orders-empty" id="ordersEmptyState">
+                    <div class="ll-orders-empty__icon-wrap">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                    <h2 class="ll-orders-empty__title">Bạn chưa có đơn hàng nào</h2>
+                    <p class="ll-orders-empty__desc">
+                        Khám phá ngay các bộ sưu tập thời trang thanh lịch, tối giản tại LIGHT LIFE để chọn cho mình những trang phục phù hợp nhất.
+                    </p>
+                    <a href="/Products" class="ll-btn ll-btn-primary" style="min-height: 48px; padding: 0 2rem;">
+                        <i class="fa-solid fa-shirt"></i> Mua sắm ngay
+                    </a>
+                </div>
+
+                <!-- Phân Trang Đơn Hàng -->
+                <div class="ll-pagination" id="ordersPagination">
+                    <!-- Render từ JS -->
+                </div>
+            </main>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL XEM CHI TIẾT NHANH ĐƠN HÀNG -->
+<div class="ll-modal-overlay" id="quickOrderDetailModal" role="dialog" aria-modal="true" aria-labelledby="modalOrderCode">
+    <div class="ll-modal-dialog--order">
+        <div class="ll-modal-header">
+            <div>
+                <span style="font-size: 0.8125rem; color: var(--color-text-sub); display: block;">Chi tiết đơn hàng</span>
+                <h3 class="ll-modal-title" style="color: var(--color-brand);" id="modalOrderCode">LL-893124</h3>
+            </div>
+            <button type="button" class="ll-modal-close-btn" id="closeOrderModalBtn" aria-label="Đóng">&times;</button>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:1.25rem;">
+            <!-- Meta Thông Tin -->
+            <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; background:#FAF8F5; padding:0.85rem 1rem; border-radius:6px; font-size:0.875rem;">
+                <div>Thời gian: <strong id="modalOrderDate">10/10/2026</strong></div>
+                <div>Trạng thái: <span id="modalOrderStatus" class="ll-badge ll-badge--pending">Chờ xác nhận</span></div>
+            </div>
+
+            <!-- Người Nhận & Địa Chỉ -->
+            <div style="font-size:0.875rem; line-height:1.5;">
+                <div style="font-weight:700; color:var(--color-text-main); margin-bottom:0.25rem;">Địa chỉ nhận hàng:</div>
+                <div id="modalOrderRecipient" style="color:var(--color-text-main);">Nguyễn Thu Trang</div>
+                <div id="modalOrderAddress" style="color:var(--color-text-sub);">TP. Hồ Chí Minh</div>
+                <div style="margin-top:0.4rem; color:var(--color-text-sub);">
+                    Thanh toán: <strong id="modalOrderPayment">Chuyển khoản Ngân hàng</strong>
+                </div>
+            </div>
+
+            <!-- Danh Sách Sản Phẩm -->
+            <div>
+                <div style="font-weight:700; font-size:0.9375rem; margin-bottom:0.5rem; color:var(--color-text-main);">Sản phẩm:</div>
+                <div id="modalOrderItems"></div>
+            </div>
+
+            <!-- Tổng Tiền -->
+            <div style="display:flex; justify-content:space-between; align-items:baseline; padding-top:0.75rem; border-top:1px solid var(--color-border);">
+                <span style="font-weight:700;">Tổng thanh toán:</span>
+                <span style="font-size:1.35rem; font-weight:700; color:var(--color-brand);" id="modalOrderTotal">0 đ</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/lightlife-orders.js" asp-append-version="true"></script>
+}
+

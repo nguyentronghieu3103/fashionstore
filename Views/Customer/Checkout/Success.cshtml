@@ -1,0 +1,239 @@
+@* Views/Checkout/Success.cshtml *@
+@{
+    Layout = "_CheckoutLayout";
+    ViewData["Title"] = "Đã tiếp nhận đơn hàng - LIGHT LIFE";
+    var orderId = ViewData["OrderId"] as string ?? "";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/lightlife-order-received.css" asp-append-version="true" />
+}
+
+<div class="ll-order-page">
+    <div class="ll-order-container">
+        <!-- 1. THẺ HIỂN THỊ KẾT QUẢ ĐƠN HÀNG HỢP LỆ -->
+        <article class="ll-order-card" id="orderCard" aria-labelledby="orderReceivedTitle">
+            <!-- HEADER TIẾP NHẬN ĐƠN HÀNG -->
+            <header class="ll-order-header">
+                <div class="ll-order-icon-wrap" aria-hidden="true">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <h1 class="ll-order-title" id="orderReceivedTitle">Đã tiếp nhận đơn hàng</h1>
+                <p class="ll-order-subtitle">
+                    Cảm ơn bạn đã lựa chọn <strong>LIGHT LIFE</strong>. Đơn hàng của bạn đã được ghi nhận trên hệ thống và nhân viên chăm sóc khách hàng sẽ liên hệ xác nhận trong thời gian sớm nhất.
+                </p>
+            </header>
+
+            <!-- DẢI TÓM TẮT META (MÃ ĐƠN, NGÀY ĐẶT, TRẠNG THÁI) -->
+            <div class="ll-order-meta-bar">
+                <div class="ll-order-meta-item">
+                    <span class="ll-order-meta-label">Mã đơn hàng</span>
+                    <span class="ll-order-meta-val ll-order-meta-val--code" id="orderCodeText">@orderId</span>
+                </div>
+                <div class="ll-order-meta-item">
+                    <span class="ll-order-meta-label">Thời gian tiếp nhận</span>
+                    <span class="ll-order-meta-val" id="orderTimeText">@DateTime.Now.ToString("HH:mm - dd/MM/yyyy")</span>
+                </div>
+                <div class="ll-order-meta-item">
+                    <span class="ll-order-meta-label">Trạng thái đơn</span>
+                    <div class="ll-status-badge ll-status-badge--pending" id="orderStatusBadge">
+                        <i class="fa-solid fa-clock-rotate-left"></i> Chờ xác nhận
+                    </div>
+                </div>
+            </div>
+
+            <!-- THÂN CHI TIẾT ĐƠN HÀNG -->
+            <div class="ll-order-body">
+                <!-- MỤC 1: THÔNG TIN GIAO NHẬN -->
+                <section aria-labelledby="shippingInfoTitle">
+                    <h2 class="ll-order-section-title" id="shippingInfoTitle">
+                        <i class="fa-solid fa-location-dot" style="color: var(--color-brand);"></i>
+                        Thông tin giao nhận
+                    </h2>
+                    <div class="ll-order-info-grid">
+                        <div class="ll-order-info-block">
+                            <span class="ll-order-info-label">Người nhận hàng</span>
+                            <span class="ll-order-info-name" id="recipientName">Đang tải...</span>
+                            <span id="recipientPhone" style="color: var(--color-text-sub);">Đang tải...</span>
+                        </div>
+                        <div class="ll-order-info-block">
+                            <span class="ll-order-info-label">Địa chỉ nhận hàng</span>
+                            <span id="recipientAddress">Đang tải...</span>
+                            <span style="font-size: 0.8125rem; color: var(--color-text-sub); margin-top: 0.25rem;">
+                                Hình thức: <strong id="shippingMethodText">Giao hàng tiêu chuẩn</strong>
+                            </span>
+                        </div>
+                    </div>
+                    <div id="orderNotesRow" style="display: none; margin-top: 0.75rem; font-size: 0.875rem; color: var(--color-text-sub); background: #FAF8F5; padding: 0.75rem 1rem; border-radius: 6px; border: 1px dashed var(--color-border);">
+                        <strong>Ghi chú giao hàng:</strong> <span id="orderNotesText"></span>
+                    </div>
+                </section>
+
+                <!-- MỤC 2: PHƯƠNG THỨC THANH TOÁN (COD vs CHUYỂN KHOẢN) -->
+                <section aria-labelledby="paymentInfoTitle">
+                    <h2 class="ll-order-section-title" id="paymentInfoTitle">
+                        <i class="fa-solid fa-credit-card" style="color: var(--color-brand);"></i>
+                        Phương thức & Trạng thái thanh toán
+                    </h2>
+
+                    <!-- 2.1. TRƯỜNG HỢP THANH TOÁN KHI NHẬN HÀNG (COD) -->
+                    <div class="ll-payment-detail-box" id="paymentCodSection" style="display: none;">
+                        <div class="ll-payment-cod-content">
+                            <div class="ll-payment-cod-icon">
+                                <i class="fa-solid fa-hand-holding-dollar"></i>
+                            </div>
+                            <div>
+                                <h3 style="font-size: 1rem; font-weight: 700; margin: 0 0 0.25rem 0; color: var(--color-text-main);">
+                                    Thanh toán khi nhận hàng (COD)
+                                </h3>
+                                <p style="margin: 0 0 0.5rem 0; font-size: 0.875rem; color: var(--color-text-sub); line-height: 1.5;">
+                                    Trạng thái: <strong style="color: var(--color-success);">Chưa thanh toán (Thanh toán tiền mặt khi nhận hàng)</strong>.
+                                </p>
+                                <p style="margin: 0; font-size: 0.8125rem; color: var(--color-text-sub); line-height: 1.5;">
+                                    <i class="fa-solid fa-circle-check" style="color: var(--color-success); margin-right: 4px;"></i>
+                                    Quý khách được quyền kiểm tra sản phẩm trước khi thanh toán cho nhân viên giao vận.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2.2. TRƯỜNG HỢP CHUYỂN KHOẢN NGÂN HÀNG (BANK TRANSFER) -->
+                    <div class="ll-bank-transfer-card" id="paymentBankSection" style="display: none;">
+                        <div class="ll-bank-header">
+                            <div>
+                                <h3 style="font-size: 1.0625rem; font-weight: 700; margin: 0 0 0.25rem 0; color: var(--color-text-main);">
+                                    Chuyển khoản Ngân hàng / Quét mã QR
+                                </h3>
+                                <span class="ll-bank-status-note">
+                                    <i class="fa-solid fa-clock"></i> Trạng thái: Chờ xác nhận thanh toán
+                                </span>
+                            </div>
+                            <span style="font-size: 0.8125rem; color: var(--color-text-sub);">
+                                Tuyệt đối <strong>chưa ghi "Đã thanh toán"</strong> trước khi hệ thống thực nhận
+                            </span>
+                        </div>
+
+                        <div class="ll-bank-content-grid">
+                            <!-- Mã QR VietQR thanh toán nhanh -->
+                            <div class="ll-bank-qr-frame">
+                                <img id="bankQrImg" src="" alt="Mã QR thanh toán ngân hàng" />
+                            </div>
+
+                            <!-- Thông tin ngân hàng & Nút sao chép -->
+                            <div class="ll-bank-info-rows">
+                                <div class="ll-bank-row">
+                                    <span class="ll-bank-row__label">Ngân hàng thụ hưởng:</span>
+                                    <span class="ll-bank-row__val" id="bankNameVal">MB Bank</span>
+                                </div>
+                                <div class="ll-bank-row">
+                                    <span class="ll-bank-row__label">Số tài khoản:</span>
+                                    <div class="ll-bank-row__val-wrap">
+                                        <span class="ll-bank-row__val ll-bank-row__val--highlight" id="bankAccVal">999988886666</span>
+                                        <button type="button" class="ll-copy-btn" id="copyBankAccBtn" title="Sao chép số tài khoản">
+                                            <i class="fa-regular fa-copy"></i> Sao chép
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="ll-bank-row">
+                                    <span class="ll-bank-row__label">Chủ tài khoản:</span>
+                                    <span class="ll-bank-row__val" id="bankHolderVal">LIGHT LIFE FASHION STUDIO</span>
+                                </div>
+                                <div class="ll-bank-row">
+                                    <span class="ll-bank-row__label">Số tiền cần chuyển:</span>
+                                    <div class="ll-bank-row__val-wrap">
+                                        <span class="ll-bank-row__val ll-bank-row__val--highlight" id="bankAmountVal">0 đ</span>
+                                        <button type="button" class="ll-copy-btn" id="copyBankAmountBtn" title="Sao chép số tiền">
+                                            <i class="fa-regular fa-copy"></i> Sao chép
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="ll-bank-row">
+                                    <span class="ll-bank-row__label">Nội dung chuyển khoản:</span>
+                                    <div class="ll-bank-row__val-wrap">
+                                        <span class="ll-bank-row__val ll-bank-row__val--highlight" id="bankContentVal">LL-893124</span>
+                                        <button type="button" class="ll-copy-btn" id="copyBankContentBtn" title="Sao chép nội dung">
+                                            <i class="fa-regular fa-copy"></i> Sao chép
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- MỤC 3: DANH SÁCH SẢN PHẨM & TỔNG TIỀN -->
+                <section aria-labelledby="orderProductsTitle">
+                    <h2 class="ll-order-section-title" id="orderProductsTitle">
+                        <i class="fa-solid fa-bag-shopping" style="color: var(--color-brand);"></i>
+                        Sản phẩm đã đặt
+                    </h2>
+
+                    <!-- Danh sách món hàng -->
+                    <div class="ll-order-items-table" id="orderItemsList">
+                        <!-- Render từ JS -->
+                    </div>
+
+                    <!-- Bảng tính tổng tiền -->
+                    <div class="ll-order-totals-card" style="margin-top: 1.5rem;">
+                        <div class="ll-order-calc-line">
+                            <span>Tiền hàng tạm tính:</span>
+                            <span class="ll-order-calc-line__val" id="orderSubtotalVal">0 đ</span>
+                        </div>
+                        <div class="ll-order-calc-line ll-order-calc-line--discount" id="orderDiscountRow" style="display: none;">
+                            <span>Giảm giá ưu đãi:</span>
+                            <span class="ll-order-calc-line__val" id="orderDiscountVal">-0 đ</span>
+                        </div>
+                        <div class="ll-order-calc-line">
+                            <span>Phí vận chuyển:</span>
+                            <span class="ll-order-calc-line__val" id="orderShippingFeeVal">30.000 đ</span>
+                        </div>
+                        <div class="ll-order-calc-line ll-order-calc-line--total">
+                            <span style="font-weight: 700; color: var(--color-text-main);">Tổng thanh toán:</span>
+                            <span class="ll-order-calc-line__val" id="orderTotalVal">0 đ</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- MỤC 4: NÚT ĐIỀU HƯỚNG HÀNH ĐỘNG -->
+                <div class="ll-order-actions-bar">
+                    <a href="/Account/Orders" class="ll-order-btn-primary" id="trackOrderBtn">
+                        <i class="fa-solid fa-box-open"></i> Theo dõi đơn hàng
+                    </a>
+                    <a href="/Products" class="ll-order-btn-secondary" id="continueShoppingBtn">
+                        <i class="fa-solid fa-shirt"></i> Tiếp tục mua sắm
+                    </a>
+                </div>
+            </div>
+        </article>
+
+        <!-- 2. THẺ LỖI 404 / 403 (KHI KHÔNG TÌM THẤY ĐƠN HOẶC KHÔNG CÓ QUYỀN TRUY CẬP) -->
+        <article class="ll-order-error-card" id="orderErrorCard" aria-labelledby="orderErrorTitle">
+            <div class="ll-order-error-icon" aria-hidden="true">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h1 class="ll-order-error-title" id="orderErrorTitle">Không tìm thấy thông tin đơn hàng</h1>
+            <p class="ll-order-error-desc">
+                Đơn hàng bạn đang tìm kiếm không tồn tại hoặc bạn không có quyền truy cập vào thông tin này. Nhằm bảo vệ quyền riêng tư, <strong>LIGHT LIFE</strong> chỉ cho phép xem đơn hàng thuộc tài khoản đã đăng nhập của chính bạn.
+            </p>
+            <div class="ll-order-actions-bar">
+                <a href="/" class="ll-order-btn-secondary">
+                    <i class="fa-solid fa-house"></i> Về trang chủ
+                </a>
+                <a href="/Account/Orders" class="ll-order-btn-primary">
+                    <i class="fa-solid fa-list-check"></i> Xem danh sách đơn của bạn
+                </a>
+            </div>
+        </article>
+    </div>
+</div>
+
+<!-- TOAST THÔNG BÁO SAO CHÉP THÀNH CÔNG -->
+<div class="ll-copy-toast" id="copyToast" role="status" aria-live="polite">
+    <i class="fa-solid fa-check" style="color: #A6E2BD;"></i>
+    <span id="copyToastText">Đã sao chép vào bộ nhớ tạm</span>
+</div>
+
+@section Scripts {
+    <script src="~/js/lightlife-order-received.js" asp-append-version="true"></script>
+}
+

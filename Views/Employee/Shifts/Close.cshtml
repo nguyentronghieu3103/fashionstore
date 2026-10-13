@@ -1,0 +1,707 @@
+@{
+    ViewData["Title"] = "Đóng ca & Bàn giao";
+}
+
+@section Styles {
+    <style>
+        .shift-close-page {
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .shift-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+            margin-bottom: 1.25rem;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .section-header {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #4b5563;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #f3f4f6;
+            padding-bottom: 0.65rem;
+        }
+
+        .form-label-custom {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 0.35rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .stat-badge {
+            background: #fafaf9;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 0.85rem 1rem;
+        }
+
+        .summary-sticky {
+            position: sticky;
+            top: 85px;
+        }
+
+        .denomination-table th, .denomination-table td {
+            padding: 0.35rem 0.65rem;
+            font-size: 0.82rem;
+            vertical-align: middle;
+        }
+
+        /* Tối ưu khi in biên bản bàn giao */
+        @@media print {
+            body * {
+                visibility: hidden;
+            }
+            #printableHandoverReceipt, #printableHandoverReceipt * {
+                visibility: visible;
+            }
+            #printableHandoverReceipt {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: #ffffff !important;
+                padding: 20px;
+            }
+        }
+    </style>
+}
+
+<div class="shift-close-page">
+
+    <!-- Thanh tiêu đề & Điều hướng -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <a asp-area="Employee" asp-controller="Dashboard" asp-action="Index" class="text-decoration-none text-muted small me-1">
+                    <i class="fa-solid fa-arrow-left me-1"></i>Tổng quan ca
+                </a>
+                <span class="text-muted">/</span>
+                <h4 class="fw-bold mb-0 text-dark">Đóng ca & Bàn giao</h4>
+            </div>
+            <p class="text-muted small mb-0">Đối chiếu tiền mặt trong két, tổng kết doanh thu và bàn giao quầy thu ngân.</p>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 fw-semibold">
+                <i class="fa-solid fa-clock me-1"></i>Chuẩn bị kết ca
+            </span>
+            <span class="text-muted small" id="liveCloseClock">--:--:--</span>
+        </div>
+    </div>
+
+    <!-- Thông báo an toàn: Không có giao dịch đang thu dở dang -->
+    <div class="alert alert-success py-2 px-3 small border-success-subtle mb-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-circle-check text-success fs-6"></i>
+            <span><strong>Kiểm tra hệ thống:</strong> Đã hoàn tất xử lý tất cả 12 hóa đơn trong ca. Không có giao dịch đang thanh toán dở dang.</span>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-success py-1 px-3 rounded-pill" onclick="openShiftInvoicesModal()">
+            <i class="fa-solid fa-receipt me-1"></i>Xem 12 hóa đơn
+        </button>
+    </div>
+
+    <div class="row g-3">
+
+        <!-- CỘT CHÍNH (8 CỘT): ĐỐI CHIẾU & KIỂM ĐẾM -->
+        <div class="col-12 col-lg-8">
+
+            <!-- 1. KHUNG THÔNG TIN CA & QUẦY -->
+            <div class="shift-card">
+                <div class="section-header">
+                    <span>1. Thông tin ca làm việc & Quầy thu ngân</span>
+                    <span class="badge bg-light text-dark border fw-medium px-2 py-1">Ca Sáng</span>
+                </div>
+
+                <div class="row g-3 mb-2">
+                    <div class="col-6 col-md-3">
+                        <label class="form-label-custom">Quầy thu ngân</label>
+                        <div class="fw-bold text-dark small">Quầy 01 (Tầng 1)</div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label class="form-label-custom">Thu ngân trực ca</label>
+                        <div class="fw-bold text-dark small">Lê Minh Nhật</div>
+                        <div class="text-muted" style="font-size: 0.72rem;">Mã: NV-0284</div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label class="form-label-custom">Thời gian mở ca</label>
+                        <div class="fw-semibold text-dark small">08:00 - 09/10/2026</div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label class="form-label-custom">Tiền đầu ca nhận</label>
+                        <div class="fw-bold text-dark small">1.000.000₫</div>
+                        <div class="text-muted" style="font-size: 0.72rem;">Tiền thối dự trữ</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. KHUNG TỔNG KẾT DOANH THU & DÒNG TIỀN -->
+            <div class="shift-card">
+                <div class="section-header">
+                    <span>2. Tổng kết doanh số & Dòng tiền ca</span>
+                    <span class="text-muted small fw-normal">Tổng 12 đơn bán</span>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-6 col-md-3">
+                        <div class="stat-badge">
+                            <div class="text-muted small mb-1">Tổng doanh số</div>
+                            <div class="fw-bold text-dark fs-6" id="statTotalSales">14.850.000₫</div>
+                            <div class="text-secondary" style="font-size: 0.72rem;">12 giao dịch</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="stat-badge border-success-subtle bg-success-subtle bg-opacity-10">
+                            <div class="text-muted small mb-1">Thu tiền mặt</div>
+                            <div class="fw-bold text-success fs-6" id="statCashSales">+8.450.000₫</div>
+                            <div class="text-secondary" style="font-size: 0.72rem;">6 hóa đơn</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="stat-badge">
+                            <div class="text-muted small mb-1">Hoàn tiền mặt</div>
+                            <div class="fw-bold text-muted fs-6" id="statCashRefund">-0₫</div>
+                            <div class="text-secondary" style="font-size: 0.72rem;">0 yêu cầu trả</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="stat-badge border-primary-subtle bg-primary-subtle bg-opacity-10">
+                            <div class="text-muted small mb-1">Chuyển khoản (QR)</div>
+                            <div class="fw-bold text-primary fs-6" id="statBankTransfer">6.400.000₫</div>
+                            <div class="text-secondary" style="font-size: 0.72rem;">6 hóa đơn</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-2 rounded bg-light border small text-muted d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-circle-info text-secondary"></i>
+                    <span><strong>Quy tắc dòng tiền:</strong> Tiền chuyển khoản ngân hàng đã được ghi nhận trực tiếp vào tài khoản công ty, <strong>không nằm trong két tiền mặt</strong> tại quầy.</span>
+                </div>
+            </div>
+
+            <!-- 3. KHUNG ĐỐI CHIẾU TIỀN MẶT TRONG KÉT -->
+            <div class="shift-card">
+                <div class="section-header">
+                    <span>3. Đối chiếu tiền mặt trong két</span>
+                    <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none small text-dark fw-semibold" onclick="toggleDenominationMode()">
+                        <i class="fa-solid fa-calculator me-1"></i><span id="denomToggleText">Đếm theo bảng mệnh giá</span>
+                    </button>
+                </div>
+
+                <!-- Dòng đối chiếu chính -->
+                <div class="p-3 bg-light rounded-3 border mb-3">
+                    <div class="row align-items-center g-3">
+                        <div class="col-12 col-md-6 border-end">
+                            <label class="form-label-custom">Tiền mặt dự kiến trong két</label>
+                            <h4 class="fw-bold text-dark mb-1" id="expectedCashDisplay">9.450.000₫</h4>
+                            <div class="text-secondary small">
+                                = Đầu ca (1.000.000₫) + Thu tiền mặt (8.450.000₫) - Hoàn (0₫)
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label class="form-label-custom">Tiền mặt thực tế đếm được (*)</label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-white border-end-0 fw-bold text-muted">₫</span>
+                                <input type="number" id="actualCashInput" class="form-control font-monospace fw-bold fs-5 border-start-0" value="9450000" oninput="handleActualCashInput()" />
+                                <span class="input-group-text bg-white">VNĐ</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BẢNG KÊ MỆNH GIÁ (ẨN/HIỆN KHI THU NGÂN CẦN ĐẾM TỪNG TỜ) -->
+                <div id="denominationBox" class="border rounded p-3 mb-3 d-none bg-white">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small fw-bold text-dark">Bảng kiểm đếm chi tiết số tờ theo mệnh giá:</span>
+                        <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 small" onclick="resetDenominations()">Đặt lại</button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm denomination-table mb-2">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Mệnh giá</th>
+                                    <th style="width: 110px;">Số tờ</th>
+                                    <th class="text-end">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>500.000₫</td>
+                                    <td><input type="number" class="form-control form-control-sm text-center denom-input" data-value="500000" value="16" min="0" oninput="calculateFromDenominations()" /></td>
+                                    <td class="text-end fw-semibold denom-subtotal">8.000.000₫</td>
+                                </tr>
+                                <tr>
+                                    <td>200.000₫</td>
+                                    <td><input type="number" class="form-control form-control-sm text-center denom-input" data-value="200000" value="5" min="0" oninput="calculateFromDenominations()" /></td>
+                                    <td class="text-end fw-semibold denom-subtotal">1.000.000₫</td>
+                                </tr>
+                                <tr>
+                                    <td>100.000₫</td>
+                                    <td><input type="number" class="form-control form-control-sm text-center denom-input" data-value="100000" value="4" min="0" oninput="calculateFromDenominations()" /></td>
+                                    <td class="text-end fw-semibold denom-subtotal">400.000₫</td>
+                                </tr>
+                                <tr>
+                                    <td>50.000₫</td>
+                                    <td><input type="number" class="form-control form-control-sm text-center denom-input" data-value="50000" value="1" min="0" oninput="calculateFromDenominations()" /></td>
+                                    <td class="text-end fw-semibold denom-subtotal">50.000₫</td>
+                                </tr>
+                                <tr>
+                                    <td>20.000₫ - 10.000₫</td>
+                                    <td><input type="number" class="form-control form-control-sm text-center denom-input" data-value="10000" value="0" min="0" oninput="calculateFromDenominations()" /></td>
+                                    <td class="text-end fw-semibold denom-subtotal">0₫</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Kết quả chênh lệch đối soát -->
+                <div class="mb-3">
+                    <label class="form-label-custom">Kết quả chênh lệch đối soát</label>
+                    <div id="cashDiffAlert" class="p-2 rounded bg-success-subtle text-success border border-success-subtle small fw-bold d-flex align-items-center justify-content-between">
+                        <span><i class="fa-solid fa-circle-check me-2"></i>Khớp hoàn toàn (0₫)</span>
+                        <span class="badge bg-success text-white">Chính xác</span>
+                    </div>
+                </div>
+
+                <!-- Ghi chú giải trình lý do lệch tiền (nếu có) -->
+                <div id="explanationContainer">
+                    <label class="form-label-custom">Ghi chú giải trình chênh lệch (Nếu có)</label>
+                    <textarea id="cashDiffExplanation" class="form-control form-control-sm" rows="2" placeholder="Nếu số tiền thực đếm khác số tiền dự kiến, bắt buộc ghi rõ nguyên nhân (VD: Khách không lấy 2.000đ tiền thối, đổi tiền lẻ lẻ cho quầy khác...)..."></textarea>
+                </div>
+            </div>
+
+            <!-- 4. KHUNG BÀN GIAO QUẦY & CA TIẾP THEO -->
+            <div class="shift-card">
+                <div class="section-header">
+                    <span>4. Bàn giao ca & Trang thiết bị</span>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label-custom">Nhân viên nhận bàn giao ca tiếp theo</label>
+                        <select id="handoverReceiverSelect" class="form-select form-select-sm">
+                            <option value="emp-ngoc" selected>Nguyễn Bích Ngọc (Ca Chiều: 15:00 - 22:00)</option>
+                            <option value="emp-tam">Trần Thanh Tâm (Ca Chiều: 15:00 - 22:00)</option>
+                            <option value="manager">Quản lý cửa hàng trực tiếp nhận két</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label-custom">Tình trạng trang thiết bị quầy</label>
+                        <div class="small pt-1 text-muted">
+                            <i class="fa-solid fa-check text-success me-1"></i>Máy in bill, két tiền & máy quét mã vạch hoạt động tốt.
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label-custom">Ghi chú bàn giao công việc / Nhắc nhở ca sau</label>
+                        <textarea id="handoverGeneralNote" class="form-control form-control-sm" rows="2" placeholder="Ghi chú nhắc nhở ca sau (VD: Khách hẹn 17:00 lấy áo Blazer đã sửa gấu, quầy đã kiểm tra vệ sinh sạch sẽ)...">Đã kiểm đủ tiền két và nộp phiếu đối soát. Đã vệ sinh quầy và bổ sung giấy in bill.</textarea>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- CỘT PHẢI (4 CỘT): TÓM TẮT & CHỐT SỔ -->
+        <div class="col-12 col-lg-4">
+            <div class="shift-card summary-sticky">
+                <div class="section-header">
+                    <span>Tóm tắt kết ca</span>
+                    <i class="fa-solid fa-shield-halved text-muted"></i>
+                </div>
+
+                <div class="small mb-3">
+                    <div class="d-flex justify-content-between py-1 border-bottom">
+                        <span class="text-muted">Tiền đầu ca:</span>
+                        <span class="fw-semibold text-dark">1.000.000₫</span>
+                    </div>
+                    <div class="d-flex justify-content-between py-1 border-bottom">
+                        <span class="text-muted">Thu tiền mặt:</span>
+                        <span class="fw-semibold text-success">+8.450.000₫</span>
+                    </div>
+                    <div class="d-flex justify-content-between py-1 border-bottom">
+                        <span class="text-muted">Hoàn tiền mặt:</span>
+                        <span class="fw-semibold text-muted">-0₫</span>
+                    </div>
+                    <div class="d-flex justify-content-between py-1 border-bottom">
+                        <span class="text-muted">Dự kiến trong két:</span>
+                        <span class="fw-bold text-dark">9.450.000₫</span>
+                    </div>
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="text-muted">Thực tế bàn giao:</span>
+                        <span class="fw-bold fs-6 text-dark" id="summaryActualCash">9.450.000₫</span>
+                    </div>
+                    <div class="d-flex justify-content-between py-2 align-items-center">
+                        <span class="fw-bold text-dark">Chênh lệch két:</span>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle fs-6" id="summaryDiffBadge">0₫</span>
+                    </div>
+                </div>
+
+                <!-- Checkbox cam kết -->
+                <div class="form-check small mb-3 p-2 rounded bg-light border">
+                    <input class="form-check-input ms-1" type="checkbox" id="confirmVerificationCheck" checked />
+                    <label class="form-check-label ps-2 text-dark" for="confirmVerificationCheck">
+                        Tôi xác nhận đã kiểm đếm đầy đủ két tiền và chịu trách nhiệm về số liệu bàn giao.
+                    </label>
+                </div>
+
+                <!-- Thao tác chính -->
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-danger py-2 fw-semibold rounded-pill shadow-sm" onclick="submitCloseShiftProcess()">
+                        <i class="fa-solid fa-lock me-1"></i>Gửi đóng ca & Chốt sổ
+                    </button>
+
+                    <button type="button" class="btn btn-outline-dark py-2 small rounded-pill" onclick="previewAndPrintHandoverReceipt()">
+                        <i class="fa-solid fa-print me-1"></i>In biên bản bàn giao
+                    </button>
+                </div>
+
+                <div class="text-center mt-3">
+                    <a asp-area="Employee" asp-controller="Dashboard" asp-action="Index" class="text-muted small text-decoration-none">
+                        Quay lại bảng điều khiển
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- MODAL: XEM DANH SÁCH 12 HÓA ĐƠN TRONG CA -->
+<div class="modal fade" id="shiftInvoicesModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header bg-dark text-white py-2 px-3">
+                <h6 class="modal-title fw-bold mb-0">Danh Sách Hóa Đơn Trong Ca (12 Hóa Đơn)</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="table-responsive" style="max-height: 380px;">
+                    <table class="table table-hover align-middle mb-0 small">
+                        <thead class="table-light sticky-top">
+                            <tr>
+                                <th>Mã HĐ</th>
+                                <th>Thời gian</th>
+                                <th>Khách hàng</th>
+                                <th>Phương thức</th>
+                                <th class="text-end">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="fw-bold font-monospace">HD-2026-0145</td>
+                                <td>09:45</td>
+                                <td>Trần Thu Trang</td>
+                                <td><span class="badge bg-primary-subtle text-primary">Chuyển khoản</span></td>
+                                <td class="text-end fw-bold">3.300.000₫</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold font-monospace">HD-2026-0144</td>
+                                <td>09:20</td>
+                                <td>Hoàng Yến</td>
+                                <td><span class="badge bg-success-subtle text-success">Tiền mặt</span></td>
+                                <td class="text-end fw-bold">890.000₫</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold font-monospace">HD-2026-0143</td>
+                                <td>09:05</td>
+                                <td>Đặng Quốc Huy</td>
+                                <td><span class="badge bg-success-subtle text-success">Tiền mặt</span></td>
+                                <td class="text-end fw-bold">2.450.000₫</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold font-monospace">HD-2026-0142</td>
+                                <td>08:50</td>
+                                <td>Ngô Bảo Ngọc</td>
+                                <td><span class="badge bg-primary-subtle text-primary">Chuyển khoản</span></td>
+                                <td class="text-end fw-bold">1.250.000₫</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold font-monospace">HD-2026-0141</td>
+                                <td>08:35</td>
+                                <td>Phạm Minh Tuấn</td>
+                                <td><span class="badge bg-success-subtle text-success">Tiền mặt</span></td>
+                                <td class="text-end fw-bold">3.150.000₫</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold font-monospace">HD-2026-0140</td>
+                                <td>08:15</td>
+                                <td>Khách vãng lai</td>
+                                <td><span class="badge bg-success-subtle text-success">Tiền mặt</span></td>
+                                <td class="text-end fw-bold">1.960.000₫</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold font-monospace">HD-2026-0139</td>
+                                <td>08:05</td>
+                                <td>Lê Thanh Hương</td>
+                                <td><span class="badge bg-primary-subtle text-primary">Chuyển khoản</span></td>
+                                <td class="text-end fw-bold">1.850.000₫</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer py-2 px-3 bg-light">
+                <button type="button" class="btn btn-sm btn-outline-secondary px-3" data-bs-dismiss="modal">Đóng</button>
+                <a asp-area="Employee" asp-controller="Invoices" asp-action="Index" class="btn btn-sm btn-dark px-3">
+                    Mở sổ hóa đơn đầy đủ
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MẪU IN BIÊN BẢN BÀN GIAO CA (ẨN TRÊN WEB, CHỈ HIỆN KHI BẤM IN) -->
+<div id="printableHandoverReceipt" class="d-none">
+    <div style="font-family: Arial, sans-serif; max-width: 650px; margin: 0 auto; color: #111;">
+        <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px;">
+            <h2 style="margin: 0 0 5px; text-transform: uppercase;">LIGHT LIFE FASHION</h2>
+            <h4 style="margin: 0; font-weight: normal;">BIÊN BẢN BÀN GIAO CA THU NGÂN</h4>
+            <div style="font-size: 13px; margin-top: 5px;">Thời gian in: <span id="printDateTimestamp"></span></div>
+        </div>
+
+        <table style="width: 100%; font-size: 13px; line-height: 1.8; margin-bottom: 15px;">
+            <tr>
+                <td style="width: 50%;"><strong>Ca làm việc:</strong> Ca Sáng (08:00 - 15:30)</td>
+                <td><strong>Quầy thu ngân:</strong> Quầy 01 (Tầng 1)</td>
+            </tr>
+            <tr>
+                <td><strong>Thu ngân bàn giao:</strong> Lê Minh Nhật (NV-0284)</td>
+                <td><strong>Người nhận bàn giao:</strong> <span id="printReceiverName">Nguyễn Bích Ngọc</span></td>
+            </tr>
+        </table>
+
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px;" border="1">
+            <thead>
+                <tr style="background-color: #f2f2f2;">
+                    <th style="padding: 6px; text-align: left;">Khoản mục đối soát</th>
+                    <th style="padding: 6px; text-align: right;">Số tiền (VNĐ)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="padding: 6px;">1. Tiền mặt nhận đầu ca</td>
+                    <td style="padding: 6px; text-align: right;">1.000.000₫</td>
+                </tr>
+                <tr>
+                    <td style="padding: 6px;">2. Doanh thu tiền mặt trong ca (6 HĐ)</td>
+                    <td style="padding: 6px; text-align: right;">8.450.000₫</td>
+                </tr>
+                <tr>
+                    <td style="padding: 6px;">3. Hoàn tiền mặt đổi trả</td>
+                    <td style="padding: 6px; text-align: right;">0₫</td>
+                </tr>
+                <tr>
+                    <td style="padding: 6px;">4. Doanh thu chuyển khoản QR (6 HĐ)</td>
+                    <td style="padding: 6px; text-align: right;">6.400.000₫</td>
+                </tr>
+                <tr style="font-weight: bold; background: #fafafa;">
+                    <td style="padding: 6px;">5. Tiền mặt lý thuyết trong két (1 + 2 - 3)</td>
+                    <td style="padding: 6px; text-align: right;">9.450.000₫</td>
+                </tr>
+                <tr style="font-weight: bold;">
+                    <td style="padding: 6px;">6. Tiền mặt thực tế đếm được bàn giao</td>
+                    <td style="padding: 6px; text-align: right;" id="printActualCash">9.450.000₫</td>
+                </tr>
+                <tr>
+                    <td style="padding: 6px;">7. Chênh lệch đối soát</td>
+                    <td style="padding: 6px; text-align: right;" id="printCashDiff">0₫ (Khớp)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="font-size: 13px; margin-bottom: 25px;">
+            <strong>Ghi chú bàn giao:</strong> <span id="printHandoverNotes">Đã kiểm đủ tiền két và nộp phiếu đối soát.</span>
+        </div>
+
+        <table style="width: 100%; text-align: center; font-size: 13px; margin-top: 30px;">
+            <tr>
+                <td style="width: 50%;">
+                    <strong>NGƯỜI BÀN GIAO</strong><br />
+                    <em>(Ký và ghi rõ họ tên)</em><br /><br /><br /><br />
+                    Lê Minh Nhật
+                </td>
+                <td>
+                    <strong>NGƯỜI NHẬN BÀN GIAO</strong><br />
+                    <em>(Ký và ghi rõ họ tên)</em><br /><br /><br /><br />
+                    <span id="printReceiverSignName">Nguyễn Bích Ngọc</span>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var expectedCashAmount = 9450000;
+        var isDenominationMode = false;
+
+        // Cập nhật đồng hồ thời gian thực
+        function updateLiveClock() {
+            var now = new Date();
+            var hours = String(now.getHours()).padStart(2, '0');
+            var minutes = String(now.getMinutes()).padStart(2, '0');
+            var seconds = String(now.getSeconds()).padStart(2, '0');
+            var el = document.getElementById('liveCloseClock');
+            if (el) el.innerText = hours + ':' + minutes + ':' + seconds;
+        }
+        setInterval(updateLiveClock, 1000);
+        updateLiveClock();
+
+        // Mở modal danh sách hóa đơn
+        function openShiftInvoicesModal() {
+            var modal = new bootstrap.Modal(document.getElementById('shiftInvoicesModal'));
+            modal.show();
+        }
+
+        // Bật/tắt chế độ đếm theo mệnh giá
+        function toggleDenominationMode() {
+            isDenominationMode = !isDenominationMode;
+            var box = document.getElementById('denominationBox');
+            var toggleText = document.getElementById('denomToggleText');
+            if (isDenominationMode) {
+                box.classList.remove('d-none');
+                toggleText.innerText = 'Ẩn bảng mệnh giá (Nhập nhanh)';
+                calculateFromDenominations();
+            } else {
+                box.classList.add('d-none');
+                toggleText.innerText = 'Đếm theo bảng mệnh giá';
+            }
+        }
+
+        // Tính tổng tiền từ bảng mệnh giá
+        function calculateFromDenominations() {
+            var inputs = document.querySelectorAll('.denom-input');
+            var total = 0;
+            inputs.forEach(function(inp) {
+                var count = Number(inp.value || 0);
+                var val = Number(inp.dataset.value || 0);
+                var sub = count * val;
+                inp.closest('tr').querySelector('.denom-subtotal').innerText = sub.toLocaleString('vi-VN') + '₫';
+                total += sub;
+            });
+
+            document.getElementById('actualCashInput').value = total;
+            handleActualCashInput();
+        }
+
+        // Đặt lại bảng mệnh giá về 0
+        function resetDenominations() {
+            var inputs = document.querySelectorAll('.denom-input');
+            inputs.forEach(function(inp) { inp.value = 0; });
+            calculateFromDenominations();
+        }
+
+        // Xử lý khi thay đổi tiền mặt thực tế
+        function handleActualCashInput() {
+            var actual = Number(document.getElementById('actualCashInput').value || 0);
+            var diff = actual - expectedCashAmount;
+
+            var alertBox = document.getElementById('cashDiffAlert');
+            var summaryBadge = document.getElementById('summaryDiffBadge');
+            var summaryActual = document.getElementById('summaryActualCash');
+
+            summaryActual.innerText = actual.toLocaleString('vi-VN') + '₫';
+
+            if (diff === 0) {
+                alertBox.className = 'p-2 rounded bg-success-subtle text-success border border-success-subtle small fw-bold d-flex align-items-center justify-content-between';
+                alertBox.innerHTML = '<span><i class="fa-solid fa-circle-check me-2"></i>Khớp hoàn toàn (0₫)</span><span class="badge bg-success text-white">Chính xác</span>';
+                
+                summaryBadge.className = 'badge bg-success-subtle text-success border border-success-subtle fs-6';
+                summaryBadge.innerText = '0₫ (Khớp)';
+            } else if (diff > 0) {
+                alertBox.className = 'p-2 rounded bg-warning-subtle text-warning-emphasis border border-warning-subtle small fw-bold d-flex align-items-center justify-content-between';
+                alertBox.innerHTML = '<span><i class="fa-solid fa-triangle-exclamation me-2"></i>Thừa tiền két: +' + diff.toLocaleString('vi-VN') + '₫</span><span class="badge bg-warning text-dark">Thừa két</span>';
+                
+                summaryBadge.className = 'badge bg-warning-subtle text-warning border border-warning-subtle fs-6';
+                summaryBadge.innerText = '+' + diff.toLocaleString('vi-VN') + '₫ (Thừa)';
+            } else {
+                var shortfall = Math.abs(diff);
+                alertBox.className = 'p-2 rounded bg-danger-subtle text-danger border border-danger-subtle small fw-bold d-flex align-items-center justify-content-between';
+                alertBox.innerHTML = '<span><i class="fa-solid fa-triangle-exclamation me-2"></i>Thiếu tiền két: -' + shortfall.toLocaleString('vi-VN') + '₫</span><span class="badge bg-danger text-white">Thiếu két</span>';
+                
+                summaryBadge.className = 'badge bg-danger-subtle text-danger border border-danger-subtle fs-6';
+                summaryBadge.innerText = '-' + shortfall.toLocaleString('vi-VN') + '₫ (Thiếu)';
+            }
+        }
+
+        // In biên bản bàn giao ca
+        function previewAndPrintHandoverReceipt() {
+            var actual = Number(document.getElementById('actualCashInput').value || 0);
+            var diff = actual - expectedCashAmount;
+            var receiverSelect = document.getElementById('handoverReceiverSelect');
+            var receiverName = receiverSelect.options[receiverSelect.selectedIndex].text;
+            var note = document.getElementById('handoverGeneralNote').value || 'Đã kiểm đủ tiền két và nộp phiếu đối soát.';
+
+            document.getElementById('printDateTimestamp').innerText = new Date().toLocaleString('vi-VN');
+            document.getElementById('printReceiverName').innerText = receiverName;
+            document.getElementById('printReceiverSignName').innerText = receiverName.split('(')[0].trim();
+            document.getElementById('printActualCash').innerText = actual.toLocaleString('vi-VN') + '₫';
+            document.getElementById('printHandoverNotes').innerText = note;
+
+            if (diff === 0) {
+                document.getElementById('printCashDiff').innerText = '0₫ (Khớp hoàn toàn)';
+            } else if (diff > 0) {
+                document.getElementById('printCashDiff').innerText = '+' + diff.toLocaleString('vi-VN') + '₫ (Thừa tiền)';
+            } else {
+                document.getElementById('printCashDiff').innerText = '-' + Math.abs(diff).toLocaleString('vi-VN') + '₫ (Thiếu tiền)';
+            }
+
+            var receiptEl = document.getElementById('printableHandoverReceipt');
+            receiptEl.classList.remove('d-none');
+            window.print();
+            receiptEl.classList.add('d-none');
+        }
+
+        // Gửi kết quả đóng ca & Chốt sổ
+        function submitCloseShiftProcess() {
+            var confirmed = document.getElementById('confirmVerificationCheck').checked;
+            if (!confirmed) {
+                alert('Vui lòng tích xác nhận cam kết đã kiểm đếm két trước khi đóng ca!');
+                return;
+            }
+
+            var actual = Number(document.getElementById('actualCashInput').value || 0);
+            var diff = actual - expectedCashAmount;
+            var explanation = document.getElementById('cashDiffExplanation').value.trim();
+
+            if (diff !== 0 && !explanation) {
+                alert('Phát hiện chênh lệch két tiền (' + (diff > 0 ? '+' : '') + diff.toLocaleString('vi-VN') + '₫)!\nVui lòng nhập nội dung giải trình lý do chênh lệch trước khi gửi.');
+                document.getElementById('cashDiffExplanation').focus();
+                return;
+            }
+
+            var receiverSelect = document.getElementById('handoverReceiverSelect');
+            var receiverName = receiverSelect.options[receiverSelect.selectedIndex].text;
+
+            var msg = '✅ ĐÃ GỬI BÁO CÁO ĐÓNG CA THÀNH CÔNG!\n\n' +
+                '• Thu ngân: Lê Minh Nhật\n' +
+                '• Tiền mặt dự kiến: ' + expectedCashAmount.toLocaleString('vi-VN') + '₫\n' +
+                '• Tiền mặt bàn giao: ' + actual.toLocaleString('vi-VN') + '₫\n' +
+                '• Chênh lệch: ' + (diff === 0 ? 'Khớp (0₫)' : (diff > 0 ? '+' : '') + diff.toLocaleString('vi-VN') + '₫') + '\n' +
+                '• Bàn giao cho: ' + receiverName + '\n' +
+                '• Trạng thái ca: ĐÃ KHÓA BÁN HÀNG & CHUYỂN CHỜ ĐỐI SOÁT.\n\n' +
+                'Hệ thống sẽ chuyển hướng về bảng điều khiển tổng quan.';
+
+            alert(msg);
+            window.location.href = '@Url.Action("Index", "Dashboard", new { area = "Employee" })';
+        }
+    </script>
+}
+

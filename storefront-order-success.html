@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đã tiếp nhận đơn hàng - LIGHT LIFE FASHION STUDIO</title>
+    
+    <!-- FontAwesome 6.5.1 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <!-- LIGHT LIFE Storefront & Order Received Design System CSS (Thuần CSS3, Không Bootstrap, Không Tailwind, Không Font Serif) -->
+    <link rel="stylesheet" href="wwwroot/css/lightlife-storefront.css" />
+    <link rel="stylesheet" href="wwwroot/css/lightlife-checkout.css" />
+    <link rel="stylesheet" href="wwwroot/css/lightlife-order-received.css" />
+</head>
+<body>
+    <!-- HEADER TINH GỌN (COMPACT CHECKOUT HEADER) -->
+    <header class="ll-checkout-header">
+        <div class="ll-container">
+            <div class="ll-checkout-header__inner">
+                <a href="storefront-home.html" class="ll-checkout-header__brand" title="Về trang chủ LIGHT LIFE">
+                    <img src="wwwroot/images/logo.png" alt="LIGHT LIFE Logo" class="ll-checkout-header__logo" />
+                    <div class="ll-checkout-header__brand-text">
+                        <span class="ll-checkout-header__brand-title">LIGHT LIFE</span>
+                        <span class="ll-checkout-header__brand-sub">FASHION STUDIO</span>
+                    </div>
+                </a>
+
+                <div class="ll-checkout-header__security">
+                    <i class="fa-solid fa-lock"></i>
+                    <span>Thanh toán an toàn (SSL 256-bit)</span>
+                </div>
+
+                <a href="storefront-home.html" class="ll-checkout-header__back-link">
+                    <i class="fa-solid fa-house"></i> Về trang chủ
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- NỘI DUNG KẾT QUẢ ĐÃ TIẾP NHẬN ĐƠN HÀNG -->
+    <main class="ll-order-page">
+        <div class="ll-order-container">
+            <!-- 1. THẺ HIỂN THỊ KẾT QUẢ ĐƠN HÀNG HỢP LỆ -->
+            <article class="ll-order-card" id="orderCard" aria-labelledby="orderReceivedTitle">
+                <!-- HEADER TIẾP NHẬN ĐƠN HÀNG -->
+                <header class="ll-order-header">
+                    <div class="ll-order-icon-wrap" aria-hidden="true">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <h1 class="ll-order-title" id="orderReceivedTitle">Đã tiếp nhận đơn hàng</h1>
+                    <p class="ll-order-subtitle">
+                        Cảm ơn bạn đã lựa chọn <strong>LIGHT LIFE</strong>. Đơn hàng của bạn đã được ghi nhận trên hệ thống và nhân viên chăm sóc khách hàng sẽ liên hệ xác nhận trong thời gian sớm nhất.
+                    </p>
+                </header>
+
+                <!-- DẢI TÓM TẮT META (MÃ ĐƠN, NGÀY ĐẶT, TRẠNG THÁI) -->
+                <div class="ll-order-meta-bar">
+                    <div class="ll-order-meta-item">
+                        <span class="ll-order-meta-label">Mã đơn hàng</span>
+                        <span class="ll-order-meta-val ll-order-meta-val--code" id="orderCodeText">LL-893124</span>
+                    </div>
+                    <div class="ll-order-meta-item">
+                        <span class="ll-order-meta-label">Thời gian tiếp nhận</span>
+                        <span class="ll-order-meta-val" id="orderTimeText">Hôm nay</span>
+                    </div>
+                    <div class="ll-order-meta-item">
+                        <span class="ll-order-meta-label">Trạng thái đơn</span>
+                        <div class="ll-status-badge ll-status-badge--pending" id="orderStatusBadge">
+                            <i class="fa-solid fa-clock-rotate-left"></i> Chờ xác nhận
+                        </div>
+                    </div>
+                </div>
+
+                <!-- THÂN CHI TIẾT ĐƠN HÀNG -->
+                <div class="ll-order-body">
+                    <!-- MỤC 1: THÔNG TIN GIAO NHẬN -->
+                    <section aria-labelledby="shippingInfoTitle">
+                        <h2 class="ll-order-section-title" id="shippingInfoTitle">
+                            <i class="fa-solid fa-location-dot" style="color: var(--color-brand);"></i>
+                            Thông tin giao nhận
+                        </h2>
+                        <div class="ll-order-info-grid">
+                            <div class="ll-order-info-block">
+                                <span class="ll-order-info-label">Người nhận hàng</span>
+                                <span class="ll-order-info-name" id="recipientName">Nguyễn Thu Trang</span>
+                                <span id="recipientPhone" style="color: var(--color-text-sub);">0908 123 456</span>
+                            </div>
+                            <div class="ll-order-info-block">
+                                <span class="ll-order-info-label">Địa chỉ nhận hàng</span>
+                                <span id="recipientAddress">Phòng 1204, Tòa Park 3, Vinhomes Central Park, 208 Nguyễn Hữu Cảnh, Phường 22, Quận Bình Thạnh, TP. Hồ Chí Minh</span>
+                                <span style="font-size: 0.8125rem; color: var(--color-text-sub); margin-top: 0.25rem;">
+                                    Hình thức: <strong id="shippingMethodText">Giao hàng tiêu chuẩn</strong>
+                                </span>
+                            </div>
+                        </div>
+                        <div id="orderNotesRow" style="display: none; margin-top: 0.75rem; font-size: 0.875rem; color: var(--color-text-sub); background: #FAF8F5; padding: 0.75rem 1rem; border-radius: 6px; border: 1px dashed var(--color-border);">
+                            <strong>Ghi chú giao hàng:</strong> <span id="orderNotesText"></span>
+                        </div>
+                    </section>
+
+                    <!-- MỤC 2: PHƯƠNG THỨC THANH TOÁN (COD vs CHUYỂN KHOẢN) -->
+                    <section aria-labelledby="paymentInfoTitle">
+                        <h2 class="ll-order-section-title" id="paymentInfoTitle">
+                            <i class="fa-solid fa-credit-card" style="color: var(--color-brand);"></i>
+                            Phương thức & Trạng thái thanh toán
+                        </h2>
+
+                        <!-- 2.1. TRƯỜNG HỢP THANH TOÁN KHI NHẬN HÀNG (COD) -->
+                        <div class="ll-payment-detail-box" id="paymentCodSection" style="display: none;">
+                            <div class="ll-payment-cod-content">
+                                <div class="ll-payment-cod-icon">
+                                    <i class="fa-solid fa-hand-holding-dollar"></i>
+                                </div>
+                                <div>
+                                    <h3 style="font-size: 1rem; font-weight: 700; margin: 0 0 0.25rem 0; color: var(--color-text-main);">
+                                        Thanh toán khi nhận hàng (COD)
+                                    </h3>
+                                    <p style="margin: 0 0 0.5rem 0; font-size: 0.875rem; color: var(--color-text-sub); line-height: 1.5;">
+                                        Trạng thái: <strong style="color: var(--color-success);">Chưa thanh toán (Thanh toán tiền mặt khi nhận hàng)</strong>.
+                                    </p>
+                                    <p style="margin: 0; font-size: 0.8125rem; color: var(--color-text-sub); line-height: 1.5;">
+                                        <i class="fa-solid fa-circle-check" style="color: var(--color-success); margin-right: 4px;"></i>
+                                        Quý khách được quyền kiểm tra sản phẩm trước khi thanh toán cho nhân viên giao vận.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2.2. TRƯỜNG HỢP CHUYỂN KHOẢN NGÂN HÀNG (BANK TRANSFER) -->
+                        <div class="ll-bank-transfer-card" id="paymentBankSection" style="display: none;">
+                            <div class="ll-bank-header">
+                                <div>
+                                    <h3 style="font-size: 1.0625rem; font-weight: 700; margin: 0 0 0.25rem 0; color: var(--color-text-main);">
+                                        Chuyển khoản Ngân hàng / Quét mã QR
+                                    </h3>
+                                    <span class="ll-bank-status-note">
+                                        <i class="fa-solid fa-clock"></i> Trạng thái: Chờ xác nhận thanh toán
+                                    </span>
+                                </div>
+                                <span style="font-size: 0.8125rem; color: var(--color-text-sub);">
+                                    Tuyệt đối <strong>chưa ghi "Đã thanh toán"</strong> trước khi hệ thống thực nhận
+                                </span>
+                            </div>
+
+                            <div class="ll-bank-content-grid">
+                                <!-- Mã QR VietQR thanh toán nhanh -->
+                                <div class="ll-bank-qr-frame">
+                                    <img id="bankQrImg" src="" alt="Mã QR thanh toán ngân hàng" />
+                                </div>
+
+                                <!-- Thông tin ngân hàng & Nút sao chép -->
+                                <div class="ll-bank-info-rows">
+                                    <div class="ll-bank-row">
+                                        <span class="ll-bank-row__label">Ngân hàng thụ hưởng:</span>
+                                        <span class="ll-bank-row__val" id="bankNameVal">MB Bank</span>
+                                    </div>
+                                    <div class="ll-bank-row">
+                                        <span class="ll-bank-row__label">Số tài khoản:</span>
+                                        <div class="ll-bank-row__val-wrap">
+                                            <span class="ll-bank-row__val ll-bank-row__val--highlight" id="bankAccVal">999988886666</span>
+                                            <button type="button" class="ll-copy-btn" id="copyBankAccBtn" title="Sao chép số tài khoản">
+                                                <i class="fa-regular fa-copy"></i> Sao chép
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="ll-bank-row">
+                                        <span class="ll-bank-row__label">Chủ tài khoản:</span>
+                                        <span class="ll-bank-row__val" id="bankHolderVal">LIGHT LIFE FASHION STUDIO</span>
+                                    </div>
+                                    <div class="ll-bank-row">
+                                        <span class="ll-bank-row__label">Số tiền cần chuyển:</span>
+                                        <div class="ll-bank-row__val-wrap">
+                                            <span class="ll-bank-row__val ll-bank-row__val--highlight" id="bankAmountVal">0 đ</span>
+                                            <button type="button" class="ll-copy-btn" id="copyBankAmountBtn" title="Sao chép số tiền">
+                                                <i class="fa-regular fa-copy"></i> Sao chép
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="ll-bank-row">
+                                        <span class="ll-bank-row__label">Nội dung chuyển khoản:</span>
+                                        <div class="ll-bank-row__val-wrap">
+                                            <span class="ll-bank-row__val ll-bank-row__val--highlight" id="bankContentVal">LL-893124</span>
+                                            <button type="button" class="ll-copy-btn" id="copyBankContentBtn" title="Sao chép nội dung">
+                                                <i class="fa-regular fa-copy"></i> Sao chép
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- MỤC 3: DANH SÁCH SẢN PHẨM & TỔNG TIỀN -->
+                    <section aria-labelledby="orderProductsTitle">
+                        <h2 class="ll-order-section-title" id="orderProductsTitle">
+                            <i class="fa-solid fa-bag-shopping" style="color: var(--color-brand);"></i>
+                            Sản phẩm đã đặt
+                        </h2>
+
+                        <!-- Danh sách món hàng -->
+                        <div class="ll-order-items-table" id="orderItemsList">
+                            <!-- Render từ JS -->
+                        </div>
+
+                        <!-- Bảng tính tổng tiền -->
+                        <div class="ll-order-totals-card" style="margin-top: 1.5rem;">
+                            <div class="ll-order-calc-line">
+                                <span>Tiền hàng tạm tính:</span>
+                                <span class="ll-order-calc-line__val" id="orderSubtotalVal">0 đ</span>
+                            </div>
+                            <div class="ll-order-calc-line ll-order-calc-line--discount" id="orderDiscountRow" style="display: none;">
+                                <span>Giảm giá ưu đãi:</span>
+                                <span class="ll-order-calc-line__val" id="orderDiscountVal">-0 đ</span>
+                            </div>
+                            <div class="ll-order-calc-line">
+                                <span>Phí vận chuyển:</span>
+                                <span class="ll-order-calc-line__val" id="orderShippingFeeVal">30.000 đ</span>
+                            </div>
+                            <div class="ll-order-calc-line ll-order-calc-line--total">
+                                <span style="font-weight: 700; color: var(--color-text-main);">Tổng thanh toán:</span>
+                                <span class="ll-order-calc-line__val" id="orderTotalVal">0 đ</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- MỤC 4: NÚT ĐIỀU HƯỚNG HÀNH ĐỘNG -->
+                    <div class="ll-order-actions-bar">
+                        <a href="storefront-home.html#orders" class="ll-order-btn-primary" id="trackOrderBtn">
+                            <i class="fa-solid fa-box-open"></i> Theo dõi đơn hàng
+                        </a>
+                        <a href="storefront-products.html" class="ll-order-btn-secondary" id="continueShoppingBtn">
+                            <i class="fa-solid fa-shirt"></i> Tiếp tục mua sắm
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 2. THẺ LỖI 404 / 403 (KHI KHÔNG TÌM THẤY ĐƠN HOẶC KHÔNG CÓ QUYỀN TRUY CẬP) -->
+            <article class="ll-order-error-card" id="orderErrorCard" aria-labelledby="orderErrorTitle">
+                <div class="ll-order-error-icon" aria-hidden="true">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <h1 class="ll-order-error-title" id="orderErrorTitle">Không tìm thấy thông tin đơn hàng</h1>
+                <p class="ll-order-error-desc">
+                    Đơn hàng bạn đang tìm kiếm không tồn tại hoặc bạn không có quyền truy cập vào thông tin này. Nhằm bảo vệ quyền riêng tư, <strong>LIGHT LIFE</strong> chỉ cho phép xem đơn hàng thuộc tài khoản đã đăng nhập của chính bạn.
+                </p>
+                <div class="ll-order-actions-bar">
+                    <a href="storefront-home.html" class="ll-order-btn-secondary">
+                        <i class="fa-solid fa-house"></i> Về trang chủ
+                    </a>
+                    <a href="storefront-home.html#orders" class="ll-order-btn-primary">
+                        <i class="fa-solid fa-list-check"></i> Xem danh sách đơn của bạn
+                    </a>
+                </div>
+            </article>
+        </div>
+    </main>
+
+    <!-- FOOTER TINH GỌN -->
+    <footer style="background-color: var(--color-surface); border-top: 1px solid var(--color-border); padding: 1.5rem 0; text-align: center; font-size: 0.8125rem; color: var(--color-text-sub);">
+        <div class="ll-container">
+            <p style="margin: 0 0 0.35rem 0;">&copy; 2026 LIGHT LIFE FASHION STUDIO. Bảo lưu mọi quyền.</p>
+            <p style="margin: 0;">Mọi giao dịch và thông tin thanh toán đều được mã hóa bảo mật theo tiêu chuẩn quốc tế.</p>
+        </div>
+    </footer>
+
+    <!-- TOAST THÔNG BÁO SAO CHÉP THÀNH CÔNG -->
+    <div class="ll-copy-toast" id="copyToast" role="status" aria-live="polite">
+        <i class="fa-solid fa-check" style="color: #A6E2BD;"></i>
+        <span id="copyToastText">Đã sao chép vào bộ nhớ tạm</span>
+    </div>
+
+    <!-- Core Scripts -->
+    <script src="wwwroot/js/lightlife-storefront.js"></script>
+    <script src="wwwroot/js/lightlife-order-received.js"></script>
+</body>
+</html>

@@ -1,0 +1,1190 @@
+@{
+    ViewData["Title"] = "Tổng quan ca làm việc";
+}
+
+@section Styles {
+    <style>
+        /* Card & Khung giao diện tinh gọn */
+        /* Card & Khung giao diện tinh gọn */
+        .emp-panel {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.25rem 1.4rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+
+        /* Dải tóm tắt ca làm việc 1 dòng tinh gọn */
+        .shift-stat-strip {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 0.75rem 1.25rem;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .stat-item-label {
+            font-size: 0.76rem;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 2px;
+        }
+
+        .stat-item-val {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #111827;
+            line-height: 1.2;
+            margin: 0;
+        }
+
+        /* Danh sách việc cần làm (Action Items) */
+        .task-action-row {
+            padding: 1rem 1.1rem;
+            border: 1px solid #f1f3f5;
+            border-radius: 10px;
+            background: #ffffff;
+            transition: all 0.15s ease;
+            margin-bottom: 0.65rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .task-action-row:hover {
+            border-color: #cbd5e1;
+            background: #fafafa;
+        }
+
+        .task-action-row.priority-high {
+            border-left: 3px solid #ef4444;
+            background: #fffafa;
+        }
+
+        .task-action-row.priority-medium {
+            border-left: 3px solid #f59e0b;
+        }
+
+        .task-action-row.priority-normal {
+            border-left: 3px solid #18181b;
+        }
+
+        .task-type-badge {
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 0.2rem 0.55rem;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Tab công việc chuẩn */
+        .nav-tabs-clean {
+            border-bottom: 1px solid #e5e7eb;
+            gap: 6px;
+        }
+
+        .nav-tabs-clean .nav-link {
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: #6b7280;
+            font-weight: 600;
+            font-size: 0.86rem;
+            padding: 0.55rem 0.95rem;
+            margin-bottom: -1px;
+            background: transparent;
+            border-radius: 0;
+            transition: color 0.15s ease;
+        }
+
+        .nav-tabs-clean .nav-link:hover {
+            color: #111827;
+        }
+
+        .nav-tabs-clean .nav-link.active {
+            color: #111827;
+            border-bottom-color: #111827;
+            background: transparent;
+        }
+
+        /* Dòng hóa đơn POS mini */
+        .pos-mini-row {
+            padding: 0.65rem 0;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .pos-mini-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        /* Phím tắt badge */
+        .kbd-badge {
+            background: #e5e7eb;
+            color: #374151;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        /* 4 Thẻ chỉ số ca làm việc (KPI Cards) chuẩn UI */
+        .emp-stat-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.1rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 104px;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+            position: relative;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .emp-stat-card:hover {
+            border-color: #111827;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+            color: inherit;
+        }
+
+        .emp-stat-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .emp-stat-arrow {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            transition: all 0.2s ease;
+        }
+
+        .emp-stat-card:hover .emp-stat-arrow {
+            color: #111827;
+            transform: translate(2px, -2px);
+        }
+
+        .kpi-num {
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: #111827;
+            letter-spacing: -0.02em;
+            margin: 0;
+            line-height: 1.2;
+            font-variant-numeric: tabular-nums;
+        }
+    </style>
+}
+
+<div class="container-fluid p-0">
+
+    <!-- ============================================================== -->
+    <!-- 1. KHU VỰC 1: THANH ĐIỀU PHỐI CA & HÀNH ĐỘNG CỐT LÕI (Shift Bar) -->
+    <!-- ============================================================== -->
+    <div class="emp-panel mb-3">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <h5 class="fw-bold mb-0 text-dark">Xin chào, <span id="empDisplayName">Lê Minh Nhật</span></h5>
+                    <span id="shiftStatusTag" class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 small">
+                        Đang trong ca
+                    </span>
+                </div>
+                <div class="text-muted small d-flex flex-wrap align-items-center gap-2">
+                    <span class="text-dark fw-medium"><i class="fa-regular fa-clock me-1 text-muted"></i>Ca sáng: 08:00 - 15:30</span>
+                    <span class="text-muted">·</span>
+                    <span>Cửa hàng Light Life Flagship</span>
+                </div>
+            </div>
+
+            <!-- Cụm hành động tác vụ tức thì cho nhân viên bán hàng -->
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <!-- Nút Tra tồn kho F2 -->
+                <button type="button" class="btn btn-outline-dark px-3 py-2 fw-semibold rounded-pill d-inline-flex align-items-center gap-2" onclick="openStockLookupModal()">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span>Tra nhanh tồn kho</span>
+                    <span class="kbd-badge d-none d-md-inline">F2</span>
+                </button>
+
+                <!-- Nút Bán hàng POS F1 (Primary nổi bật nhất) -->
+                <div id="btnShiftActionsGroup">
+                    <button type="button" class="btn btn-dark px-4 py-2 fw-semibold rounded-pill d-inline-flex align-items-center gap-2 shadow-sm" onclick="openPosSale()" id="btnMainSaleAction">
+                        <i class="fa-solid fa-cash-register"></i>
+                        <span>Bán hàng POS</span>
+                        <span class="badge bg-white text-dark rounded-pill px-2 py-0 fw-bold d-none d-md-inline" style="font-size: 0.72rem;">F1</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cảnh báo khi ca chưa mở -->
+        <div id="shiftClosedAlert" class="alert alert-warning mt-3 mb-0 d-none py-2 px-3 small border-warning-subtle" role="alert">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div>
+                    <strong>Ca làm việc chưa được mở.</strong> Tạm khóa thanh toán tại POS. Bạn vẫn có thể tra tồn kho và đóng gói đơn online bình thường.
+                </div>
+                <a asp-area="Employee" asp-controller="Shifts" asp-action="Open" class="btn btn-sm btn-dark px-3 rounded-pill text-decoration-none">
+                    Mở ca bán hàng
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 2. BỐN THẺ CHỈ SỐ CA: Tinh gọn, hợp UI UX -->
+    <!-- ============================================================== -->
+    <div class="row g-3 mb-3">
+        <!-- 1. Hóa đơn / Doanh thu -->
+        <div class="col-6 col-lg-3">
+            <a href="@Url.Action("Index", "Invoices", new { area = "Employee" })" class="emp-stat-card border-0 shadow-sm" style="background: linear-gradient(145deg, #ffffff, #f9fafb); text-decoration: none;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted fw-semibold small text-uppercase">Doanh thu ca</span>
+                    <div class="bg-success-subtle text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                        <i class="fa-solid fa-receipt"></i>
+                    </div>
+                </div>
+                <h4 class="kpi-num mb-0">14.250.000₫</h4>
+                <div class="mt-2 text-muted small"><i class="fa-solid fa-arrow-trend-up text-success me-1"></i> 18 hóa đơn</div>
+            </a>
+        </div>
+
+        <!-- 2. Đơn online -->
+        <div class="col-6 col-lg-3">
+            <div class="emp-stat-card border-0 shadow-sm" onclick="switchTaskTab('tab-online')" style="background: linear-gradient(145deg, #ffffff, #f9fafb); cursor: pointer;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted fw-semibold small text-uppercase">Đơn Online</span>
+                    <div class="bg-warning-subtle text-warning-emphasis rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                        <i class="fa-solid fa-box"></i>
+                    </div>
+                </div>
+                <h4 class="kpi-num mb-0 text-dark">5 <span class="fs-6 fw-normal text-muted">đơn</span></h4>
+                <div class="mt-2 text-danger small fw-semibold"><i class="fa-solid fa-bolt me-1"></i> 1 đơn hỏa tốc</div>
+            </div>
+        </div>
+
+        <!-- 3. Yêu cầu đổi trả -->
+        <div class="col-6 col-lg-3">
+            <a href="@Url.Action("Create", "Returns", new { area = "Employee" })" class="emp-stat-card border-0 shadow-sm" style="background: linear-gradient(145deg, #ffffff, #f9fafb); text-decoration: none;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted fw-semibold small text-uppercase">Yêu cầu Đổi/Trả</span>
+                    <div class="bg-info-subtle text-info-emphasis rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </div>
+                </div>
+                <h4 class="kpi-num mb-0 text-dark">2 <span class="fs-6 fw-normal text-muted">yêu cầu</span></h4>
+                <div class="mt-2 text-warning small fw-semibold"><i class="fa-regular fa-clock me-1"></i> Chờ xử lý</div>
+            </a>
+        </div>
+
+        <!-- 4. Việc kho cần làm -->
+        <div class="col-6 col-lg-3">
+            <a href="@Url.Action("Index", "Warehouse", new { area = "Employee" })" class="emp-stat-card border-0 shadow-sm" style="background: linear-gradient(145deg, #ffffff, #f9fafb); text-decoration: none;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted fw-semibold small text-uppercase">Việc Kho</span>
+                    <div class="bg-secondary-subtle text-dark rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                        <i class="fa-solid fa-warehouse"></i>
+                    </div>
+                </div>
+                <h4 class="kpi-num mb-0 text-dark">2 <span class="fs-6 fw-normal text-muted">phiếu</span></h4>
+                <div class="mt-2 text-muted small"><i class="fa-solid fa-clipboard-check me-1"></i> Nhập & Kiểm kê</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 3. BỐ CỤC 2 CỘT CÂN ĐỐI: TRẠM VIỆC CẦN LÀM (65%) & TRỢ LÝ QUẦY (35%) -->
+    <!-- ============================================================== -->
+    <div class="row g-3">
+
+        <!-- CỘT TRÁI (65%): TRẠM TÁC VỤ CẦN LÀM THEO ĐỘ ƯU TIÊN -->
+        <div class="col-12 col-xl-8">
+            <div class="emp-panel h-100">
+                <!-- Header Tab: Phân loại việc rõ ràng -->
+                <div class="d-flex flex-wrap justify-content-between align-items-center pb-2 mb-3 border-bottom gap-2">
+                    <ul class="nav nav-tabs nav-tabs-clean" id="empActionTabs" role="tablist">
+                        <li class="nav-item">
+                            <button class="nav-link active" id="tab-urgent-btn" data-bs-toggle="tab" data-bs-target="#tab-urgent-pane" type="button">
+                                Cần xử lý ngay <span class="badge bg-danger rounded-pill px-2 py-0 ms-1">3</span>
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" id="tab-online-btn" data-bs-toggle="tab" data-bs-target="#tab-online-pane" type="button">
+                                Đơn online đóng gói (2)
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" id="tab-warehouse-btn" data-bs-toggle="tab" data-bs-target="#tab-warehouse-pane" type="button">
+                                Việc kho (2)
+                            </button>
+                        </li>
+                    </ul>
+
+                    <span class="text-muted small d-none d-sm-inline">
+                        Sắp xếp theo thứ tự ưu tiên
+                    </span>
+                </div>
+
+                <!-- Danh sách công việc theo dạng Tác Vụ Trực Diện (Action Items) -->
+                <div class="tab-content" id="empActionContent">
+
+                    <!-- TAB 1: CẦN XỬ LÝ NGAY (Ưu tiên hàng đầu trong ca) -->
+                    <div class="tab-pane fade show active" id="tab-urgent-pane" role="tabpanel">
+
+                        <!-- Việc 1: Đơn hỏa tốc online Shopee -->
+                        <div class="task-action-row priority-high">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="rounded-circle bg-danger-subtle text-danger d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px;">
+                                    <i class="fa-solid fa-bolt"></i>
+                                </div>
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                                        <span class="task-type-badge bg-danger text-white">Shopee Hỏa tốc</span>
+                                        <span class="font-monospace fw-bold text-dark">ONL-9821</span>
+                                        <span class="text-danger fw-bold small"><i class="fa-regular fa-clock me-1"></i>Hạn giao: Trước 10:30</span>
+                                    </div>
+                                    <div class="fw-semibold text-dark">Blazer Silk Suông Form Chuẩn (M - Đen)</div>
+                                    <div class="text-muted small mt-1">
+                                        Khách: Lê Thu Hà (Q.1, HCM)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-end flex-shrink-0">
+                                <button type="button" class="btn btn-danger btn-sm px-3 py-2 fw-semibold rounded-pill" onclick="openOnlineOrderModal('ONL-9821')">
+                                    Nhặt & In tem
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Việc 2: Khách mang đồ đến đổi tại quầy -->
+                        <div class="task-action-row priority-medium">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="rounded-circle bg-warning-subtle text-warning-emphasis d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px;">
+                                    <i class="fa-solid fa-arrow-rotate-left"></i>
+                                </div>
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                                        <span class="task-type-badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">Đổi hàng tại shop</span>
+                                        <span class="font-monospace fw-bold text-dark">DT-2026-085</span>
+                                        <span class="text-muted small">Khách đang đợi tại quầy</span>
+                                    </div>
+                                    <div class="fw-semibold text-dark">Đổi Đầm Lụa Satin (Size M → Size L)</div>
+                                    <div class="text-muted small mt-1">
+                                        Khách hàng: Nguyễn Mai (0912 888 999) · Nguyên tem mác
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-end flex-shrink-0">
+                                <button type="button" class="btn btn-dark btn-sm px-3 py-2 fw-semibold rounded-pill" onclick="openReturnsPage()">
+                                    Xử lý đổi trả
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Việc 3: Phiếu nhập vải chờ xác nhận ngoại quan -->
+                        <div class="task-action-row priority-normal">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="rounded-circle bg-light text-dark d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px;">
+                                    <i class="fa-solid fa-truck-ramp-box"></i>
+                                </div>
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                                        <span class="task-type-badge bg-light text-dark border">Nhập kho vải</span>
+                                        <span class="font-monospace fw-bold text-dark">NK-031</span>
+                                        <span class="text-muted small">NCC: Bảo Nam Silk</span>
+                                    </div>
+                                    <div class="fw-semibold text-dark">Kiểm ngoại quan 40 cây vải lụa Satin (1.200m)</div>
+                                    <div class="text-muted small mt-1">
+                                        Tình trạng: Đã ký biên bản giao nhận · Chờ quản lý duyệt
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-end flex-shrink-0">
+                                <button type="button" class="btn btn-outline-dark btn-sm px-3 py-2 fw-semibold rounded-pill" onclick="viewImportSlip('NK-031')">
+                                    Xem phiếu
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- TAB 2: ĐƠN ONLINE ĐÓNG GÓI THƯỜNG -->
+                    <div class="tab-pane fade" id="tab-online-pane" role="tabpanel">
+                        <div class="task-action-row">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="rounded-circle bg-light text-dark d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px;">
+                                    <i class="fa-solid fa-box"></i>
+                                </div>
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                                        <span class="task-type-badge bg-dark text-white">Website GHTK</span>
+                                        <span class="font-monospace fw-bold text-dark">ONL-9819</span>
+                                        <span class="text-muted small">Hạn: Trước 12:00</span>
+                                    </div>
+                                    <div class="fw-semibold text-dark">Áo Sơ Mi Linen Form Rộng (L - Be)</div>
+                                    <div class="text-muted small mt-1">
+                                        Trạng thái: Đã đóng gói xong
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-end flex-shrink-0">
+                                <button type="button" class="btn btn-outline-dark btn-sm px-3 py-2 fw-semibold rounded-pill" onclick="handoverShipper('ONL-9819')">
+                                    Giao bưu tá
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="task-action-row">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="rounded-circle bg-light text-dark d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px;">
+                                    <i class="fa-solid fa-box"></i>
+                                </div>
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                                        <span class="task-type-badge bg-secondary text-white">Shopee Tiêu chuẩn</span>
+                                        <span class="font-monospace fw-bold text-dark">ONL-9815</span>
+                                        <span class="text-muted small">Hạn: Trước 16:00</span>
+                                    </div>
+                                    <div class="fw-semibold text-dark">Chân Váy Xếp Ly Dáng Dài (S - Xám)</div>
+                                    <div class="text-muted small mt-1">
+                                        Chờ in tem vận chuyển
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-end flex-shrink-0">
+                                <button type="button" class="btn btn-dark btn-sm px-3 py-2 fw-semibold rounded-pill" onclick="openOnlineOrderModal('ONL-9815')">
+                                    Nhặt & In tem
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: VIỆC KHO & KIỂM KÊ -->
+                    <div class="tab-pane fade" id="tab-warehouse-pane" role="tabpanel">
+                        <div class="task-action-row">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="rounded-circle bg-light text-dark d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px;">
+                                    <i class="fa-solid fa-clipboard-check"></i>
+                                </div>
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                                        <span class="task-type-badge bg-light text-dark border">Kiểm kê kệ</span>
+                                        <span class="font-monospace fw-bold text-dark">KK-10</span>
+                                        <span class="text-danger small fw-semibold">Lệch -2 chiếc size L</span>
+                                    </div>
+                                    <div class="fw-semibold text-dark">Cân đối tồn kho Áo Blazer tháng 10</div>
+                                    <div class="text-muted small mt-1">
+                                        Thực đếm: 48 / 50 chiếc · Đã gửi quản lý duyệt cân đối
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-end flex-shrink-0">
+                                <button type="button" class="btn btn-outline-dark btn-sm px-3 py-2 fw-semibold rounded-pill" onclick="viewAuditSlip('KK-10')">
+                                    Bảng kiểm
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="text-center pt-2">
+                            <a asp-area="Employee" asp-controller="Warehouse" asp-action="Index" class="btn btn-sm btn-link text-decoration-none text-dark fw-semibold">
+                                Đi đến trang Quản lý kho toàn diện <i class="fa-solid fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- CỘT PHẢI (35%): TRỢ LÝ QUẦY & KÉT TIỀN CA -->
+        <div class="col-12 col-xl-4">
+            <div class="d-flex flex-column gap-3">
+
+                <!-- 1. KÉT TIỀN BÁN HÀNG & NÚT ĐÓNG CA DUY NHẤT -->
+                <div class="emp-panel shadow-sm" id="shiftCashWidget">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-vault text-muted"></i>
+                            Két tiền mặt tại quầy
+                        </h6>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle small px-2 py-1">Ca đang mở</span>
+                    </div>
+
+                    <div class="p-3 bg-light rounded-3 border mb-3">
+                        <div class="d-flex justify-content-between small mb-2">
+                            <span class="text-muted">Tiền đầu ca bàn giao:</span>
+                            <span class="fw-semibold text-dark">1.000.000₫</span>
+                        </div>
+                        <div class="d-flex justify-content-between small mb-2">
+                            <span class="text-muted">Tiền mặt thu trong ca:</span>
+                            <span class="fw-bold text-success">+ 8.450.000₫</span>
+                        </div>
+                        <div class="d-flex justify-content-between small mb-2">
+                            <span class="text-muted">Chuyển khoản QR:</span>
+                            <span class="text-secondary">5.800.000₫</span>
+                        </div>
+                        <hr class="my-2" />
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold text-dark">Tiền mặt trong két:</span>
+                            <span class="fs-5 fw-bold text-dark">9.450.000₫</span>
+                        </div>
+                    </div>
+
+                    <!-- Nút Đóng ca duy nhất của toàn trang (Không lặp lại ở đầu trang) -->
+                    <button type="button" class="btn btn-outline-danger w-100 fw-semibold rounded-pill py-2" onclick="openCloseShiftModal()">
+                        <i class="fa-solid fa-lock me-1"></i> Kiểm đếm két & Đóng ca
+                    </button>
+                </div>
+
+                <!-- 2. HÓA ĐƠN POS VỪA BÁN GẦN NHẤT (Tiện in lại bill / xem đối soát) -->
+                <div class="emp-panel shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-receipt text-muted"></i>
+                            Hóa đơn vừa bán
+                        </h6>
+                        <a asp-area="Employee" asp-controller="Invoices" asp-action="Index" class="btn btn-sm btn-link text-decoration-none text-muted p-0 small">
+                            Xem tất cả
+                        </a>
+                    </div>
+
+                    <div class="small">
+                        <!-- Hóa đơn 1 -->
+                        <div class="pos-mini-row">
+                            <div>
+                                <div class="fw-semibold text-dark">
+                                    <span class="font-monospace">HD-0145</span> · Trần Thu Trang
+                                </div>
+                                <div class="text-muted" style="font-size: 0.74rem;">09:45 · Chuyển khoản VietQR</div>
+                            </div>
+                            <div class="text-end">
+                                <div class="fw-bold text-dark">3.300.000₫</div>
+                                <a asp-area="Employee" asp-controller="Invoices" asp-action="Index" class="text-decoration-none text-muted small" style="font-size: 0.72rem;">
+                                    In lại <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Hóa đơn 2 -->
+                        <div class="pos-mini-row">
+                            <div>
+                                <div class="fw-semibold text-dark">
+                                    <span class="font-monospace">HD-0144</span> · Hoàng Yến
+                                </div>
+                                <div class="text-muted" style="font-size: 0.74rem;">09:20 · Tiền mặt</div>
+                            </div>
+                            <div class="text-end">
+                                <div class="fw-bold text-dark">890.000₫</div>
+                                <a asp-area="Employee" asp-controller="Invoices" asp-action="Index" class="text-decoration-none text-muted small" style="font-size: 0.72rem;">
+                                    In lại <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Hóa đơn 3 -->
+                        <div class="pos-mini-row">
+                            <div>
+                                <div class="fw-semibold text-dark">
+                                    <span class="font-monospace">HD-0143</span> · Lê Quốc Bảo
+                                </div>
+                                <div class="text-muted" style="font-size: 0.74rem;">08:50 · Tiền mặt</div>
+                            </div>
+                            <div class="text-end">
+                                <div class="fw-bold text-dark">1.450.000₫</div>
+                                <a asp-area="Employee" asp-controller="Invoices" asp-action="Index" class="text-decoration-none text-muted small" style="font-size: 0.72rem;">
+                                    In lại <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. CẢNH BÁO KỆ THIẾU HÀNG (Cần bổ sung từ kho tổng) -->
+                <div class="emp-panel shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-triangle-exclamation text-danger"></i>
+                            Cảnh báo kệ thiếu size
+                        </h6>
+                        <button type="button" class="btn btn-sm btn-link text-decoration-none text-muted p-0 small" onclick="openStockLookupModal()">
+                            Tra kệ
+                        </button>
+                    </div>
+
+                    <div class="p-2 bg-light rounded border small">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="fw-semibold text-dark">Áo Tweed Thu Đông (S - Be)</span>
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle fw-semibold">Kệ còn 1 cái</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center text-muted" style="font-size: 0.74rem;">
+                            <span>Kho tổng còn 12 cái</span>
+                            <a href="javascript:void(0)" onclick="alert('Đã gửi yêu cầu nhân viên kho chuyển 5 áo Tweed size S lên quầy!')" class="text-decoration-none fw-semibold">
+                                Yêu cầu xuất bù →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ============================================================== -->
+<!-- MODALS PHỤC VỤ THAO TÁC: Tiêu đề sạch sẽ, không mã kỹ thuật -->
+<!-- ============================================================== -->
+
+<!-- 1. MODAL: BÁN HÀNG TẠI QUẦY -->
+<div class="modal fade" id="posSaleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+            <div class="modal-header bg-dark text-white p-3">
+                <h5 class="modal-title fw-bold mb-0">Bán Hàng Tại Quầy POS</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-7">
+                        <label class="form-label fw-bold small text-dark mb-1">Quét mã vạch hoặc nhập tên sản phẩm:</label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text bg-white"><i class="fa-solid fa-barcode text-muted"></i></span>
+                            <input type="text" id="posBarcodeInput" class="form-control" placeholder="Quét barcode..." value="AT-TWEED-01" />
+                            <button class="btn btn-outline-dark" type="button" onclick="alert('Đã thêm sản phẩm Áo Tweed vào đơn hàng!')"><i class="fa-solid fa-plus"></i> Thêm</button>
+                        </div>
+
+                        <div class="table-responsive border rounded mb-3">
+                            <table class="table table-sm mb-0 align-middle small">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>Sản phẩm</th>
+                                        <th class="text-center">SL</th>
+                                        <th class="text-end">Đơn giá</th>
+                                        <th class="text-end">Thành tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="fw-semibold">Áo Tweed Thu Đông Cổ Điển</div>
+                                            <small class="text-muted">Size S • Nâu be</small>
+                                        </td>
+                                        <td class="text-center">1</td>
+                                        <td class="text-end">1.850.000₫</td>
+                                        <td class="text-end fw-bold">1.850.000₫</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="fw-semibold">Đầm Lụa Satin Kem Dự Tiệc</div>
+                                            <small class="text-muted">Size M • Kem</small>
+                                        </td>
+                                        <td class="text-center">1</td>
+                                        <td class="text-end">1.450.000₫</td>
+                                        <td class="text-end fw-bold">1.450.000₫</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="col-md-5">
+                        <div class="p-3 bg-light rounded-3 border">
+                            <h6 class="fw-bold text-dark mb-3">Thông tin thanh toán</h6>
+                            <div class="d-flex justify-content-between small mb-1">
+                                <span class="text-muted">Tổng tiền hàng:</span>
+                                <strong>3.300.000₫</strong>
+                            </div>
+                            <div class="d-flex justify-content-between small mb-1">
+                                <span class="text-muted">Chiết khấu:</span>
+                                <span class="text-success">- 0₫</span>
+                            </div>
+                            <hr class="my-2" />
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="fw-bold">Khách cần trả:</span>
+                                <span class="fs-5 fw-bold text-danger">3.300.000₫</span>
+                            </div>
+
+                            <label class="form-label small fw-bold mb-1">Phương thức thanh toán:</label>
+                            <div class="d-grid gap-2 mb-3">
+                                <button type="button" class="btn btn-outline-dark btn-sm text-start py-2 d-flex justify-content-between" onclick="finishSale('Tiền mặt')">
+                                    <span><i class="fa-solid fa-money-bill-wave me-2 text-success"></i>Tiền mặt tại quầy</span>
+                                    <i class="fa-solid fa-chevron-right small text-muted"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-dark btn-sm text-start py-2 d-flex justify-content-between" onclick="finishSale('VietQR')">
+                                    <span><i class="fa-solid fa-qrcode me-2 text-primary"></i>Quét mã VietQR</span>
+                                    <i class="fa-solid fa-chevron-right small text-muted"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 2. MODAL: MỞ CA LÀM VIỆC -->
+<div class="modal fade" id="startShiftModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header bg-dark text-white p-3">
+                <h5 class="modal-title fw-bold mb-0">Mở Ca Làm Việc</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    <label class="form-label small fw-bold text-dark">Nhân viên tiếp nhận:</label>
+                    <input type="text" class="form-control bg-light" value="Lê Minh Nhật" readonly />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold text-dark">Ca làm việc:</label>
+                    <input type="text" class="form-control bg-light" value="Ca sáng (08:00 - 15:30)" readonly />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold text-dark">Khai báo tiền mặt đầu ca bàn giao trong két (*):</label>
+                    <div class="input-group">
+                        <input type="number" id="startShiftCash" class="form-control" value="1000000" />
+                        <span class="input-group-text">VNĐ</span>
+                    </div>
+                    <small class="text-muted">Tiền lẻ chuẩn bị để thối cho khách (mặc định 1.000.000₫)</small>
+                </div>
+            </div>
+            <div class="modal-footer p-3 bg-light">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-dark rounded-pill px-4" onclick="confirmStartShift()">
+                    Xác nhận mở ca
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 3. MODAL: ĐÓNG CA & NỘP KÉT -->
+<div class="modal fade" id="closeShiftModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header bg-dark text-white p-3">
+                <h5 class="modal-title fw-bold mb-0">Đóng Ca & Đối Soát Tiền Két</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="p-3 bg-light rounded-3 border mb-3 small">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Tiền đầu ca:</span>
+                        <span>1.000.000₫</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Tiền mặt bán được:</span>
+                        <span class="text-success">+ 8.450.000₫</span>
+                    </div>
+                    <hr class="my-1" />
+                    <div class="d-flex justify-content-between fw-bold">
+                        <span>Tiền mặt lý thuyết trong két:</span>
+                        <span class="text-primary fs-6">9.450.000₫</span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-bold text-dark">Tiền mặt thực tế nhân viên đếm được (*):</label>
+                    <div class="input-group">
+                        <input type="number" id="actualCashCount" class="form-control" value="9450000" oninput="calculateCashDiff()" />
+                        <span class="input-group-text">VNĐ</span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-bold text-dark">Chênh lệch đối soát:</label>
+                    <div id="diffAlertBox" class="p-2 rounded bg-success-subtle text-success border border-success-subtle small fw-bold">
+                        <i class="fa-solid fa-circle-check me-1"></i>Khớp hoàn toàn (0₫)
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-bold text-dark">Ghi chú giải trình nếu lệch tiền ca:</label>
+                    <textarea class="form-control small" id="shiftCloseNote" rows="2" placeholder="Ví dụ: Lệch 50.000đ do đổi tiền thối..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer p-3 bg-light">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-danger rounded-pill px-4" onclick="submitCloseShift()">
+                    Nộp két & Hoàn tất ca
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 4. MODAL: TRA TỒN KHO -->
+<div class="modal fade" id="stockLookupModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header bg-dark text-white p-3">
+                <h5 class="modal-title fw-bold mb-0">Tra Cứu Tồn Kho & Vị Trí Kệ</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="input-group mb-3">
+                    <span class="input-group-text bg-white"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                    <input type="text" class="form-control" id="stockSearchInput" placeholder="Tìm theo tên sản phẩm, mã hoặc size..." value="Tweed" />
+                </div>
+
+                <div class="table-responsive border rounded">
+                    <table class="table table-sm mb-0 align-middle small">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Mã SKU</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Màu & Size</th>
+                                <th class="text-center">Tồn cửa hàng</th>
+                                <th class="text-center">Kho tổng</th>
+                                <th>Vị trí kệ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="font-monospace fw-bold">AT-TWEED-01-S</td>
+                                <td>Áo Tweed Thu Đông Cổ Điển</td>
+                                <td>Be / Size S</td>
+                                <td class="text-center text-danger fw-bold">1</td>
+                                <td class="text-center fw-bold">12</td>
+                                <td><span class="badge bg-light text-dark border">Kệ A-01</span></td>
+                            </tr>
+                            <tr>
+                                <td class="font-monospace fw-bold">AT-TWEED-01-M</td>
+                                <td>Áo Tweed Thu Đông Cổ Điển</td>
+                                <td>Be / Size M</td>
+                                <td class="text-center fw-bold">4</td>
+                                <td class="text-center fw-bold">25</td>
+                                <td><span class="badge bg-light text-dark border">Kệ A-01</span></td>
+                            </tr>
+                            <tr>
+                                <td class="font-monospace fw-bold">DL-SATIN-02-M</td>
+                                <td>Đầm Lụa Satin Kem Dự Tiệc</td>
+                                <td>Kem / Size M</td>
+                                <td class="text-center text-warning-emphasis fw-bold">2</td>
+                                <td class="text-center fw-bold">18</td>
+                                <td><span class="badge bg-light text-dark border">Kệ B-04</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer p-3 bg-light">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 5. MODAL: ĐƠN ONLINE NHẶT HÀNG & IN TEM -->
+<div class="modal fade" id="onlineModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header bg-dark text-white p-3">
+                <h5 class="modal-title fw-bold mb-0">Xử Lý Đơn Online Hỏa Tốc</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 small">
+                <div class="alert alert-danger py-2 mb-3">
+                    <i class="fa-solid fa-bolt me-1"></i><strong>Đơn hỏa tốc Shopee:</strong> Cần giao bưu tá trước 10:30!
+                </div>
+                <div class="mb-2">
+                    <span class="text-muted">Mã đơn:</span>
+                    <strong class="font-monospace ms-1 text-dark" id="modalOnlineCode">ONL-9821</strong>
+                </div>
+                <div class="mb-2">
+                    <span class="text-muted">Khách nhận:</span>
+                    <strong class="ms-1 text-dark">Lê Thu Hà (0903.111.222) - Q.1, TP.HCM</strong>
+                </div>
+                <div class="mb-3">
+                    <span class="text-muted">Sản phẩm:</span>
+                    <div class="p-2 border rounded bg-light mt-1">
+                        <div class="fw-bold text-dark">Blazer Silk Suông Form Chuẩn</div>
+                        <div class="text-muted">Màu Đen • Size M • Kệ A-02</div>
+                    </div>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="checkPicked" checked />
+                    <label class="form-check-label fw-semibold text-dark" for="checkPicked">Đã nhặt đúng mẫu, đúng size và kiểm tra vải nguyên vẹn</label>
+                </div>
+            </div>
+            <div class="modal-footer p-3 bg-light">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-danger rounded-pill px-3" onclick="confirmPackAndPrint()">
+                    In tem & Hoàn tất đóng gói
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var isShiftOpen = true;
+
+        // Toggle trạng thái ca làm việc
+        function toggleShiftState(isOpen) {
+            isShiftOpen = isOpen;
+            sessionStorage.setItem('currentShiftState', isOpen ? 'open' : 'closed');
+            var tag = document.getElementById('shiftStatusTag');
+            var alertBox = document.getElementById('shiftClosedAlert');
+            var topbarBadge = document.getElementById('topbarShiftBadge');
+            var cashWidget = document.getElementById('shiftCashWidget');
+            var btnGroup = document.getElementById('btnShiftActionsGroup');
+
+            if (isOpen) {
+                tag.className = 'badge bg-success-subtle text-success border border-success-subtle px-2 py-1 small';
+                tag.innerHTML = 'Đang trong ca';
+                alertBox.classList.add('d-none');
+                if (topbarBadge) {
+                    topbarBadge.className = 'badge bg-success-subtle text-success border border-success-subtle small px-2 py-1';
+                    topbarBadge.innerHTML = '<i class="fa-solid fa-circle text-success me-1" style="font-size: 0.45rem;"></i>Ca đang mở';
+                }
+                if (cashWidget) cashWidget.classList.remove('opacity-50');
+                btnGroup.innerHTML = `
+                    <button type="button" class="btn btn-dark px-4 py-2 fw-semibold rounded-pill d-inline-flex align-items-center gap-2 shadow-sm" onclick="openPosSale()" id="btnMainSaleAction">
+                        <i class="fa-solid fa-cash-register"></i>
+                        <span>Bán hàng POS</span>
+                        <span class="badge bg-white text-dark rounded-pill px-2 py-0 fw-bold d-none d-md-inline" style="font-size: 0.72rem;">F1</span>
+                    </button>
+                `;
+            } else {
+                tag.className = 'badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1 small';
+                tag.innerHTML = 'Chưa mở ca';
+                alertBox.classList.remove('d-none');
+                if (topbarBadge) {
+                    topbarBadge.className = 'badge bg-warning-subtle text-warning border border-warning-subtle small px-2 py-1';
+                    topbarBadge.innerHTML = '<i class="fa-solid fa-circle text-warning me-1" style="font-size: 0.45rem;"></i>Chưa mở ca';
+                }
+                if (cashWidget) cashWidget.classList.add('opacity-50');
+                btnGroup.innerHTML = `
+                    <a href="@Url.Action("Open", "Shifts", new { area = "Employee" })" class="btn btn-dark px-4 py-2 fw-semibold rounded-pill shadow-sm text-decoration-none">
+                        <i class="fa-solid fa-door-open me-1"></i> Mở ca bán hàng
+                    </a>
+                `;
+            }
+        }
+
+        // Mở POS bán hàng - Chặn nếu chưa mở ca
+        function openPosSale() {
+            if (!isShiftOpen) {
+                alert('⚠️ Ca làm việc chưa mở! Vui lòng khai báo tiền đầu ca và bấm [Mở ca bán hàng] trước khi bán hàng tại quầy.');
+                openStartShiftModal();
+                return;
+            }
+            window.location.href = '@Url.Action("Index", "Pos", new { area = "Employee" })';
+        }
+
+        // Mở trang Mở ca bán hàng
+        function openStartShiftModal() {
+            window.location.href = '@Url.Action("Open", "Shifts", new { area = "Employee" })';
+        }
+
+        // Xác nhận Mở ca
+        function confirmStartShift() {
+            var cash = document.getElementById('startShiftCash').value;
+            alert('✅ ĐÃ MỞ CA THÀNH CÔNG:\n\nNhân viên: Lê Minh Nhật\nTiền đầu ca: ' + Number(cash).toLocaleString('vi-VN') + ' VNĐ.\nBây giờ bạn có thể bắt đầu quét thanh toán tại POS.');
+            var modalEl = document.getElementById('startShiftModal');
+            var modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+            
+            document.getElementById('shiftToggleSwitch').checked = true;
+            toggleShiftState(true);
+        }
+
+        // Mở màn hình Đóng ca & Bàn giao
+        function openCloseShiftModal() {
+            if (!isShiftOpen) {
+                alert('Ca làm việc đang đóng!');
+                return;
+            }
+            window.location.href = '@Url.Action("Close", "Shifts", new { area = "Employee" })';
+        }
+
+        // Tính chênh lệch tiền két
+        function calculateCashDiff() {
+            var actual = Number(document.getElementById('actualCashCount').value || 0);
+            var expected = 9450000;
+            var diff = actual - expected;
+            var diffBox = document.getElementById('diffAlertBox');
+
+            if (diff === 0) {
+                diffBox.className = 'p-2 rounded bg-success-subtle text-success border border-success-subtle small fw-bold';
+                diffBox.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i>Khớp hoàn toàn (0₫)';
+            } else if (diff > 0) {
+                diffBox.className = 'p-2 rounded bg-warning-subtle text-warning-emphasis border border-warning-subtle small fw-bold';
+                diffBox.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-1"></i>Thừa tiền két: +' + diff.toLocaleString('vi-VN') + '₫';
+            } else {
+                diffBox.className = 'p-2 rounded bg-danger-subtle text-danger border border-danger-subtle small fw-bold';
+                diffBox.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-1"></i>Thiếu tiền két: ' + diff.toLocaleString('vi-VN') + '₫ (Cần giải trình)';
+            }
+        }
+
+        // Gửi kết quả đóng ca lên Quản lý soát ca
+        function submitCloseShift() {
+            var actual = Number(document.getElementById('actualCashCount').value || 0);
+            var expected = 9450000;
+            var diff = actual - expected;
+            var note = document.getElementById('shiftCloseNote').value;
+
+            var msg = 'ĐÃ GỬI BÁO CÁO KẾT CA THÀNH CÔNG:\n\n- Tiền thực đếm: ' + actual.toLocaleString('vi-VN') + '₫\n- Tiền lý thuyết: ' + expected.toLocaleString('vi-VN') + '₫';
+            if (diff !== 0) {
+                msg += '\n- Chênh lệch két: ' + (diff > 0 ? '+' : '') + diff.toLocaleString('vi-VN') + '₫\n- Ghi chú: ' + (note || '(Không có)');
+            }
+            msg += '\n\nDữ liệu đối soát đã được lưu vào hệ thống!';
+            alert(msg);
+
+            var modalEl = document.getElementById('closeShiftModal');
+            var modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+
+            toggleShiftState(false);
+        }
+
+        // Hoàn tất bán hàng
+        function finishSale(method) {
+            alert('✅ THANH TOÁN THÀNH CÔNG!\n\nPhương thức: ' + method + '\nTổng tiền: 3.300.000₫\nĐã in hóa đơn và cộng vào doanh thu ca.');
+            var modalEl = document.getElementById('posSaleModal');
+            var modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+        }
+
+        // Chuyển tab công việc
+        function switchTaskTab(targetTabId, cardEl) {
+            var tabBtnId = targetTabId + '-btn';
+            var triggerEl = document.getElementById(tabBtnId);
+            if (triggerEl) {
+                var tab = new bootstrap.Tab(triggerEl);
+                tab.show();
+            }
+
+            document.querySelectorAll('.emp-stat-card').forEach(function(el) {
+                el.classList.remove('active-tab');
+            });
+            if (cardEl) cardEl.classList.add('active-tab');
+        }
+
+        // Mở modal xử lý đơn online
+        function openOnlineOrderModal(code) {
+            var modal = new bootstrap.Modal(document.getElementById('onlineModal'));
+            modal.show();
+        }
+
+        // Bàn giao bưu tá
+        function handoverShipper(code) {
+            alert('Đã cập nhật: Đơn hàng ' + code + ' đã bàn giao cho bưu tá thành công.');
+        }
+
+        // Xác nhận đóng gói & in tem
+        function confirmPackAndPrint() {
+            alert('✅ ĐÃ HOÀN TẤT ĐÓNG GÓI:\n\nĐã in mã vận đơn và chuyển sang trạng thái "Chờ bàn giao bưu tá".');
+            var modalEl = document.getElementById('onlineModal');
+            var modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+        }
+
+        // Tra tồn kho
+        function openStockLookupModal() {
+            var modal = new bootstrap.Modal(document.getElementById('stockLookupModal'));
+            modal.show();
+        }
+
+        // Tạo phiếu nhập
+        function openCreateImportModal() {
+            alert('Mở biểu mẫu Lập phiếu nhập vải / hàng mới gửi Quản lý phê duyệt.');
+        }
+
+        // Kiểm kê kho
+        function openStockAuditModal() {
+            alert('Mở màn hình Nhập số lượng đếm kiểm kê thực tế tại kệ.');
+        }
+
+        // Xem phiếu nhập
+        function viewImportSlip(code) {
+            alert('Chi tiết phiếu ' + code + ':\n- NCC: Bảo Nam Silk\n- Mặt hàng: 40 cây vải lụa Satin\n- Trạng thái: Chờ Quản lý phê duyệt.');
+        }
+
+        // Xem phiếu kiểm kê
+        function viewAuditSlip(code) {
+            alert('Bảng kiểm kê ' + code + ':\n- Phạm vi: Áo khoác & Blazer\n- Tồn sổ: 50 | Thực đếm: 48 (Lệch -2)\n- Trạng thái: Đã gửi Quản lý cân đối tồn.');
+        }
+
+        // Thông tin đổi trả
+        function showReturnsInfo() {
+            openReturnsPage();
+        }
+
+        // Mở trang Tạo yêu cầu đổi / trả
+        function openReturnsPage() {
+            window.location.href = '@Url.Action("Returns", "Dashboard", new { area = "Employee" })';
+        }
+
+        // Mở trang danh sách hóa đơn
+        function openInvoicesPage() {
+            window.location.href = '@Url.Action("Index", "Invoices", new { area = "Employee" })';
+        }
+
+        // Mở trang Công việc kho
+        function openWarehousePage() {
+            window.location.href = '@Url.Action("Index", "Warehouse", new { area = "Employee" })';
+        }
+
+        // Trigger từ Sidebar
+        function quickActionTrigger(action) {
+            switch(action) {
+                case 'pos': openPosSale(); break;
+                case 'invoices': openInvoicesPage(); break;
+                case 'close_shift': openCloseShiftModal(); break;
+                case 'online': switchTaskTab('tab-online'); break;
+                case 'stock': openStockLookupModal(); break;
+                case 'warehouse_tasks': openWarehousePage(); break;
+                default: break;
+            }
+        }
+
+        // Tự động đồng bộ trạng thái khi tải trang
+        window.addEventListener('DOMContentLoaded', function() {
+            var saved = sessionStorage.getItem('currentShiftState');
+            if (saved === 'closed') {
+                toggleShiftState(false);
+            } else {
+                toggleShiftState(true);
+            }
+        });
+
+        // Phím tắt tác vụ nhanh cho nhân viên quầy (F1: POS, F2: Tra kho)
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F1') {
+                e.preventDefault();
+                openPosSale();
+            } else if (e.key === 'F2') {
+                e.preventDefault();
+                openStockLookupModal();
+            }
+        });
+    </script>
+}
+

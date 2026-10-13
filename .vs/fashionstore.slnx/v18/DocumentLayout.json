@@ -1,0 +1,884 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\fashionstore\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\controllers\\employee\\dashboardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:controllers\\employee\\dashboardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\wwwroot\\js\\lightlife-account.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:wwwroot\\js\\lightlife-account.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\wwwroot\\css\\lightlife-account.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:wwwroot\\css\\lightlife-account.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\storefront-profile.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:storefront-profile.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\storefront-orders.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:storefront-orders.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\storefront-order-detail.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:storefront-order-detail.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\storefront-change-password.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:storefront-change-password.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\storefront-addresses.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:storefront-addresses.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\wwwroot\\js\\lightlife-orders.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:wwwroot\\js\\lightlife-orders.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\wwwroot\\js\\lightlife-order-detail.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:wwwroot\\js\\lightlife-order-detail.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\wwwroot\\css\\lightlife-order-detail.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:wwwroot\\css\\lightlife-order-detail.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\storefront-order-success.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:storefront-order-success.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\storefront-home.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:storefront-home.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\views\\shared\\_storelayout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:views\\shared\\_storelayout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\wwwroot\\css\\lightlife-orders.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:wwwroot\\css\\lightlife-orders.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\wwwroot\\js\\lightlife-order-received.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:wwwroot\\js\\lightlife-order-received.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\wwwroot\\css\\lightlife-order-received.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:wwwroot\\css\\lightlife-order-received.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\wwwroot\\js\\lightlife-checkout.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:wwwroot\\js\\lightlife-checkout.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\wwwroot\\css\\lightlife-checkout.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:wwwroot\\css\\lightlife-checkout.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\storefront-checkout.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:storefront-checkout.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\views\\shared\\_checkoutlayout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:views\\shared\\_checkoutlayout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\wwwroot\\js\\lightlife-auth.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:wwwroot\\js\\lightlife-auth.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\wwwroot\\css\\lightlife-auth.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:wwwroot\\css\\lightlife-auth.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\storefront-register.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:storefront-register.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\storefront-login.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:storefront-login.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\storefront-forgot-password.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:storefront-forgot-password.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\wwwroot\\js\\lightlife-cart.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:wwwroot\\js\\lightlife-cart.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\wwwroot\\css\\lightlife-cart.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:wwwroot\\css\\lightlife-cart.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\storefront-cart.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:storefront-cart.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\wwwroot\\js\\lightlife-detail.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:wwwroot\\js\\lightlife-detail.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\wwwroot\\css\\lightlife-detail.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:wwwroot\\css\\lightlife-detail.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\storefront-product-detail.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:storefront-product-detail.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\wwwroot\\js\\lightlife-products.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:wwwroot\\js\\lightlife-products.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\wwwroot\\css\\lightlife-products.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:wwwroot\\css\\lightlife-products.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\storefront-products.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:storefront-products.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\wwwroot\\js\\lightlife-storefront.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:wwwroot\\js\\lightlife-storefront.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\wwwroot\\css\\lightlife-storefront.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:wwwroot\\css\\lightlife-storefront.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\views\\shared\\_employeelayout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:views\\shared\\_employeelayout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\views\\shared\\_adminlayout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:views\\shared\\_adminlayout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\wwwroot\\css\\lighlife-tokens.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:wwwroot\\css\\lighlife-tokens.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\wwwroot\\css\\lighlife-ui.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:wwwroot\\css\\lighlife-ui.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\wwwroot\\js\\lighlife-ui.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:wwwroot\\js\\lighlife-ui.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\wwwroot\\js\\lighlife-mock.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:wwwroot\\js\\lighlife-mock.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|c:\\Users\\User\\.gemini\\antigravity\\brain\\0493459d-89bc-4547-bd83-1cfda8c7b816\\scratch\\wireframe.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\views\\_viewstart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:views\\_viewstart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|d:\\fashionstore\\wwwroot\\images\\logo.png||{58961B49-13E0-48C0-9258-13CBC4D40279}",
+      "RelativeMoniker": "D:0:0:{A2330967-0E94-661C-BA3B-C807EFDE4F82}|fashionstore.csproj|solutionrelative:wwwroot\\images\\logo.png||{58961B49-13E0-48C0-9258-13CBC4D40279}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 39,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "lightlife-account.js",
+              "DocumentMoniker": "D:\\fashionstore\\wwwroot\\js\\lightlife-account.js",
+              "RelativeDocumentMoniker": "wwwroot\\js\\lightlife-account.js",
+              "ToolTip": "D:\\fashionstore\\wwwroot\\js\\lightlife-account.js",
+              "RelativeToolTip": "wwwroot\\js\\lightlife-account.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-10-10T17:28:32.209Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\fashionstore\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "D:\\fashionstore\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAC8AAAAAAAAAAAAAACcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-07T08:11:35.053Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "DashboardController.cs",
+              "DocumentMoniker": "D:\\fashionstore\\Controllers\\Employee\\DashboardController.cs",
+              "RelativeDocumentMoniker": "Controllers\\Employee\\DashboardController.cs",
+              "ToolTip": "D:\\fashionstore\\Controllers\\Employee\\DashboardController.cs",
+              "RelativeToolTip": "Controllers\\Employee\\DashboardController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-10T17:48:33.271Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "lightlife-account.css",
+              "DocumentMoniker": "D:\\fashionstore\\wwwroot\\css\\lightlife-account.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\lightlife-account.css",
+              "ToolTip": "D:\\fashionstore\\wwwroot\\css\\lightlife-account.css",
+              "RelativeToolTip": "wwwroot\\css\\lightlife-account.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsDAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-10-10T17:28:32.016Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "storefront-profile.html",
+              "DocumentMoniker": "D:\\fashionstore\\storefront-profile.html",
+              "RelativeDocumentMoniker": "storefront-profile.html",
+              "ToolTip": "D:\\fashionstore\\storefront-profile.html",
+              "RelativeToolTip": "storefront-profile.html",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4BAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-10-10T17:28:31.836Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "storefront-change-password.html",
+              "DocumentMoniker": "D:\\fashionstore\\storefront-change-password.html",
+              "RelativeDocumentMoniker": "storefront-change-password.html",
+              "ToolTip": "D:\\fashionstore\\storefront-change-password.html",
+              "RelativeToolTip": "storefront-change-password.html",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADYBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-10-10T17:28:31.59Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "storefront-addresses.html",
+              "DocumentMoniker": "D:\\fashionstore\\storefront-addresses.html",
+              "RelativeDocumentMoniker": "storefront-addresses.html",
+              "ToolTip": "D:\\fashionstore\\storefront-addresses.html",
+              "RelativeToolTip": "storefront-addresses.html",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFABAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-10-10T17:28:31.405Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "storefront-orders.html",
+              "DocumentMoniker": "D:\\fashionstore\\storefront-orders.html",
+              "RelativeDocumentMoniker": "storefront-orders.html",
+              "ToolTip": "D:\\fashionstore\\storefront-orders.html",
+              "RelativeToolTip": "storefront-orders.html",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEcBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-10-10T16:52:10.366Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "storefront-order-detail.html",
+              "DocumentMoniker": "D:\\fashionstore\\storefront-order-detail.html",
+              "RelativeDocumentMoniker": "storefront-order-detail.html",
+              "ToolTip": "D:\\fashionstore\\storefront-order-detail.html",
+              "RelativeToolTip": "storefront-order-detail.html",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAN8BAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-10-10T17:19:35.695Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "lightlife-order-detail.js",
+              "DocumentMoniker": "D:\\fashionstore\\wwwroot\\js\\lightlife-order-detail.js",
+              "RelativeDocumentMoniker": "wwwroot\\js\\lightlife-order-detail.js",
+              "ToolTip": "D:\\fashionstore\\wwwroot\\js\\lightlife-order-detail.js",
+              "RelativeToolTip": "wwwroot\\js\\lightlife-order-detail.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEADAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-10-10T17:19:36.145Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "lightlife-orders.js",
+              "DocumentMoniker": "D:\\fashionstore\\wwwroot\\js\\lightlife-orders.js",
+              "RelativeDocumentMoniker": "wwwroot\\js\\lightlife-orders.js",
+              "ToolTip": "D:\\fashionstore\\wwwroot\\js\\lightlife-orders.js",
+              "RelativeToolTip": "wwwroot\\js\\lightlife-orders.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-10-10T16:52:12.391Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "lightlife-order-detail.css",
+              "DocumentMoniker": "D:\\fashionstore\\wwwroot\\css\\lightlife-order-detail.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\lightlife-order-detail.css",
+              "ToolTip": "D:\\fashionstore\\wwwroot\\css\\lightlife-order-detail.css",
+              "RelativeToolTip": "wwwroot\\css\\lightlife-order-detail.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAIEDAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-10-10T17:19:35.9Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "storefront-home.html",
+              "DocumentMoniker": "D:\\fashionstore\\storefront-home.html",
+              "RelativeDocumentMoniker": "storefront-home.html",
+              "ToolTip": "D:\\fashionstore\\storefront-home.html",
+              "RelativeToolTip": "storefront-home.html",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAHMBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-10-10T15:21:16.586Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "storefront-order-success.html",
+              "DocumentMoniker": "D:\\fashionstore\\storefront-order-success.html",
+              "RelativeDocumentMoniker": "storefront-order-success.html",
+              "ToolTip": "D:\\fashionstore\\storefront-order-success.html",
+              "RelativeToolTip": "storefront-order-success.html",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-10-10T16:31:04.46Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "_StoreLayout.cshtml",
+              "DocumentMoniker": "D:\\fashionstore\\Views\\Shared\\_StoreLayout.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\_StoreLayout.cshtml",
+              "ToolTip": "D:\\fashionstore\\Views\\Shared\\_StoreLayout.cshtml",
+              "RelativeToolTip": "Views\\Shared\\_StoreLayout.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAMYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-10-07T08:15:56.836Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "lightlife-orders.css",
+              "DocumentMoniker": "D:\\fashionstore\\wwwroot\\css\\lightlife-orders.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\lightlife-orders.css",
+              "ToolTip": "D:\\fashionstore\\wwwroot\\css\\lightlife-orders.css",
+              "RelativeToolTip": "wwwroot\\css\\lightlife-orders.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADEDAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-10-10T16:52:11.322Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "lightlife-order-received.js",
+              "DocumentMoniker": "D:\\fashionstore\\wwwroot\\js\\lightlife-order-received.js",
+              "RelativeDocumentMoniker": "wwwroot\\js\\lightlife-order-received.js",
+              "ToolTip": "D:\\fashionstore\\wwwroot\\js\\lightlife-order-received.js",
+              "RelativeToolTip": "wwwroot\\js\\lightlife-order-received.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-10-10T16:44:41.449Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "lightlife-order-received.css",
+              "DocumentMoniker": "D:\\fashionstore\\wwwroot\\css\\lightlife-order-received.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\lightlife-order-received.css",
+              "ToolTip": "D:\\fashionstore\\wwwroot\\css\\lightlife-order-received.css",
+              "RelativeToolTip": "wwwroot\\css\\lightlife-order-received.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFgCAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-10-10T16:44:41.238Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "lightlife-checkout.js",
+              "DocumentMoniker": "D:\\fashionstore\\wwwroot\\js\\lightlife-checkout.js",
+              "RelativeDocumentMoniker": "wwwroot\\js\\lightlife-checkout.js",
+              "ToolTip": "D:\\fashionstore\\wwwroot\\js\\lightlife-checkout.js",
+              "RelativeToolTip": "wwwroot\\js\\lightlife-checkout.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-10-10T16:31:04.859Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "lightlife-checkout.css",
+              "DocumentMoniker": "D:\\fashionstore\\wwwroot\\css\\lightlife-checkout.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\lightlife-checkout.css",
+              "ToolTip": "D:\\fashionstore\\wwwroot\\css\\lightlife-checkout.css",
+              "RelativeToolTip": "wwwroot\\css\\lightlife-checkout.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAPoCAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-10-10T16:31:04.661Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "storefront-checkout.html",
+              "DocumentMoniker": "D:\\fashionstore\\storefront-checkout.html",
+              "RelativeDocumentMoniker": "storefront-checkout.html",
+              "ToolTip": "D:\\fashionstore\\storefront-checkout.html",
+              "RelativeToolTip": "storefront-checkout.html",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAC4BAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-10-10T16:31:04.229Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "_CheckoutLayout.cshtml",
+              "DocumentMoniker": "D:\\fashionstore\\Views\\Shared\\_CheckoutLayout.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\_CheckoutLayout.cshtml",
+              "ToolTip": "D:\\fashionstore\\Views\\Shared\\_CheckoutLayout.cshtml",
+              "RelativeToolTip": "Views\\Shared\\_CheckoutLayout.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAD8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-10-10T16:31:04.015Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "lightlife-auth.js",
+              "DocumentMoniker": "D:\\fashionstore\\wwwroot\\js\\lightlife-auth.js",
+              "RelativeDocumentMoniker": "wwwroot\\js\\lightlife-auth.js",
+              "ToolTip": "D:\\fashionstore\\wwwroot\\js\\lightlife-auth.js",
+              "RelativeToolTip": "wwwroot\\js\\lightlife-auth.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAMUBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-10-10T16:22:52.476Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "lightlife-auth.css",
+              "DocumentMoniker": "D:\\fashionstore\\wwwroot\\css\\lightlife-auth.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\lightlife-auth.css",
+              "ToolTip": "D:\\fashionstore\\wwwroot\\css\\lightlife-auth.css",
+              "RelativeToolTip": "wwwroot\\css\\lightlife-auth.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAPMBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-10-10T16:22:52.251Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "storefront-register.html",
+              "DocumentMoniker": "D:\\fashionstore\\storefront-register.html",
+              "RelativeDocumentMoniker": "storefront-register.html",
+              "ToolTip": "D:\\fashionstore\\storefront-register.html",
+              "RelativeToolTip": "storefront-register.html",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAALwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-10-10T16:22:52.055Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "storefront-login.html",
+              "DocumentMoniker": "D:\\fashionstore\\storefront-login.html",
+              "RelativeDocumentMoniker": "storefront-login.html",
+              "ToolTip": "D:\\fashionstore\\storefront-login.html",
+              "RelativeToolTip": "storefront-login.html",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAJYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-10-10T16:22:51.873Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "storefront-forgot-password.html",
+              "DocumentMoniker": "D:\\fashionstore\\storefront-forgot-password.html",
+              "RelativeDocumentMoniker": "storefront-forgot-password.html",
+              "ToolTip": "D:\\fashionstore\\storefront-forgot-password.html",
+              "RelativeToolTip": "storefront-forgot-password.html",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAGwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-10-10T16:22:51.664Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "lightlife-cart.js",
+              "DocumentMoniker": "D:\\fashionstore\\wwwroot\\js\\lightlife-cart.js",
+              "RelativeDocumentMoniker": "wwwroot\\js\\lightlife-cart.js",
+              "ToolTip": "D:\\fashionstore\\wwwroot\\js\\lightlife-cart.js",
+              "RelativeToolTip": "wwwroot\\js\\lightlife-cart.js",
+              "ViewState": "AgIAABIAAAAAAAAAAAAAAA8AAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-10-10T16:10:50.199Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "lightlife-cart.css",
+              "DocumentMoniker": "D:\\fashionstore\\wwwroot\\css\\lightlife-cart.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\lightlife-cart.css",
+              "ToolTip": "D:\\fashionstore\\wwwroot\\css\\lightlife-cart.css",
+              "RelativeToolTip": "wwwroot\\css\\lightlife-cart.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEADAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-10-10T16:10:48.635Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "storefront-cart.html",
+              "DocumentMoniker": "D:\\fashionstore\\storefront-cart.html",
+              "RelativeDocumentMoniker": "storefront-cart.html",
+              "ToolTip": "D:\\fashionstore\\storefront-cart.html",
+              "RelativeToolTip": "storefront-cart.html",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAGYBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-10-10T16:10:47.736Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 30,
+              "Title": "lightlife-detail.js",
+              "DocumentMoniker": "D:\\fashionstore\\wwwroot\\js\\lightlife-detail.js",
+              "RelativeDocumentMoniker": "wwwroot\\js\\lightlife-detail.js",
+              "ToolTip": "D:\\fashionstore\\wwwroot\\js\\lightlife-detail.js",
+              "RelativeToolTip": "wwwroot\\js\\lightlife-detail.js",
+              "ViewState": "AgIAAB4AAAAAAAAAAAAAABEAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-10-10T15:59:30.139Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 31,
+              "Title": "lightlife-detail.css",
+              "DocumentMoniker": "D:\\fashionstore\\wwwroot\\css\\lightlife-detail.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\lightlife-detail.css",
+              "ToolTip": "D:\\fashionstore\\wwwroot\\css\\lightlife-detail.css",
+              "RelativeToolTip": "wwwroot\\css\\lightlife-detail.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAALICAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-10-10T15:59:28.808Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 32,
+              "Title": "storefront-product-detail.html",
+              "DocumentMoniker": "D:\\fashionstore\\storefront-product-detail.html",
+              "RelativeDocumentMoniker": "storefront-product-detail.html",
+              "ToolTip": "D:\\fashionstore\\storefront-product-detail.html",
+              "RelativeToolTip": "storefront-product-detail.html",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAI8BAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-10-10T15:59:27.759Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 33,
+              "Title": "lightlife-products.js",
+              "DocumentMoniker": "D:\\fashionstore\\wwwroot\\js\\lightlife-products.js",
+              "RelativeDocumentMoniker": "wwwroot\\js\\lightlife-products.js",
+              "ToolTip": "D:\\fashionstore\\wwwroot\\js\\lightlife-products.js",
+              "RelativeToolTip": "wwwroot\\js\\lightlife-products.js",
+              "ViewState": "AgIAABUAAAAAAAAAAAAAABUAAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-10-10T15:34:44.779Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 34,
+              "Title": "lightlife-products.css",
+              "DocumentMoniker": "D:\\fashionstore\\wwwroot\\css\\lightlife-products.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\lightlife-products.css",
+              "ToolTip": "D:\\fashionstore\\wwwroot\\css\\lightlife-products.css",
+              "RelativeToolTip": "wwwroot\\css\\lightlife-products.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAHMCAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-10-10T15:34:43.385Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 35,
+              "Title": "storefront-products.html",
+              "DocumentMoniker": "D:\\fashionstore\\storefront-products.html",
+              "RelativeDocumentMoniker": "storefront-products.html",
+              "ToolTip": "D:\\fashionstore\\storefront-products.html",
+              "RelativeToolTip": "storefront-products.html",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYCAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-10-10T15:34:42.44Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 36,
+              "Title": "lightlife-storefront.js",
+              "DocumentMoniker": "D:\\fashionstore\\wwwroot\\js\\lightlife-storefront.js",
+              "RelativeDocumentMoniker": "wwwroot\\js\\lightlife-storefront.js",
+              "ToolTip": "D:\\fashionstore\\wwwroot\\js\\lightlife-storefront.js",
+              "RelativeToolTip": "wwwroot\\js\\lightlife-storefront.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-10-10T15:21:17.057Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 37,
+              "Title": "lightlife-storefront.css",
+              "DocumentMoniker": "D:\\fashionstore\\wwwroot\\css\\lightlife-storefront.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\lightlife-storefront.css",
+              "ToolTip": "D:\\fashionstore\\wwwroot\\css\\lightlife-storefront.css",
+              "RelativeToolTip": "wwwroot\\css\\lightlife-storefront.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAE0EAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-10-10T15:21:16.876Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 39,
+              "Title": "_AdminLayout.cshtml",
+              "DocumentMoniker": "D:\\fashionstore\\Views\\Shared\\_AdminLayout.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\_AdminLayout.cshtml",
+              "ToolTip": "D:\\fashionstore\\Views\\Shared\\_AdminLayout.cshtml",
+              "RelativeToolTip": "Views\\Shared\\_AdminLayout.cshtml",
+              "ViewState": "AgIAAFQAAAAAAAAAAAAAADsAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-10-07T08:49:46.919Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 38,
+              "Title": "_EmployeeLayout.cshtml",
+              "DocumentMoniker": "D:\\fashionstore\\Views\\Shared\\_EmployeeLayout.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\_EmployeeLayout.cshtml",
+              "ToolTip": "D:\\fashionstore\\Views\\Shared\\_EmployeeLayout.cshtml",
+              "RelativeToolTip": "Views\\Shared\\_EmployeeLayout.cshtml",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAACEAAAATAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-10-09T00:03:41.559Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 40,
+              "Title": "site.css",
+              "DocumentMoniker": "D:\\fashionstore\\wwwroot\\css\\site.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\site.css",
+              "ToolTip": "D:\\fashionstore\\wwwroot\\css\\site.css",
+              "RelativeToolTip": "wwwroot\\css\\site.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-10-07T08:16:03.157Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 42,
+              "Title": "lighlife-ui.css",
+              "DocumentMoniker": "D:\\fashionstore\\wwwroot\\css\\lighlife-ui.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\lighlife-ui.css",
+              "ToolTip": "D:\\fashionstore\\wwwroot\\css\\lighlife-ui.css",
+              "RelativeToolTip": "wwwroot\\css\\lighlife-ui.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-10-10T08:42:23.773Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 43,
+              "Title": "lighlife-ui.js",
+              "DocumentMoniker": "D:\\fashionstore\\wwwroot\\js\\lighlife-ui.js",
+              "RelativeDocumentMoniker": "wwwroot\\js\\lighlife-ui.js",
+              "ToolTip": "D:\\fashionstore\\wwwroot\\js\\lighlife-ui.js",
+              "RelativeToolTip": "wwwroot\\js\\lighlife-ui.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-10-10T08:42:24.532Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 41,
+              "Title": "lighlife-tokens.css",
+              "DocumentMoniker": "D:\\fashionstore\\wwwroot\\css\\lighlife-tokens.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\lighlife-tokens.css",
+              "ToolTip": "D:\\fashionstore\\wwwroot\\css\\lighlife-tokens.css",
+              "RelativeToolTip": "wwwroot\\css\\lighlife-tokens.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-10-10T08:42:23.559Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 44,
+              "Title": "lighlife-mock.js",
+              "DocumentMoniker": "D:\\fashionstore\\wwwroot\\js\\lighlife-mock.js",
+              "RelativeDocumentMoniker": "wwwroot\\js\\lighlife-mock.js",
+              "ToolTip": "D:\\fashionstore\\wwwroot\\js\\lighlife-mock.js",
+              "RelativeToolTip": "wwwroot\\js\\lighlife-mock.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-10-10T08:42:23.975Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 45,
+              "Title": "wireframe.html",
+              "DocumentMoniker": "C:\\Users\\User\\.gemini\\antigravity\\brain\\0493459d-89bc-4547-bd83-1cfda8c7b816\\scratch\\wireframe.html",
+              "ToolTip": "C:\\Users\\User\\.gemini\\antigravity\\brain\\0493459d-89bc-4547-bd83-1cfda8c7b816\\scratch\\wireframe.html",
+              "ViewState": "AgIAADgBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-10-10T08:39:40.271Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 46,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\fashionstore\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "D:\\fashionstore\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-10-10T00:45:57.475Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 47,
+              "Title": "appsettings.Development.json",
+              "DocumentMoniker": "D:\\fashionstore\\appsettings.Development.json",
+              "RelativeDocumentMoniker": "appsettings.Development.json",
+              "ToolTip": "D:\\fashionstore\\appsettings.Development.json",
+              "RelativeToolTip": "appsettings.Development.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-10-10T00:46:02.02Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 48,
+              "Title": "_ViewStart.cshtml",
+              "DocumentMoniker": "D:\\fashionstore\\Views\\_ViewStart.cshtml",
+              "RelativeDocumentMoniker": "Views\\_ViewStart.cshtml",
+              "ToolTip": "D:\\fashionstore\\Views\\_ViewStart.cshtml",
+              "RelativeToolTip": "Views\\_ViewStart.cshtml",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-10-07T08:15:06.222Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 49,
+              "Title": "logo.png",
+              "DocumentMoniker": "D:\\fashionstore\\wwwroot\\images\\logo.png",
+              "RelativeDocumentMoniker": "wwwroot\\images\\logo.png",
+              "ToolTip": "D:\\fashionstore\\wwwroot\\images\\logo.png",
+              "RelativeToolTip": "wwwroot\\images\\logo.png",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001533|",
+              "WhenOpened": "2026-10-07T07:37:07.591Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 125,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{eefa5220-e298-11d0-8f78-00a0c9110057}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,897 @@
+/* ==========================================================================
+   LIGHT LIFE FASHION STUDIO - ORDER DETAIL & RETURN REQUEST STYLES
+   Design System: Arial, Helvetica, sans-serif; #6F2438, #F7F4EF, #FFFFFF
+   Timeline Stepper + Products 4:5 + Return Tracking + Responsive Modals
+   ========================================================================== */
+
+/* 1. Trang Chi Tiết Đơn Tổng Thể */
+.ll-order-detail-page {
+  padding-top: 1.5rem;
+  padding-bottom: 5rem;
+  min-height: calc(100vh - 350px);
+}
+
+/* Breadcrumb */
+.ll-detail-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--color-text-sub, #6B615A);
+  margin-bottom: 1.75rem;
+}
+
+.ll-detail-breadcrumb a {
+  color: var(--color-text-sub, #6B615A);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.ll-detail-breadcrumb a:hover {
+  color: var(--color-brand, #6F2438);
+}
+
+.ll-detail-breadcrumb__sep {
+  color: var(--color-border, #E7DFD5);
+}
+
+.ll-detail-breadcrumb__current {
+  color: var(--color-text-main, #201C1A);
+  font-weight: 700;
+}
+
+/* Bố Cục 2 Cột Desktop (Sidebar 280px + Nội Dung Chính 1fr) */
+.ll-detail-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2.25rem;
+  align-items: start;
+}
+
+/* 2. Khung Nội Dung Chi Tiết Đơn Hàng Chính */
+.ll-order-detail-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+/* Thẻ Card Trắng Dùng Chung */
+.ll-detail-card {
+  background-color: var(--color-surface, #FFFFFF);
+  border: 1px solid var(--color-border, #E7DFD5);
+  border-radius: var(--radius, 8px);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(32, 28, 26, 0.05));
+}
+
+/* 3. Header Chi Tiết Đơn Hàng */
+.ll-detail-top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.ll-btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-brand, #6F2438);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.2s;
+  padding: 0.4rem 0.65rem;
+  border-radius: 6px;
+  background-color: var(--color-bg, #F7F4EF);
+}
+
+.ll-btn-back:hover {
+  background-color: #ECE5DC;
+}
+
+.ll-order-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--color-border, #E7DFD5);
+}
+
+.ll-detail-code-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-brand, #6F2438);
+  margin: 0 0 0.35rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ll-detail-meta-date {
+  font-size: 0.875rem;
+  color: var(--color-text-sub, #6B615A);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ll-detail-badges-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+  margin-top: 0.75rem;
+}
+
+/* Nút Hành Động Trên Header */
+.ll-detail-action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.ll-btn-cancel-order {
+  min-height: 44px;
+  padding: 0 1.25rem;
+  background: #FFFFFF;
+  border: 1px solid var(--color-error, #B42318);
+  color: var(--color-error, #B42318);
+  border-radius: var(--radius, 8px);
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: all 0.2s;
+}
+
+.ll-btn-cancel-order:hover {
+  background-color: #FEF3F2;
+  border-color: #912018;
+}
+
+.ll-btn-return-request {
+  min-height: 44px;
+  padding: 0 1.25rem;
+  background-color: var(--color-brand, #6F2438);
+  color: #FFFFFF;
+  border: 1px solid var(--color-brand, #6F2438);
+  border-radius: var(--radius, 8px);
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: all 0.2s;
+}
+
+.ll-btn-return-request:hover {
+  background-color: var(--color-brand-hover, #52172A);
+  border-color: var(--color-brand-hover, #52172A);
+}
+
+.ll-btn-support-contact {
+  min-height: 44px;
+  padding: 0 1rem;
+  background-color: var(--color-bg, #F7F4EF);
+  color: var(--color-text-main, #201C1A);
+  border: 1px solid var(--color-border, #E7DFD5);
+  border-radius: var(--radius, 8px);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: background-color 0.2s;
+}
+
+.ll-btn-support-contact:hover {
+  background-color: #ECE5DC;
+}
+
+/* 4. Timeline Quy Trình Đơn Hàng (Order Stepper Progress Bar) */
+.ll-timeline-header {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text-main, #201C1A);
+  margin: 0 0 1.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ll-stepper-track {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin: 1.5rem 0 0.5rem 0;
+}
+
+.ll-stepper-track::before {
+  content: "";
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  height: 3px;
+  background-color: var(--color-border, #E7DFD5);
+  z-index: 1;
+}
+
+.ll-stepper-progress-fill {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  height: 3px;
+  background-color: var(--color-brand, #6F2438);
+  z-index: 2;
+  transition: width 0.4s ease;
+}
+
+.ll-step-item {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 18%;
+}
+
+.ll-step-dot {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  border: 2px solid var(--color-border, #E7DFD5);
+  color: var(--color-text-sub, #6B615A);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.65rem;
+  transition: all 0.3s;
+}
+
+.ll-step-item.completed .ll-step-dot {
+  background-color: var(--color-brand, #6F2438);
+  border-color: var(--color-brand, #6F2438);
+  color: #FFFFFF;
+}
+
+.ll-step-item.active .ll-step-dot {
+  background-color: #FFFFFF;
+  border-color: var(--color-brand, #6F2438);
+  color: var(--color-brand, #6F2438);
+  box-shadow: 0 0 0 4px rgba(111, 36, 56, 0.15);
+}
+
+.ll-step-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-sub, #6B615A);
+  margin-bottom: 0.25rem;
+  line-height: 1.3;
+}
+
+.ll-step-item.completed .ll-step-title,
+.ll-step-item.active .ll-step-title {
+  color: var(--color-text-main, #201C1A);
+  font-weight: 700;
+}
+
+.ll-step-time {
+  font-size: 0.75rem;
+  color: var(--color-text-sub, #6B615A);
+}
+
+/* Banner Thông Báo Đơn Đã Hủy */
+.ll-order-cancelled-banner {
+  background-color: #FEF3F2;
+  border: 1px solid #FECDCA;
+  border-radius: var(--radius, 8px);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  color: var(--color-error, #B42318);
+  margin-top: 1rem;
+}
+
+.ll-order-cancelled-banner i {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.ll-order-cancelled-banner h4 {
+  margin: 0 0 0.35rem 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.ll-order-cancelled-banner p {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #7A271A;
+}
+
+/* 5. Khung Theo Dõi Yêu Cầu Đổi Trả (Return Tracking Card) */
+.ll-return-tracking-card {
+  border-left: 4px solid var(--color-gold, #B99A70);
+  background-color: #FAF8F5;
+}
+
+.ll-return-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--color-border, #E7DFD5);
+}
+
+.ll-return-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text-main, #201C1A);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ll-return-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.ll-return-status--pending {
+  background-color: #FEF0C7;
+  color: #7A2E0E;
+  border: 1px solid #FEDF89;
+}
+
+.ll-return-status--approved {
+  background-color: #E8F5E9;
+  color: #1B5E20;
+  border: 1px solid #A5D6A7;
+}
+
+.ll-return-status--rejected {
+  background-color: #FEF3F2;
+  color: #B42318;
+  border: 1px solid #FECDCA;
+}
+
+.ll-return-status--completed {
+  background-color: #E8F5E9;
+  color: #276749;
+  border: 1px solid #A6E2BD;
+}
+
+.ll-return-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.875rem;
+}
+
+.ll-return-info-item label {
+  color: var(--color-text-sub, #6B615A);
+  font-size: 0.8125rem;
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.ll-return-info-item strong {
+  color: var(--color-text-main, #201C1A);
+}
+
+.ll-return-evidence-preview {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.ll-return-evidence-thumb {
+  width: 60px;
+  height: 75px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid var(--color-border, #E7DFD5);
+}
+
+/* 6. Danh Sách Sản Phẩm Trong Đơn */
+.ll-products-card-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text-main, #201C1A);
+  margin: 0 0 1.25rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ll-detail-items-table {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ll-detail-item-row {
+  display: grid;
+  grid-template-columns: 80px 1fr auto auto;
+  gap: 1.25rem;
+  align-items: center;
+  padding-bottom: 1rem;
+  border-bottom: 1px dashed var(--color-border, #E7DFD5);
+}
+
+.ll-detail-item-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.ll-detail-item-thumb {
+  width: 80px;
+  aspect-ratio: 4/5;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: var(--color-bg, #F7F4EF);
+  border: 1px solid var(--color-border, #E7DFD5);
+}
+
+.ll-detail-item-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ll-detail-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ll-detail-item-name {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--color-text-main, #201C1A);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.ll-detail-item-name:hover {
+  color: var(--color-brand, #6F2438);
+}
+
+.ll-detail-item-variant {
+  font-size: 0.8125rem;
+  color: var(--color-text-sub, #6B615A);
+}
+
+.ll-detail-item-qty {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-main, #201C1A);
+  text-align: center;
+  padding: 0 1rem;
+}
+
+.ll-detail-item-price {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-brand, #6F2438);
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* 7. Lưới Thông Tin Giao Nhận & Thanh Toán (3 Cột) */
+.ll-detail-grid-info {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.ll-info-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-main, #201C1A);
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-border, #E7DFD5);
+}
+
+.ll-info-block {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--color-text-sub, #6B615A);
+}
+
+.ll-info-block strong {
+  color: var(--color-text-main, #201C1A);
+}
+
+.ll-info-block p {
+  margin: 0 0 0.5rem 0;
+}
+
+/* Bảng Tài Chính Tính Tiền */
+.ll-financial-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  font-size: 0.875rem;
+}
+
+.ll-financial-line {
+  display: flex;
+  justify-content: space-between;
+  color: var(--color-text-sub, #6B615A);
+}
+
+.ll-financial-line.total {
+  padding-top: 0.75rem;
+  margin-top: 0.25rem;
+  border-top: 1px solid var(--color-border, #E7DFD5);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--color-text-main, #201C1A);
+  align-items: baseline;
+}
+
+.ll-financial-total-val {
+  color: var(--color-brand, #6F2438);
+  font-size: 1.35rem;
+}
+
+/* 8. Lịch Sử Sự Kiện & Box Hỗ Trợ */
+.ll-audit-history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.ll-audit-history-list::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 9px;
+  width: 2px;
+  background-color: var(--color-border, #E7DFD5);
+}
+
+.ll-audit-item {
+  position: relative;
+  padding-left: 2rem;
+  font-size: 0.875rem;
+}
+
+.ll-audit-bullet {
+  position: absolute;
+  left: 3px;
+  top: 5px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  border: 2px solid var(--color-brand, #6F2438);
+}
+
+.ll-audit-item-time {
+  font-size: 0.75rem;
+  color: var(--color-text-sub, #6B615A);
+}
+
+.ll-audit-item-title {
+  font-weight: 700;
+  color: var(--color-text-main, #201C1A);
+  margin-bottom: 0.15rem;
+}
+
+.ll-support-contact-box {
+  background-color: #FAF8F5;
+  border: 1px dashed var(--color-border, #E7DFD5);
+  border-radius: var(--radius, 8px);
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* 9. Modals (Hủy Đơn & Yêu Cầu Đổi Trả) */
+.ll-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(32, 28, 26, 0.6);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  backdrop-filter: blur(3px);
+}
+
+.ll-modal-overlay.show {
+  display: flex;
+}
+
+.ll-modal-dialog--cancel,
+.ll-modal-dialog--return {
+  background-color: #FFFFFF;
+  border-radius: var(--radius, 8px);
+  width: 100%;
+  max-width: 580px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 1.75rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  position: relative;
+  animation: modalSlideIn 0.25s ease-out;
+}
+
+.ll-modal-dialog--return {
+  max-width: 680px;
+}
+
+@keyframes modalSlideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.ll-form-group {
+  margin-bottom: 1.25rem;
+}
+
+.ll-form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-text-main, #201C1A);
+  margin-bottom: 0.45rem;
+}
+
+.ll-form-label span.req {
+  color: var(--color-error, #B42318);
+}
+
+.ll-form-select,
+.ll-form-textarea,
+.ll-form-input {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--color-border, #E7DFD5);
+  border-radius: var(--radius, 8px);
+  font-family: var(--font-family, Arial, sans-serif);
+  font-size: 0.9375rem;
+  color: var(--color-text-main, #201C1A);
+  background-color: #FFFFFF;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.ll-form-select {
+  min-height: 44px;
+}
+
+.ll-form-select:focus,
+.ll-form-textarea:focus,
+.ll-form-input:focus {
+  border-color: var(--color-brand, #6F2438);
+  box-shadow: 0 0 0 3px rgba(111, 36, 56, 0.1);
+}
+
+.ll-form-textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.ll-return-items-select {
+  border: 1px solid var(--color-border, #E7DFD5);
+  border-radius: var(--radius, 8px);
+  padding: 0.75rem 1rem;
+  background-color: #FAF8F5;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ll-return-select-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px dashed var(--color-border, #E7DFD5);
+}
+
+.ll-return-select-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.ll-return-item-check {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-main, #201C1A);
+}
+
+.ll-return-qty-select {
+  width: 80px;
+  min-height: 38px;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--color-border, #E7DFD5);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  background: #FFF;
+}
+
+.ll-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-border, #E7DFD5);
+}
+
+.ll-modal-btn-close {
+  min-height: 44px;
+  padding: 0 1.25rem;
+  background: #FFFFFF;
+  border: 1px solid var(--color-border, #E7DFD5);
+  border-radius: var(--radius, 8px);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-main, #201C1A);
+  cursor: pointer;
+}
+
+.ll-modal-btn-confirm {
+  min-height: 44px;
+  padding: 0 1.5rem;
+  border-radius: var(--radius, 8px);
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+}
+
+.ll-modal-btn-confirm--danger {
+  background-color: var(--color-error, #B42318);
+  color: #FFFFFF;
+}
+
+.ll-modal-btn-confirm--danger:hover {
+  background-color: #912018;
+}
+
+.ll-modal-btn-confirm--brand {
+  background-color: var(--color-brand, #6F2438);
+  color: #FFFFFF;
+}
+
+.ll-modal-btn-confirm--brand:hover {
+  background-color: var(--color-brand-hover, #52172A);
+}
+
+/* 10. Responsive Design */
+@media (max-width: 992px) {
+  .ll-detail-layout {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .ll-detail-grid-info {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .ll-stepper-track {
+    flex-direction: column;
+    gap: 1.25rem;
+    align-items: flex-start;
+    padding-left: 1.5rem;
+  }
+
+  .ll-stepper-track::before {
+    top: 10px;
+    bottom: 10px;
+    left: 35px;
+    width: 3px;
+    height: auto;
+    right: auto;
+  }
+
+  .ll-stepper-progress-fill {
+    display: none;
+  }
+
+  .ll-step-item {
+    flex-direction: row;
+    width: 100%;
+    text-align: left;
+    gap: 1rem;
+  }
+
+  .ll-step-dot {
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+
+  .ll-detail-item-row {
+    grid-template-columns: 70px 1fr;
+    gap: 0.85rem;
+  }
+
+  .ll-detail-item-qty,
+  .ll-detail-item-price {
+    grid-column: 2 / -1;
+    text-align: left;
+    padding: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .ll-order-detail-header {
+    flex-direction: column;
+  }
+
+  .ll-detail-action-buttons {
+    width: 100%;
+  }
+
+  .ll-btn-cancel-order,
+  .ll-btn-return-request,
+  .ll-btn-support-contact {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .ll-detail-card {
+    padding: 1.25rem;
+  }
+}
+

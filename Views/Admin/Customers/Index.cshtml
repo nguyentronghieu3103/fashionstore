@@ -1,0 +1,708 @@
+@{
+    ViewData["Title"] = "Khách hàng & Lịch sử mua";
+}
+
+@section Styles {
+    <style>
+        .customer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #18181b;
+            color: #c5a880;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            border: 1px solid #c5a880;
+        }
+
+        .customer-table thead th {
+            background: #fafafa;
+            color: #6b7280;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.85rem 1.25rem;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        .customer-table tbody td {
+            padding: 1rem 1.25rem;
+            vertical-align: middle;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .customer-table tbody tr:hover {
+            background-color: #fafafa;
+        }
+
+        .filter-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+        }
+
+        .badge-vip {
+            background: linear-gradient(135deg, rgba(197, 168, 128, 0.2) 0%, rgba(179, 147, 105, 0.1) 100%);
+            color: #8c6b3e;
+            border: 1px solid rgba(197, 168, 128, 0.4);
+            font-weight: 600;
+            font-size: 0.72rem;
+            padding: 2px 7px;
+            border-radius: 4px;
+        }
+
+        .badge-loyal {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            font-size: 0.72rem;
+            padding: 2px 7px;
+            border-radius: 4px;
+        }
+
+        .history-table th {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #6b7280;
+            background: #f9fafb;
+            padding: 0.65rem 0.75rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .history-table td {
+            padding: 0.65rem 0.75rem;
+            font-size: 0.85rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f3f4f6;
+        }
+    </style>
+}
+
+<div class="container-fluid p-0">
+
+    <!-- 1. Khung đầu: Tiêu đề, Tổng khách & Thao tác Admin -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+        <div>
+            <h4 class="fw-bold mb-1 text-dark">Khách hàng và lịch sử mua</h4>
+            <div class="text-muted small">Tra cứu hồ sơ khách hàng, phân hạng thành viên và toàn bộ lịch sử chi tiêu (Tổng số: <strong class="text-dark" id="totalCustomerCount">1.240 khách hàng</strong>)</div>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-dark btn-sm px-3 d-inline-flex align-items-center gap-2" onclick="exportCustomerData()">
+                <i class="fa-solid fa-file-export"></i>
+                <span>Xuất danh sách </span>
+            </button>
+            <button class="btn btn-dark btn-sm px-3 d-inline-flex align-items-center gap-2" onclick="openCreateCustomerModal()">
+                <i class="fa-solid fa-user-plus"></i>
+                <span>Thêm khách hàng</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. Khung lọc: Tên/SĐT/Email, Nhóm khách, Trạng thái -->
+    <div class="filter-card mb-4">
+        <div class="row g-2 align-items-center">
+            <!-- Tìm tên, SĐT, Email -->
+            <div class="col-md-4">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" id="custSearchInput" class="form-control border-start-0 ps-1" placeholder="Tìm theo tên, số điện thoại hoặc email..." onkeyup="filterCustomers()" />
+                </div>
+            </div>
+
+            <!-- Phân nhóm khách hàng -->
+            <div class="col-md-3">
+                <select id="custGroupFilter" class="form-select form-select-sm" onchange="filterCustomers()">
+                    <option value="">Tất cả phân nhóm</option>
+                    <option value="VIP">Khách VIP</option>
+                    <option value="Thân thiết">Khách Thân thiết</option>
+                    <option value="Mới">Khách hàng mới</option>
+                </select>
+            </div>
+
+            <!-- Trạng thái hồ sơ -->
+            <div class="col-md-3">
+                <select id="custStatusFilter" class="form-select form-select-sm" onchange="filterCustomers()">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="active">Đang hoạt động</option>
+                    <option value="locked">Đã khóa hồ sơ</option>
+                </select>
+            </div>
+
+            <!-- Đặt lại -->
+            <div class="col-md-2 text-md-end">
+                <button type="button" class="btn btn-light btn-sm text-secondary w-100" onclick="resetCustomerFilter()">
+                    <i class="fa-solid fa-rotate-left me-1"></i> Đặt lại
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Khung bảng: Danh sách khách hàng & Tổng chi tiêu -->
+    <div class="card border border-1 rounded-3 overflow-hidden shadow-none mb-4">
+        <div class="table-responsive">
+            <table class="table customer-table mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th>Khách hàng</th>
+                        <th>Số điện thoại & Email</th>
+                        <th>Hạng thành viên</th>
+                        <th>Lần mua gần nhất</th>
+                        <th>Tổng chi tiêu</th>
+                        <th>Số đơn</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="customerTableBody">
+                    <!-- KH 1: VIP -->
+                    <tr data-group="VIP" data-status="active" id="cust-row-1">
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="customer-avatar">PT</div>
+                                <div>
+                                    <div class="fw-bold text-dark">Nguyễn Phương Thảo</div>
+                                    <small class="text-muted">Mã: <span class="font-monospace">KH-0089</span></small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-semibold text-dark font-monospace">0903 124 567</div>
+                            <small class="text-muted">thao.nguyen@@gmail.com</small>
+                        </td>
+                        <td>
+                            <span class="badge-vip"><i class="fa-solid fa-crown me-1 text-warning"></i>VIP Kim Cương</span>
+                            <div class="text-muted small" style="font-size: 0.72rem;">1.850 điểm</div>
+                        </td>
+                        <td>
+                            <div class="text-dark small">Hôm nay - 14:20</div>
+                            <small class="text-muted">Tại Quầy POS 01</small>
+                        </td>
+                        <td>
+                            <strong class="text-dark font-serif" style="font-size: 0.95rem;">38.450.000 ₫</strong>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border">14 đơn</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle cust-status-badge">Hoạt động</span>
+                        </td>
+                        <td class="text-end">
+                            <button type="button" class="btn btn-outline-dark btn-sm px-2 py-1 me-1" onclick="viewCustomerProfile(1, 'Nguyễn Phương Thảo', '0903 124 567', 'thao.nguyen@@gmail.com', '124 Nguyễn Huệ, P. Bến Nghé, Q.1, TP.HCM', 'VIP Kim Cương', '38.450.000 ₫', 14, 1850, 'Ưa chuộng dòng Dạ Tweed và Đầm Satin, size M chuẩn form.')" title="Xem hồ sơ & Lịch sử mua hàng">
+                                <i class="fa-solid fa-id-card me-1"></i> Hồ sơ
+                            </button>
+                            <a href="@Url.Action("Edit", "Customers", new { area = "Admin", id = 1 })" class="btn btn-outline-dark btn-sm px-2 py-1 me-1" title="Chỉnh sửa thông tin">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <button type="button" class="btn btn-light btn-sm text-danger border px-2 py-1 toggle-cust-btn" onclick="toggleCustomerLock('cust-row-1', 'Nguyễn Phương Thảo', true)" title="Khóa hồ sơ">
+                                <i class="fa-solid fa-user-lock"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- KH 2: Thân thiết -->
+                    <tr data-group="Thân thiết" data-status="active" id="cust-row-2">
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="customer-avatar">HL</div>
+                                <div>
+                                    <div class="fw-bold text-dark">Trần Hoàng Linh</div>
+                                    <small class="text-muted">Mã: <span class="font-monospace">KH-0142</span></small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-semibold text-dark font-monospace">0918 332 981</div>
+                            <small class="text-muted">hoanglinh.tran@@outlook.com</small>
+                        </td>
+                        <td>
+                            <span class="badge-loyal"><i class="fa-solid fa-star me-1 text-primary"></i>Thân thiết</span>
+                            <div class="text-muted small" style="font-size: 0.72rem;">620 điểm</div>
+                        </td>
+                        <td>
+                            <div class="text-dark small">05/10/2026</div>
+                            <small class="text-muted">Đơn Online N14</small>
+                        </td>
+                        <td>
+                            <strong class="text-dark font-serif" style="font-size: 0.95rem;">14.200.000 ₫</strong>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border">6 đơn</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle cust-status-badge">Hoạt động</span>
+                        </td>
+                        <td class="text-end">
+                            <button type="button" class="btn btn-outline-dark btn-sm px-2 py-1 me-1" onclick="viewCustomerProfile(2, 'Trần Hoàng Linh', '0918 332 981', 'hoanglinh.tran@@outlook.com', '45 Lê Duẩn, P. Bến Nghé, Q.1, TP.HCM', 'Thân thiết', '14.200.000 ₫', 6, 620, 'Thường mua Blazer Silk và Quần Pleated công sở, size S.')" title="Xem hồ sơ & Lịch sử mua hàng">
+                                <i class="fa-solid fa-id-card me-1"></i> Hồ sơ
+                            </button>
+                            <a href="@Url.Action("Edit", "Customers", new { area = "Admin", id = 2 })" class="btn btn-outline-dark btn-sm px-2 py-1 me-1" title="Chỉnh sửa thông tin">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <button type="button" class="btn btn-light btn-sm text-danger border px-2 py-1 toggle-cust-btn" onclick="toggleCustomerLock('cust-row-2', 'Trần Hoàng Linh', true)" title="Khóa hồ sơ">
+                                <i class="fa-solid fa-user-lock"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- KH 3: Thân thiết -->
+                    <tr data-group="Thân thiết" data-status="active" id="cust-row-3">
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="customer-avatar">MA</div>
+                                <div>
+                                    <div class="fw-bold text-dark">Lê Minh Anh</div>
+                                    <small class="text-muted">Mã: <span class="font-monospace">KH-0210</span></small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-semibold text-dark font-monospace">0987 654 321</div>
+                            <small class="text-muted">minhanh.le@@gmail.com</small>
+                        </td>
+                        <td>
+                            <span class="badge-loyal"><i class="fa-solid fa-star me-1 text-primary"></i>Thân thiết</span>
+                            <div class="text-muted small" style="font-size: 0.72rem;">480 điểm</div>
+                        </td>
+                        <td>
+                            <div class="text-dark small">28/09/2026</div>
+                            <small class="text-muted">Tại Quầy POS 02</small>
+                        </td>
+                        <td>
+                            <strong class="text-dark font-serif" style="font-size: 0.95rem;">9.800.000 ₫</strong>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border">4 đơn</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle cust-status-badge">Hoạt động</span>
+                        </td>
+                        <td class="text-end">
+                            <button type="button" class="btn btn-outline-dark btn-sm px-2 py-1 me-1" onclick="viewCustomerProfile(3, 'Lê Minh Anh', '0987 654 321', 'minhanh.le@@gmail.com', '88 Nam Kỳ Khởi Nghĩa, Q.3, TP.HCM', 'Thân thiết', '9.800.000 ₫', 4, 480, 'Thích chất liệu Linen mát mẻ, màu sáng tone Pastel.')" title="Xem hồ sơ & Lịch sử mua hàng">
+                                <i class="fa-solid fa-id-card me-1"></i> Hồ sơ
+                            </button>
+                            <a href="@Url.Action("Edit", "Customers", new { area = "Admin", id = 3 })" class="btn btn-outline-dark btn-sm px-2 py-1 me-1" title="Chỉnh sửa thông tin">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <button type="button" class="btn btn-light btn-sm text-danger border px-2 py-1 toggle-cust-btn" onclick="toggleCustomerLock('cust-row-3', 'Lê Minh Anh', true)" title="Khóa hồ sơ">
+                                <i class="fa-solid fa-user-lock"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- KH 4: Mới -->
+                    <tr data-group="Mới" data-status="active" id="cust-row-4">
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="customer-avatar">VT</div>
+                                <div>
+                                    <div class="fw-bold text-dark">Vũ Thanh Tùng</div>
+                                    <small class="text-muted">Mã: <span class="font-monospace">KH-0305</span></small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-semibold text-dark font-monospace">0933 881 224</div>
+                            <small class="text-muted">tung.vu@@company.vn</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-muted border">Khách mới</span>
+                            <div class="text-muted small" style="font-size: 0.72rem;">120 điểm</div>
+                        </td>
+                        <td>
+                            <div class="text-dark small">02/10/2026</div>
+                            <small class="text-muted">Đơn Online</small>
+                        </td>
+                        <td>
+                            <strong class="text-dark font-serif" style="font-size: 0.95rem;">2.250.000 ₫</strong>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border">1 đơn</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle cust-status-badge">Hoạt động</span>
+                        </td>
+                        <td class="text-end">
+                            <button type="button" class="btn btn-outline-dark btn-sm px-2 py-1 me-1" onclick="viewCustomerProfile(4, 'Vũ Thanh Tùng', '0933 881 224', 'tung.vu@@company.vn', '201 Hai Bà Trưng, Q.3, TP.HCM', 'Khách mới', '2.250.000 ₫', 1, 120, 'Khách mua tặng quà sinh nhật người thân.')" title="Xem hồ sơ & Lịch sử mua hàng">
+                                <i class="fa-solid fa-id-card me-1"></i> Hồ sơ
+                            </button>
+                            <a href="@Url.Action("Edit", "Customers", new { area = "Admin", id = 4 })" class="btn btn-outline-dark btn-sm px-2 py-1 me-1" title="Chỉnh sửa thông tin">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <button type="button" class="btn btn-light btn-sm text-danger border px-2 py-1 toggle-cust-btn" onclick="toggleCustomerLock('cust-row-4', 'Vũ Thanh Tùng', true)" title="Khóa hồ sơ">
+                                <i class="fa-solid fa-user-lock"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- KH 5: Đã khóa hồ sơ -->
+                    <tr data-group="Mới" data-status="locked" id="cust-row-5">
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="customer-avatar opacity-50">ĐT</div>
+                                <div>
+                                    <div class="fw-bold text-secondary">Đặng Thu Trang</div>
+                                    <small class="text-muted">Mã: <span class="font-monospace">KH-0412</span></small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-muted font-monospace">0909 999 111</div>
+                            <small class="text-muted">trang.dang@@temp.com</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary-subtle text-muted border">Khóa</span>
+                            <div class="text-muted small" style="font-size: 0.72rem;">0 điểm</div>
+                        </td>
+                        <td>
+                            <div class="text-muted small">15/08/2026</div>
+                            <small class="text-muted">Yêu cầu khóa</small>
+                        </td>
+                        <td>
+                            <strong class="text-secondary font-serif" style="font-size: 0.95rem;">850.000 ₫</strong>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-muted border">1 đơn</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary-subtle text-secondary border cust-status-badge">Đã khóa</span>
+                        </td>
+                        <td class="text-end">
+                            <button type="button" class="btn btn-outline-dark btn-sm px-2 py-1 me-1" onclick="viewCustomerProfile(5, 'Đặng Thu Trang', '0909 999 111', 'trang.dang@@temp.com', '12 Nguyễn Trãi, Q.5, TP.HCM', 'Đã khóa', '850.000 ₫', 1, 0, 'Tài khoản yêu cầu đóng do không còn sử dụng số điện thoại này.')" title="Xem hồ sơ">
+                                <i class="fa-solid fa-id-card me-1"></i> Hồ sơ
+                            </button>
+                            <a href="@Url.Action("Edit", "Customers", new { area = "Admin", id = 5 })" class="btn btn-outline-dark btn-sm px-2 py-1 me-1" title="Chỉnh sửa thông tin">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <button type="button" class="btn btn-light btn-sm text-success border px-2 py-1 toggle-cust-btn" onclick="toggleCustomerLock('cust-row-5', 'Đặng Thu Trang', false)" title="Mở khóa hồ sơ">
+                                <i class="fa-solid fa-lock-open"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 4. Khung dưới: Phân trang & Thống kê -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center text-muted small">
+        <div>
+            Đang hiển thị <strong class="text-dark" id="visibleCustCount">5</strong> trên tổng số 1.240 khách hàng
+        </div>
+        <nav aria-label="Phân trang khách hàng">
+            <ul class="pagination pagination-sm mb-0">
+                <li class="page-item disabled"><a class="page-link" href="#">Trước</a></li>
+                <li class="page-item active"><a class="page-link bg-dark border-dark text-white" href="#">1</a></li>
+                <li class="page-item"><a class="page-link text-dark" href="#">2</a></li>
+                <li class="page-item"><a class="page-link text-dark" href="#">3</a></li>
+                <li class="page-item"><a class="page-link text-dark" href="#">Sau</a></li>
+            </ul>
+        </nav>
+    </div>
+
+</div>
+
+<!-- MODAL: Khung hồ sơ & Lịch sử mua hàng chi tiết [A04 - Profile Drawer] -->
+<div class="modal fade" id="customerProfileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded-3 border-0 shadow">
+            <div class="modal-header border-bottom p-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="customer-avatar" id="modalCustAvatar">PT</div>
+                    <div>
+                        <h6 class="modal-title fw-bold text-dark mb-0" id="modalCustName">Nguyễn Phương Thảo</h6>
+                        <span class="badge-vip" id="modalCustTier">VIP Kim Cương</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-3">
+                <!-- Thông tin cơ bản -->
+                <div class="row g-2 mb-3 p-2 bg-light rounded border">
+                    <div class="col-md-4">
+                        <small class="text-muted d-block">Số điện thoại:</small>
+                        <strong class="text-dark font-monospace" id="modalCustPhone">0903 124 567</strong>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted d-block">Email:</small>
+                        <span class="text-dark" id="modalCustEmail">thao.nguyen@@gmail.com</span>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted d-block">Tổng chi tiêu tích lũy:</small>
+                        <strong class="text-dark font-serif" id="modalCustTotalSpent">38.450.000 ₫</strong>
+                    </div>
+                    <div class="col-12 mt-2 pt-2 border-top">
+                        <small class="text-muted d-block">Địa chỉ nhận hàng mặc định:</small>
+                        <span class="text-dark" id="modalCustAddress">124 Nguyễn Huệ, P. Bến Nghé, Q.1, TP.HCM</span>
+                    </div>
+                    <div class="col-12 mt-1">
+                        <small class="text-muted d-block">Ghi chú sở thích & form dáng thời trang:</small>
+                        <div class="text-dark fst-italic small" id="modalCustNotes">Ưa chuộng dòng Dạ Tweed và Đầm Satin, size M chuẩn form.</div>
+                    </div>
+                </div>
+
+                <!-- Lịch sử hóa đơn mua & đổi trả -->
+                <h6 class="fw-bold text-dark small mb-2"><i class="fa-solid fa-receipt me-1 text-secondary"></i> Lịch sử hóa đơn giao dịch gần đây</h6>
+                <div class="table-responsive border rounded-2">
+                    <table class="table history-table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Mã hóa đơn</th>
+                                <th>Thời gian</th>
+                                <th>Kênh bán</th>
+                                <th>Sản phẩm giao dịch</th>
+                                <th class="text-end">Giá trị</th>
+                                <th class="text-center">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="custHistoryTableBody">
+                            <tr>
+                                <td class="font-monospace fw-semibold text-primary">HD-2026-1042</td>
+                                <td>Hôm nay 14:20</td>
+                                <td>POS Quầy 01</td>
+                                <td>Áo Tweed Thu Đông (Size M - Đen)</td>
+                                <td class="text-end fw-bold">1.850.000 ₫</td>
+                                <td class="text-center"><span class="badge bg-warning-subtle text-warning-emphasis">Có yêu cầu đổi [A07]</span></td>
+                            </tr>
+                            <tr>
+                                <td class="font-monospace fw-semibold text-primary">HD-2026-0988</td>
+                                <td>15/09/2026</td>
+                                <td>Online N14</td>
+                                <td>Đầm Lụa Satin Kem + Blazer Silk</td>
+                                <td class="text-end fw-bold">3.700.000 ₫</td>
+                                <td class="text-center"><span class="badge bg-success-subtle text-success">Hoàn tất</span></td>
+                            </tr>
+                            <tr>
+                                <td class="font-monospace fw-semibold text-primary">HD-2026-0855</td>
+                                <td>02/08/2026</td>
+                                <td>POS Quầy 01</td>
+                                <td>Quần Tây Pleated Be + Sơ Mi Linen</td>
+                                <td class="text-end fw-bold">1.540.000 ₫</td>
+                                <td class="text-center"><span class="badge bg-success-subtle text-success">Hoàn tất</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-2 text-muted small" style="font-size: 0.74rem;">
+                    <i class="fa-solid fa-circle-info me-1"></i>
+                    Dữ liệu hóa đơn được liên kết vĩnh viễn với hồ sơ khách hàng nhằm bảo vệ đối soát tài chính và bảo hành sản phẩm.
+                </div>
+            </div>
+            <div class="modal-footer border-top p-3 d-flex justify-content-between">
+                <div>
+                    <span class="text-muted small">Mã hệ thống: <strong class="text-dark font-monospace" id="modalCustId">KH-0089</strong></span>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-dark btn-sm" onclick="editCustomerInfo()">
+                        <i class="fa-solid fa-pen-to-square me-1"></i> Chỉnh sửa thông tin
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Thêm khách hàng mới (Kiểm tra tránh trùng SĐT theo ngoại lệ PDF) -->
+<div class="modal fade" id="createCustomerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-3 border-0 shadow">
+            <div class="modal-header border-bottom p-3">
+                <h6 class="modal-title fw-bold text-dark">Thêm hồ sơ khách hàng mới</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-3">
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-dark">Họ và tên khách hàng</label>
+                    <input type="text" class="form-control form-control-sm" id="newCustName" placeholder="Ví dụ: Hoàng Bích Phương" required />
+                </div>
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label class="form-label small fw-semibold text-dark">Số điện thoại (*)</label>
+                        <input type="text" class="form-control form-control-sm font-monospace" id="newCustPhone" placeholder="09xxxxxxxx" required onblur="checkDuplicatePhone(this.value)" />
+                        <small class="text-danger d-none" id="phoneDupAlert" style="font-size: 0.72rem;">⚠️ Số điện thoại đã tồn tại trong hệ thống!</small>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small fw-semibold text-dark">Email (Tùy chọn)</label>
+                        <input type="email" class="form-control form-control-sm" id="newCustEmail" placeholder="email@@example.com" />
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-dark">Địa chỉ giao hàng</label>
+                    <input type="text" class="form-control form-control-sm" id="newCustAddress" placeholder="Số nhà, tên đường, phường/xã, quận/huyện..." />
+                </div>
+                <div class="mb-2">
+                    <label class="form-label small fw-semibold text-dark">Ghi chú form dáng & sở thích thời trang</label>
+                    <textarea class="form-control form-control-sm" id="newCustNote" rows="2" placeholder="Ví dụ: Thích đầm dáng dài, chuộng màu pastel, size L..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer border-top p-3">
+                <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Hủy bỏ</button>
+                <button type="button" class="btn btn-dark btn-sm px-3" onclick="saveNewCustomer()">Lưu hồ sơ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Danh sách số điện thoại đã tồn tại để kiểm tra ngoại lệ: "Điện thoại đã tồn tại: gợi ý hồ sơ cũ"
+        var existingPhones = ['0903124567', '0918332981', '0987654321', '0933881224', '0909999111'];
+
+        function checkDuplicatePhone(phone) {
+            var cleanPhone = phone.replace(/\s+/g, '');
+            var alertEl = document.getElementById('phoneDupAlert');
+            if (cleanPhone && existingPhones.includes(cleanPhone)) {
+                alertEl.classList.remove('d-none');
+            } else {
+                alertEl.classList.add('d-none');
+            }
+        }
+
+        var selectedCustId = 1;
+
+        // Xem hồ sơ khách hàng
+        function viewCustomerProfile(id, name, phone, email, address, tier, totalSpent, ordersCount, points, notes) {
+            selectedCustId = id;
+            document.getElementById('modalCustName').innerText = name;
+            document.getElementById('modalCustPhone').innerText = phone;
+            document.getElementById('modalCustEmail').innerText = email;
+            document.getElementById('modalCustAddress').innerText = address;
+            document.getElementById('modalCustTier').innerText = tier;
+            document.getElementById('modalCustTotalSpent').innerText = totalSpent;
+            document.getElementById('modalCustNotes').innerText = notes;
+            document.getElementById('modalCustId').innerText = 'KH-00' + id;
+
+            var initials = name.split(' ').map(function(n) { return n[0]; }).join('').toUpperCase();
+            if (initials.length > 2) initials = initials.substring(0, 2);
+            document.getElementById('modalCustAvatar').innerText = initials;
+
+            var modal = new bootstrap.Modal(document.getElementById('customerProfileModal'));
+            modal.show();
+        }
+
+        // Khóa / Mở khóa tài khoản khách hàng (Ngoại lệ: "Không xóa khách làm mất liên kết hóa đơn; có thể khóa hồ sơ")
+        function toggleCustomerLock(rowId, name, isCurrentlyActive) {
+            var row = document.getElementById(rowId);
+            if (!row) return;
+
+            if (isCurrentlyActive) {
+                if (confirm('Xác nhận KHÓA hồ sơ khách hàng: "' + name + '"?\n\nLưu ý: Hồ sơ bị khóa sẽ không thể tích điểm hay tạo đơn mới tại quầy, nhưng toàn bộ lịch sử hóa đơn cũ vẫn được bảo lưu.')) {
+                    updateCustomerStatus(row, false, name);
+                }
+            } else {
+                if (confirm('Kích hoạt MỞ KHÓA hồ sơ khách hàng: "' + name + '"?')) {
+                    updateCustomerStatus(row, true, name);
+                }
+            }
+        }
+
+        function updateCustomerStatus(row, isActive, name) {
+            row.setAttribute('data-status', isActive ? 'active' : 'locked');
+
+            var badge = row.querySelector('.cust-status-badge');
+            if (badge) {
+                if (isActive) {
+                    badge.className = 'badge bg-success-subtle text-success border border-success-subtle cust-status-badge';
+                    badge.innerText = 'Hoạt động';
+                } else {
+                    badge.className = 'badge bg-secondary-subtle text-secondary border cust-status-badge';
+                    badge.innerText = 'Đã khóa';
+                }
+            }
+
+            var btn = row.querySelector('.toggle-cust-btn');
+            if (btn) {
+                var rowId = row.id;
+                if (isActive) {
+                    btn.className = 'btn btn-light btn-sm text-danger border px-2 py-1 toggle-cust-btn';
+                    btn.title = 'Khóa hồ sơ';
+                    btn.innerHTML = '<i class="fa-solid fa-user-lock"></i>';
+                    btn.onclick = function() { toggleCustomerLock(rowId, name, true); };
+                } else {
+                    btn.className = 'btn btn-light btn-sm text-success border px-2 py-1 toggle-cust-btn';
+                    btn.title = 'Mở khóa hồ sơ';
+                    btn.innerHTML = '<i class="fa-solid fa-lock-open"></i>';
+                    btn.onclick = function() { toggleCustomerLock(rowId, name, false); };
+                }
+            }
+        }
+
+        // Lọc danh sách khách hàng
+        function filterCustomers() {
+            var kw = document.getElementById('custSearchInput').value.toLowerCase().trim();
+            var grp = document.getElementById('custGroupFilter').value;
+            var st = document.getElementById('custStatusFilter').value;
+
+            var rows = document.querySelectorAll('#customerTableBody tr');
+            var visible = 0;
+
+            rows.forEach(function(row) {
+                var rowGrp = row.getAttribute('data-group') || '';
+                var rowSt = row.getAttribute('data-status') || '';
+                var text = row.innerText.toLowerCase();
+
+                var matchKw = (kw === '' || text.includes(kw));
+                var matchGrp = (grp === '' || rowGrp.includes(grp));
+                var matchSt = (st === '' || rowSt === st);
+
+                if (matchKw && matchGrp && matchSt) {
+                    row.style.display = '';
+                    visible++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            document.getElementById('visibleCustCount').innerText = visible;
+        }
+
+        function resetCustomerFilter() {
+            document.getElementById('custSearchInput').value = '';
+            document.getElementById('custGroupFilter').value = '';
+            document.getElementById('custStatusFilter').value = '';
+            filterCustomers();
+        }
+
+        // Thêm khách hàng mới
+        function openCreateCustomerModal() {
+            var modal = new bootstrap.Modal(document.getElementById('createCustomerModal'));
+            modal.show();
+        }
+
+        function saveNewCustomer() {
+            var name = document.getElementById('newCustName').value.trim();
+            var phone = document.getElementById('newCustPhone').value.trim();
+
+            if (!name || !phone) {
+                alert('Vui lòng nhập Họ tên và Số điện thoại khách hàng!');
+                return;
+            }
+
+            var cleanPhone = phone.replace(/\s+/g, '');
+            if (existingPhones.includes(cleanPhone)) {
+                if (!confirm('Số điện thoại ' + phone + ' đã tồn tại trong hệ thống. Bạn có muốn tiếp tục lưu hay kiểm tra lại hồ sơ cũ?')) {
+                    return;
+                }
+            }
+
+            alert('Đã tạo thành công hồ sơ khách hàng mới: ' + name + ' (' + phone + ')!');
+            bootstrap.Modal.getInstance(document.getElementById('createCustomerModal')).hide();
+        }
+
+        function editCustomerInfo() {
+            window.location.href = '@Url.Action("Edit", "Customers", new { area = "Admin" })/' + selectedCustId;
+        }
+
+        function exportCustomerData() {
+            alert('Đang trích xuất toàn bộ dữ liệu khách hàng theo quyền quản trị viên Admin...');
+        }
+    </script>
+}
+

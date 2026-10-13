@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Light Life Admin</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        :root {
+            --sidebar-width: 250px;
+            --sidebar-bg: #141518;
+            --sidebar-border: #22242a;
+            --sidebar-text: #9ca3af;
+            --sidebar-active-bg: rgba(197, 168, 128, 0.15);
+            --sidebar-active-color: #c5a880;
+            --admin-topbar-h: 74px;
+        }
+
+        body.admin-body {
+            background-color: #f8f9fa;
+            color: #1f2937;
+            font-family: var(--ll-font-body);
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styling - Gọn 6 mục */
+        .admin-sidebar {
+            width: var(--sidebar-width);
+            min-height: 100vh;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--sidebar-border);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1040;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+
+        .admin-sidebar-header {
+            height: var(--admin-topbar-h);
+            display: flex;
+            align-items: center;
+            padding: 0 1.25rem;
+            border-bottom: 1px solid var(--sidebar-border);
+            background: #0f1013;
+        }
+
+        .sidebar-brand-name {
+            font-family: var(--ll-font-heading);
+            font-size: 1.1rem;  
+            letter-spacing: 0.5px;
+            color: #f9fafb;
+            font-weight: 700;
+        }
+
+        .sidebar-menu {
+            flex-grow: 1;
+            padding: 1.25rem 0.85rem;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.68rem 1rem;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-link:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar-link.active {
+            color: #ffffff;
+            background: var(--sidebar-active-bg);
+            font-weight: 600;
+        }
+
+        .sidebar-link.active .sidebar-icon {
+            color: var(--sidebar-active-color);
+        }
+
+        .sidebar-icon {
+            width: 22px;
+            margin-right: 10px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .admin-sidebar-footer {
+            padding: 1rem 1.25rem;
+            border-top: 1px solid var(--sidebar-border);
+            background: #0f1013;
+        }
+
+        /* Main Content Wrapper */
+        .admin-main-wrapper {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Topbar Header */
+        .admin-topbar {
+            height: var(--admin-topbar-h);
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.75rem;
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+        }
+
+        .btn-topbar-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid #e5e7eb;
+            background: #ffffff;
+            color: #4b5563;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.2s;
+        }
+        .btn-topbar-circle:hover {
+            background: #f9fafb;
+            color: #111827;
+        }
+
+        .admin-avatar-sm {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #18181b;
+            color: #c5a880;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            border: 1px solid #c5a880;
+        }
+
+        /* Responsive */
+        @@media (max-width: 991.98px) {
+            .admin-sidebar {
+                transform: translateX(-100%);
+            }
+            .admin-sidebar.show {
+                transform: translateX(0);
+            }
+            .admin-main-wrapper {
+                margin-left: 0;
+            }
+            .sidebar-backdrop {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.4);
+                z-index: 1035;
+            }
+            .sidebar-backdrop.show {
+                display: block;
+            }
+        }
+    </style>
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="admin-body">
+
+    <!-- Mobile Backdrop -->
+    <div id="sidebarBackdrop" class="sidebar-backdrop" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar: Tối đa 6 mục chính -->
+    <aside id="adminSidebar" class="admin-sidebar">
+        <!-- Logo -->
+        <div class="admin-sidebar-header">
+            <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="d-flex align-items-center text-decoration-none">
+                <img src="~/images/logo.png" alt="Light Life" style="height: 34px; width: auto; object-fit: contain; margin-right: 10px;" />
+                <span class="sidebar-brand-name">LIGHT LIFE</span>
+            </a>
+        </div>
+
+        <!-- 6 Mục Menu chính -->
+        <nav class="sidebar-menu">
+            <!-- 1. Dashboard -->
+            <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")">
+                <div class="d-flex align-items-center">
+                    <span class="sidebar-icon"><i class="fa-solid fa-chart-line"></i></span>
+                    <span>Dashboard</span>
+                </div>
+            </a>
+
+            <!-- 2. Sản phẩm -->
+            <a asp-area="Admin" asp-controller="Products" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Products" ? "active" : "")">
+                <div class="d-flex align-items-center">
+                    <span class="sidebar-icon"><i class="fa-solid fa-shirt"></i></span>
+                    <span>Sản phẩm</span>
+                </div>
+            </a>
+
+            <!-- 3. Nhà cung cấp [A05] -->
+            <a asp-area="Admin" asp-controller="Suppliers" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Suppliers" ? "active" : "")">
+                <div class="d-flex align-items-center">
+                    <span class="sidebar-icon"><i class="fa-solid fa-truck-ramp-box"></i></span>
+                    <span>Nhà cung cấp</span>
+                </div>
+            </a>
+
+            <!-- 4. Khách hàng -->
+            <a asp-area="Admin" asp-controller="Customers" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Customers" ? "active" : "")">
+                <div class="d-flex align-items-center">
+                    <span class="sidebar-icon"><i class="fa-solid fa-users"></i></span>
+                    <span>Khách hàng</span>
+                </div>
+            </a>
+
+            <!-- 4. Duyệt đổi trả -->
+            <a asp-area="Admin" asp-controller="Returns" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Returns" ? "active" : "")">
+                <div class="d-flex align-items-center">
+                    <span class="sidebar-icon"><i class="fa-solid fa-file-circle-check"></i></span>
+                    <span>Duyệt đổi trả</span>
+                </div>
+            </a>
+
+            <!-- 5. Phân ca & Soát ca -->
+            <a asp-area="Admin" asp-controller="Shifts" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Shifts" ? "active" : "")">
+                <div class="d-flex align-items-center">
+                    <span class="sidebar-icon"><i class="fa-solid fa-calendar-check"></i></span>
+                    <span>Phân ca & Soát ca</span>
+                </div>
+            </a>
+
+            <!-- 6. Báo cáo -->
+            <a asp-area="Admin" asp-controller="Reports" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Reports" ? "active" : "")">
+                <div class="d-flex align-items-center">
+                    <span class="sidebar-icon"><i class="fa-solid fa-chart-pie"></i></span>
+                    <span>Báo cáo</span>
+                </div>
+            </a>
+
+            <!-- 6. Tài khoản & Phân quyền (A10) -->
+            <a asp-area="Admin" asp-controller="Accounts" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Accounts" ? "active" : "")">
+                <div class="d-flex align-items-center">
+                    <span class="sidebar-icon"><i class="fa-solid fa-user-shield"></i></span>
+                    <span>Tài khoản & Vai trò</span>
+                </div>
+            </a>
+
+        </nav>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="admin-main-wrapper">
+        <!-- Header Topbar Gộp (Bên trái: Xin chào Admin & Giờ thực, Bên phải: Xem shop, Thông báo, Tài khoản) -->
+        <header class="admin-topbar">
+            <!-- Bên trái: Toggle mobile + Chào mừng & Giờ thực -->
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-light d-lg-none" type="button" onclick="toggleSidebar()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div>
+                    <h5 class="fw-bold mb-0 text-dark">Xin chào Admin</h5>
+                    <div class="text-muted small" id="liveClockDisplay">--:--:-- - --/--/----</div>
+                </div>
+            </div>
+
+            <!-- Bên phải: Xem cửa hàng, Thông báo, Tài khoản -->
+            <div class="d-flex align-items-center gap-2 gap-md-3">
+                <!-- Nút Xem Cửa Hàng -->
+                <a asp-area="" asp-controller="Home" asp-action="Index" target="_blank" class="btn btn-outline-dark btn-sm rounded-pill px-3 py-1 d-inline-flex align-items-center gap-2" style="font-size: 0.85rem;">
+                    <i class="fa-solid fa-store"></i>
+                    <span>Xem cửa hàng</span>
+                </a>
+
+                <!-- Chuông Thông báo -->
+                <div class="dropdown">
+                    <button class="btn-topbar-circle" type="button" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Thông báo công việc">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" style="font-size: 0.65rem; padding: 3px 5px;">
+                            4
+                        </span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 p-0 mt-2" aria-labelledby="notifDropdown" style="width: 320px; max-width: 90vw;">
+                        <div class="p-3 bg-dark text-white rounded-top-3 d-flex justify-content-between align-items-center">
+                            <span class="fw-bold small">Thông báo công việc</span>
+                            <span class="badge bg-danger">4 chờ duyệt</span>
+                        </div>
+                        <div class="list-group list-group-flush small" style="max-height: 250px; overflow-y: auto;">
+                            <a asp-area="Admin" asp-controller="Returns" asp-action="Index" class="list-group-item list-group-item-action py-2">
+                                <div class="fw-semibold text-dark">Đổi trả [DT-2026-089]</div>
+                                <div class="text-muted text-truncate" style="font-size: 0.75rem;">Yêu cầu hoàn tiền 1.850.000₫</div>
+                            </a>
+                            <a asp-area="Admin" asp-controller="Shifts" asp-action="Index" class="list-group-item list-group-item-action py-2">
+                                <div class="fw-semibold text-dark">Lệch ca làm [CA-0142]</div>
+                                <div class="text-muted text-truncate" style="font-size: 0.75rem;">Lệch két ca sáng -50.000₫</div>
+                            </a>
+                            <a asp-area="Admin" asp-controller="Suppliers" asp-action="Index" class="list-group-item list-group-item-action py-2">
+                                <div class="fw-semibold text-dark">Nhập vải lụa [NK-031]</div>
+                                <div class="text-muted text-truncate" style="font-size: 0.75rem;">Phiếu nhập 40 cây vải</div>
+                            </a>
+                            <a asp-area="Admin" asp-controller="Products" asp-action="Index" class="list-group-item list-group-item-action py-2">
+                                <div class="fw-semibold text-dark">Kiểm kê kho [KK-10]</div>
+                                <div class="text-muted text-truncate" style="font-size: 0.75rem;">Cân đối tồn kho tháng 10</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tài khoản Admin: Nhấn vào là chuyển thẳng tới Hồ sơ cá nhân -->
+                <a asp-area="Admin" asp-controller="Profile" asp-action="Index" class="btn p-0 border-0 d-flex align-items-center gap-2 text-decoration-none" title="Xem hồ sơ cá nhân">
+                    <div class="admin-avatar-sm">AD</div>
+                    <span class="fw-semibold text-dark small d-none d-md-inline">Admin</span>
+                </a>
+
+                <!-- Nút Đăng xuất sát bên phải Admin -->
+                <a asp-area="" asp-controller="Account" asp-action="Login" class="btn btn-outline-danger btn-sm d-flex align-items-center gap-1 rounded-3 px-2 py-1" style="height: 36px;" title="Đăng xuất">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span class="small d-none d-sm-inline">Đăng xuất</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Body -->
+        <main role="main" class="flex-grow-1 p-3 p-lg-4">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        function toggleSidebar() {
+            var sidebar = document.getElementById('adminSidebar');
+            var backdrop = document.getElementById('sidebarBackdrop');
+            sidebar.classList.toggle('show');
+            backdrop.classList.toggle('show');
+        }
+
+        // Đồng hồ thời gian thực ở Header
+        function updateLiveClock() {
+            var now = new Date();
+            var h = String(now.getHours()).padStart(2, '0');
+            var m = String(now.getMinutes()).padStart(2, '0');
+            var s = String(now.getSeconds()).padStart(2, '0');
+            var d = String(now.getDate()).padStart(2, '0');
+            var mo = String(now.getMonth() + 1).padStart(2, '0');
+            var y = now.getFullYear();
+            var el = document.getElementById('liveClockDisplay');
+            if (el) {
+                el.innerText = h + ':' + m + ':' + s + ' - ' + d + '/' + mo + '/' + y;
+            }
+        }
+        setInterval(updateLiveClock, 1000);
+        updateLiveClock();
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+

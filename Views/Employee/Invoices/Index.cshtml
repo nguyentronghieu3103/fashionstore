@@ -1,0 +1,709 @@
+@{
+    ViewData["Title"] = "Danh sách hóa đơn bán hàng";
+}
+
+@section Styles {
+    <style>
+        .invoices-page {
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        .inv-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+            margin-bottom: 1rem;
+        }
+
+        .filter-panel {
+            padding: 1.15rem 1.25rem;
+        }
+
+        .form-label-sm {
+            font-size: 0.76rem;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 0.35rem;
+        }
+
+        .inv-table-card {
+            overflow: hidden;
+        }
+
+        .inv-table {
+            margin-bottom: 0;
+            width: 100%;
+        }
+
+        .inv-table thead th {
+            background: #fafafa;
+            color: #4b5563;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        .inv-table tbody td {
+            padding: 0.85rem 1rem;
+            vertical-align: middle;
+            font-size: 0.86rem;
+            border-bottom: 1px solid #f3f4f6;
+            color: #1f2937;
+        }
+
+        .inv-table tbody tr:hover {
+            background-color: #fafbfc;
+        }
+
+        .code-link {
+            font-family: var(--bs-font-monospace, monospace);
+            font-weight: 700;
+            color: #18181b;
+            text-decoration: none;
+            cursor: pointer;
+            border-bottom: 1px dashed #9ca3af;
+            padding-bottom: 1px;
+        }
+
+        .code-link:hover {
+            color: #c5a880;
+            border-bottom-color: #c5a880;
+        }
+
+        .badge-status {
+            font-size: 0.74rem;
+            font-weight: 600;
+            padding: 0.35rem 0.65rem;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .summary-bar {
+            background: #fcfcfd;
+            border-top: 1px solid #e5e7eb;
+            padding: 0.85rem 1.25rem;
+        }
+
+        .role-scope-pill {
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.76rem;
+            color: #4b5563;
+            font-weight: 500;
+        }
+
+        .role-scope-pill.active {
+            background: #18181b;
+            color: #ffffff;
+            border-color: #18181b;
+        }
+
+        .print-receipt-paper {
+            background: #ffffff;
+            border: 1px dashed #d1d5db;
+            border-radius: 8px;
+            padding: 1.5rem;
+            font-family: inherit;
+        }
+    </style>
+}
+
+<div class="invoices-page">
+
+    <!-- ============================================================== -->
+    <!-- 1. KHUNG ĐẦU: TIÊU ĐỀ, PHẠM VI, NÚT HÀNH ĐỘNG                  -->
+    <!-- ============================================================== -->
+    <div class="inv-card p-3 p-md-4 mb-3">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <a asp-area="Employee" asp-controller="Dashboard" asp-action="Index" class="text-decoration-none text-muted small me-1" title="Quay lại Tổng quan">
+                        <i class="fa-solid fa-arrow-left me-1"></i>Tổng quan
+                    </a>
+                    <span class="text-muted">/</span>
+                    <h4 class="fw-bold mb-0 text-dark">Danh sách hóa đơn bán hàng</h4>
+                    <span class="badge bg-dark text-white rounded-pill px-2 py-1 small" id="filteredCountBadge">
+                        18 đơn
+                    </span>
+                </div>
+                <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+                    <span class="text-muted small">Phạm vi xem:</span>
+                    <button type="button" class="role-scope-pill active" id="btnScopeShift" onclick="setFilterScope('shift')">
+                        Ca hiện tại (Lê Minh Nhật)
+                    </button>
+                    <button type="button" class="role-scope-pill" id="btnScopeAll" onclick="setFilterScope('all')">
+                        Toàn cửa hàng (Giám sát)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Nút hành động đầu trang -->
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <a asp-area="Employee" asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-secondary px-3 py-2 fw-medium rounded-pill text-decoration-none small">
+                    Quay lại ca làm việc
+                </a>
+                <a asp-area="Employee" asp-controller="Pos" asp-action="Index" class="btn btn-dark px-3 py-2 fw-semibold rounded-pill text-decoration-none shadow-sm">
+                    <i class="fa-solid fa-plus me-1 small"></i>Bán hàng mới
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 2. KHUNG LỌC: BỘ LỌC TÌM KIẾM ĐA ĐIỀU KIỆN                     -->
+    <!-- ============================================================== -->
+    <div class="inv-card filter-panel">
+        <div class="row g-2 g-md-3">
+            <!-- Tìm mã đơn -->
+            <div class="col-12 col-sm-6 col-lg-3">
+                <label class="form-label-sm">Mã hóa đơn</label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white border-end-0 text-muted">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" id="filterOrderCode" class="form-control border-start-0" placeholder="VD: HD-2026-0145..." onkeyup="if(event.key === 'Enter') applyFilters()" />
+                </div>
+            </div>
+
+            <!-- Tìm khách hàng -->
+            <div class="col-12 col-sm-6 col-lg-3">
+                <label class="form-label-sm">Điện thoại / Khách hàng</label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white border-end-0 text-muted">
+                        <i class="fa-solid fa-phone"></i>
+                    </span>
+                    <input type="text" id="filterCustomer" class="form-control border-start-0" placeholder="SĐT hoặc tên khách..." onkeyup="if(event.key === 'Enter') applyFilters()" />
+                </div>
+            </div>
+
+            <!-- Khoảng thời gian / Ca -->
+            <div class="col-12 col-sm-6 col-lg-3">
+                <label class="form-label-sm">Khoảng thời gian</label>
+                <select id="filterTimeRange" class="form-select form-select-sm" onchange="applyFilters()">
+                    <option value="current_shift" selected>Ca hiện tại (08:00 - 15:30)</option>
+                    <option value="today">Hôm nay</option>
+                    <option value="yesterday">Hôm qua</option>
+                    <option value="last_7_days">7 ngày qua</option>
+                    <option value="all">Toàn bộ</option>
+                </select>
+            </div>
+
+            <!-- Phương thức thanh toán: Chỉ 2 phương thức (Tiền mặt & Chuyển khoản) -->
+            <div class="col-12 col-sm-6 col-lg-3">
+                <label class="form-label-sm">Phương thức thanh toán</label>
+                <select id="filterPaymentMethod" class="form-select form-select-sm" onchange="applyFilters()">
+                    <option value="all" selected>Tất cả phương thức</option>
+                    <option value="cash">Tiền mặt</option>
+                    <option value="qr">Chuyển khoản</option>
+                </select>
+            </div>
+
+            <!-- Nút tìm & đặt lại -->
+            <div class="col-12 d-flex justify-content-end gap-2 pt-1">
+                <button type="button" class="btn btn-sm btn-outline-secondary px-3 rounded-pill" onclick="resetFilters()">
+                    Đặt lại bộ lọc
+                </button>
+                <button type="button" class="btn btn-sm btn-dark px-4 fw-medium rounded-pill" onclick="applyFilters()">
+                    <i class="fa-solid fa-filter me-1"></i>Lọc danh sách
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 3. KHUNG BẢNG: DANH SÁCH HÓA ĐƠN                              -->
+    <!-- ============================================================== -->
+    <div class="inv-card inv-table-card">
+        <div class="table-responsive">
+            <table class="table inv-table align-middle">
+                <thead>
+                    <tr>
+                        <th style="width: 135px;">Mã hóa đơn</th>
+                        <th style="width: 140px;">Thời gian</th>
+                        <th>Khách hàng</th>
+                        <th>Thu ngân</th>
+                        <th class="text-end" style="width: 140px;">Tổng tiền</th>
+                        <th style="width: 160px;">Phương thức</th>
+                        <th style="width: 130px;">Trạng thái</th>
+                        <th class="text-end" style="width: 120px;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="invoicesTableBody">
+                    <!-- Sẽ render bằng JS theo bộ lọc -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Trạng thái trống khi lọc không có kết quả -->
+        <div id="emptyInvoiceState" class="p-5 text-center d-none">
+            <div class="text-muted mb-2" style="font-size: 2.2rem;">
+                <i class="fa-regular fa-folder-open"></i>
+            </div>
+            <h6 class="fw-bold text-dark mb-1">Không tìm thấy hóa đơn nào phù hợp</h6>
+            <p class="text-muted small mb-3">Vui lòng thử thay đổi điều kiện tìm kiếm hoặc đặt lại bộ lọc để xem toàn bộ danh sách.</p>
+            <button type="button" class="btn btn-sm btn-outline-dark rounded-pill px-3" onclick="resetFilters()">
+                Đặt lại bộ lọc
+            </button>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- 4. KHUNG DƯỚI: PHÂN TRANG, TỔNG TIỀN & XUẤT FILE               -->
+        <!-- ============================================================== -->
+        <div class="summary-bar d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div class="d-flex flex-wrap align-items-center gap-3 small">
+                <div>
+                    Hiển thị <span class="fw-bold text-dark" id="displayRange">1 - 10</span> trong số <span class="fw-bold text-dark" id="totalFilteredItems">18</span> hóa đơn
+                </div>
+                <div class="text-muted">|</div>
+                <div>
+                    Tổng doanh thu tập lọc: <span class="fw-bold text-dark fs-6" id="totalFilteredAmount">14.250.000₫</span>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <!-- Chú thích trạng thái -->
+                <div class="d-none d-lg-flex align-items-center gap-2 me-2 small text-muted">
+                    <span class="d-inline-flex align-items-center gap-1">
+                        <span class="badge bg-success-subtle text-success p-1 rounded-circle" style="width:8px;height:8px;"></span> Đã hoàn tất thanh toán
+                    </span>
+                </div>
+
+                <!-- Nút xuất danh sách -->
+                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="exportInvoicesList()">
+                    <i class="fa-solid fa-file-arrow-down me-1"></i>Xuất danh sách
+                </button>
+
+                <!-- Phân trang -->
+                <nav aria-label="Phân trang hóa đơn">
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item disabled" id="btnPagePrev">
+                            <a class="page-link" href="javascript:void(0)" onclick="changePage(-1)">‹</a>
+                        </li>
+                        <li class="page-item active" id="pageNumberPill">
+                            <a class="page-link" href="javascript:void(0)">1</a>
+                        </li>
+                        <li class="page-item" id="btnPageNext">
+                            <a class="page-link" href="javascript:void(0)" onclick="changePage(1)">›</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================== -->
+<!-- 5. MODAL XEM CHI TIẾT HÓA ĐƠN & IN LẠI                        -->
+<!-- ============================================================== -->
+<div class="modal fade" id="invoiceDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-bottom py-3 px-4">
+                <div class="d-flex align-items-center gap-2">
+                    <h5 class="modal-title fw-bold text-dark mb-0">Chi tiết hóa đơn</h5>
+                    <span id="modalInvoiceCode" class="badge bg-dark text-white font-monospace">HD-2026-0145</span>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 bg-light">
+                <div class="print-receipt-paper shadow-sm">
+                    <!-- Tiêu đề hóa đơn -->
+                    <div class="text-center pb-3 border-bottom mb-3">
+                        <h5 class="fw-bold text-dark tracking-wide mb-1">LIGHT LIFE BOUTIQUE</h5>
+                        <p class="text-muted small mb-1">Địa chỉ: 128 Hai Bà Trưng, Phường Bến Nghé, Quận 1, TP. HCM</p>
+                        <p class="text-muted small mb-0">Hotline: 1900 6868 • Thu ngân: <span id="modalCashierName" class="fw-semibold text-dark">Lê Minh Nhật</span></p>
+                    </div>
+
+                    <!-- Thông tin chung hóa đơn -->
+                    <div class="row g-2 mb-3 small">
+                        <div class="col-6">
+                            <span class="text-muted">Thời gian lập:</span> <strong id="modalCreatedAt" class="text-dark">09:45 - 09/10/2026</strong>
+                        </div>
+                        <div class="col-6 text-end">
+                            <span class="text-muted">Khách hàng:</span> <strong id="modalCustomerName" class="text-dark">Trần Thu Trang</strong>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted">Số điện thoại:</span> <span id="modalCustomerPhone" class="text-dark">0912 345 678</span>
+                        </div>
+                        <div class="col-6 text-end">
+                            <span class="text-muted">Phương thức:</span> <span id="modalPaymentMethod" class="badge bg-dark-subtle text-dark fw-semibold">Chuyển khoản</span>
+                        </div>
+                    </div>
+
+                    <!-- Bảng chi tiết sản phẩm -->
+                    <div class="table-responsive mb-3">
+                        <table class="table table-sm align-middle small mb-0">
+                            <thead>
+                                <tr class="border-bottom">
+                                    <th>Sản phẩm</th>
+                                    <th class="text-center" style="width: 70px;">SL</th>
+                                    <th class="text-end" style="width: 120px;">Đơn giá</th>
+                                    <th class="text-end" style="width: 130px;">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody id="modalItemsBody">
+                                <!-- Render danh sách món -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Tính tiền -->
+                    <div class="border-top pt-2 small">
+                        <div class="d-flex justify-content-between py-1">
+                            <span class="text-muted">Tạm tính:</span>
+                            <span id="modalSubtotal" class="fw-medium text-dark">3.300.000₫</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-1">
+                            <span class="text-muted">Ưu đãi / Chiết khấu:</span>
+                            <span id="modalDiscount" class="text-danger fw-medium">-0₫</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-2 border-top mt-1">
+                            <span class="fw-bold text-dark fs-6">TỔNG THANH TOÁN:</span>
+                            <span id="modalTotal" class="fw-bold text-dark fs-5">3.300.000₫</span>
+                        </div>
+                    </div>
+
+                    <div class="text-center pt-3 border-top mt-3 text-muted small fst-italic">
+                        Cảm ơn Quý khách đã mua sắm tại Light Life! Hỗ trợ đổi size trong vòng 07 ngày kèm hóa đơn.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer py-2 px-4 justify-content-between">
+                <div>
+                    <button type="button" class="btn btn-sm btn-outline-dark" onclick="openCreateReturnRequest()">
+                        <i class="fa-solid fa-arrow-rotate-left me-1"></i>Tạo yêu cầu đổi / trả
+                    </button>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary px-3" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-sm btn-dark px-3 fw-semibold" onclick="printReceiptDirectly()">
+                        <i class="fa-solid fa-print me-1"></i>In lại hóa đơn
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Dữ liệu mẫu hóa đơn thực tế: Chỉ gồm các hóa đơn bán hoàn tất, thanh toán bằng Tiền mặt hoặc Chuyển khoản
+        var sampleInvoices = [
+            {
+                code: 'HD-2026-0145',
+                time: '09:45 09/10/2026',
+                scope: 'shift',
+                customerName: 'Trần Thu Trang',
+                customerPhone: '0912 345 678',
+                cashier: 'Lê Minh Nhật',
+                total: 3300000,
+                subtotal: 3300000,
+                discount: 0,
+                paymentMethod: 'qr',
+                paymentMethodText: 'Chuyển khoản',
+                items: [
+                    { name: 'Áo Blazer Linen Signature', variant: 'Be / M', qty: 1, price: 1450000 },
+                    { name: 'Đầm Lụa Satin Cúp Ngực', variant: 'Đen / S', qty: 1, price: 1850000 }
+                ]
+            },
+            {
+                code: 'HD-2026-0144',
+                time: '09:20 09/10/2026',
+                scope: 'shift',
+                customerName: 'Hoàng Yến',
+                customerPhone: '0988 776 655',
+                cashier: 'Lê Minh Nhật',
+                total: 890000,
+                subtotal: 990000,
+                discount: 100000,
+                paymentMethod: 'cash',
+                paymentMethodText: 'Tiền mặt',
+                items: [
+                    { name: 'Chân Váy Xếp Ly Dáng Dài', variant: 'Xám khói / S', qty: 1, price: 990000 }
+                ]
+            },
+            {
+                code: 'HD-2026-0143',
+                time: '09:05 09/10/2026',
+                scope: 'shift',
+                customerName: 'Khách lẻ tại quầy',
+                customerPhone: '—',
+                cashier: 'Lê Minh Nhật',
+                total: 2150000,
+                subtotal: 2150000,
+                discount: 0,
+                paymentMethod: 'cash',
+                paymentMethodText: 'Tiền mặt',
+                items: [
+                    { name: 'Quần Âu Ống Suông Lưng Cao', variant: 'Trắng kem / M', qty: 1, price: 1150000 },
+                    { name: 'Áo Sơ Mi Lụa Cổ V', variant: 'Xanh pastel / S', qty: 1, price: 1000000 }
+                ]
+            },
+            {
+                code: 'HD-2026-0142',
+                time: '08:50 09/10/2026',
+                scope: 'shift',
+                customerName: 'Nguyễn Bích Ngọc',
+                customerPhone: '0903 112 233',
+                cashier: 'Lê Minh Nhật',
+                total: 2565000,
+                subtotal: 2850000,
+                discount: 285000,
+                paymentMethod: 'qr',
+                paymentMethodText: 'Chuyển khoản',
+                items: [
+                    { name: 'Áo Khoác Dạ Tweed Tay Lỡ', variant: 'Đen / M', qty: 1, price: 2850000 }
+                ]
+            },
+            {
+                code: 'HD-2026-0140',
+                time: '08:15 09/10/2026',
+                scope: 'shift',
+                customerName: 'Phạm Thu Thảo',
+                customerPhone: '0971 223 344',
+                cashier: 'Lê Minh Nhật',
+                total: 4095000,
+                subtotal: 4550000,
+                discount: 455000,
+                paymentMethod: 'qr',
+                paymentMethodText: 'Chuyển khoản',
+                items: [
+                    { name: 'Áo Blazer Linen Signature', variant: 'Be / L', qty: 1, price: 1450000 },
+                    { name: 'Đầm Lụa Satin Cúp Ngực', variant: 'Đỏ rượu / M', qty: 1, price: 1850000 },
+                    { name: 'Quần Âu Ống Suông Lưng Cao', variant: 'Trắng kem / M', qty: 1, price: 1250000 }
+                ]
+            },
+            {
+                code: 'HD-2026-0138',
+                time: '18:10 08/10/2026',
+                scope: 'all',
+                customerName: 'Khách lẻ',
+                customerPhone: '—',
+                cashier: 'Trần Văn Hưng (Ca tối)',
+                total: 990000,
+                subtotal: 990000,
+                discount: 0,
+                paymentMethod: 'cash',
+                paymentMethodText: 'Tiền mặt',
+                items: [
+                    { name: 'Chân Váy Xếp Ly Dáng Dài', variant: 'Đen / M', qty: 1, price: 990000 }
+                ]
+            },
+            {
+                code: 'HD-2026-0137',
+                time: '17:30 08/10/2026',
+                scope: 'all',
+                customerName: 'Vũ Minh Anh',
+                customerPhone: '0945 667 788',
+                cashier: 'Trần Văn Hưng (Ca tối)',
+                total: 1450000,
+                subtotal: 1450000,
+                discount: 0,
+                paymentMethod: 'qr',
+                paymentMethodText: 'Chuyển khoản',
+                items: [
+                    { name: 'Áo Blazer Linen Signature', variant: 'Đen / S', qty: 1, price: 1450000 }
+                ]
+            }
+        ];
+
+        var currentScope = 'shift';
+        var activeInvoice = null;
+        var currentPage = 1;
+        var currentFilteredList = [];
+
+        // Chuyển đổi phạm vi: Ca hiện tại vs Toàn cửa hàng
+        function setFilterScope(scope) {
+            currentScope = scope;
+            document.getElementById('btnScopeShift').classList.toggle('active', scope === 'shift');
+            document.getElementById('btnScopeAll').classList.toggle('active', scope === 'all');
+            applyFilters();
+        }
+
+        // Lọc danh sách
+        function applyFilters() {
+            var codeQuery = (document.getElementById('filterOrderCode').value || '').trim().toLowerCase();
+            var customerQuery = (document.getElementById('filterCustomer').value || '').trim().toLowerCase();
+            var paymentMethod = document.getElementById('filterPaymentMethod').value;
+
+            currentFilteredList = sampleInvoices.filter(function(inv) {
+                // Lọc phạm vi quyền
+                if (currentScope === 'shift' && inv.scope !== 'shift') return false;
+
+                // Lọc mã đơn
+                if (codeQuery && !inv.code.toLowerCase().includes(codeQuery)) return false;
+
+                // Lọc khách hàng
+                if (customerQuery) {
+                    var matchName = inv.customerName.toLowerCase().includes(customerQuery);
+                    var matchPhone = inv.customerPhone.toLowerCase().includes(customerQuery);
+                    if (!matchName && !matchPhone) return false;
+                }
+
+                // Lọc phương thức
+                if (paymentMethod !== 'all' && inv.paymentMethod !== paymentMethod) return false;
+
+                return true;
+            });
+
+            renderTable(currentFilteredList);
+        }
+
+        // Đặt lại bộ lọc
+        function resetFilters() {
+            document.getElementById('filterOrderCode').value = '';
+            document.getElementById('filterCustomer').value = '';
+            document.getElementById('filterTimeRange').value = 'current_shift';
+            document.getElementById('filterPaymentMethod').value = 'all';
+            setFilterScope('shift');
+        }
+
+        // Render bảng dữ liệu
+        function renderTable(list) {
+            var tbody = document.getElementById('invoicesTableBody');
+            var emptyState = document.getElementById('emptyInvoiceState');
+            var totalCountBadge = document.getElementById('filteredCountBadge');
+            var displayRange = document.getElementById('displayRange');
+            var totalFilteredItems = document.getElementById('totalFilteredItems');
+            var totalFilteredAmount = document.getElementById('totalFilteredAmount');
+
+            totalCountBadge.innerText = list.length + ' hóa đơn';
+            totalFilteredItems.innerText = list.length;
+
+            // Tính tổng tiền của tập đang lọc
+            var sumTotal = list.reduce(function(acc, item) {
+                return acc + item.total;
+            }, 0);
+            totalFilteredAmount.innerText = sumTotal.toLocaleString('vi-VN') + '₫';
+
+            if (list.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.classList.remove('d-none');
+                displayRange.innerText = '0 - 0';
+                return;
+            }
+
+            emptyState.classList.add('d-none');
+            displayRange.innerText = '1 - ' + list.length;
+
+            var html = '';
+            list.forEach(function(item) {
+                html += `
+                    <tr>
+                        <td>
+                            <a href="javascript:void(0)" class="code-link" onclick="openInvoiceDetail('${item.code}')">
+                                ${item.code}
+                            </a>
+                        </td>
+                        <td class="text-muted small">${item.time}</td>
+                        <td>
+                            <div class="fw-semibold text-dark">${item.customerName}</div>
+                            <div class="text-muted small">${item.customerPhone}</div>
+                        </td>
+                        <td>
+                            <span class="small text-muted">${item.cashier}</span>
+                        </td>
+                        <td class="text-end fw-bold text-dark">
+                            ${item.total.toLocaleString('vi-VN')}₫
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border fw-medium px-2 py-1">
+                                ${item.paymentMethodText}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge badge-status bg-success-subtle text-success border border-success-subtle">
+                                Hoàn tất
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <button type="button" class="btn btn-sm btn-outline-dark px-2 py-1 rounded-pill small" onclick="openInvoiceDetail('${item.code}')">
+                                Xem chi tiết
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        // Mở modal xem chi tiết hóa đơn
+        function openInvoiceDetail(code) {
+            var found = sampleInvoices.find(function(i) { return i.code === code; });
+            if (!found) return;
+
+            activeInvoice = found;
+
+            document.getElementById('modalInvoiceCode').innerText = found.code;
+            document.getElementById('modalCreatedAt').innerText = found.time;
+            document.getElementById('modalCustomerName').innerText = found.customerName;
+            document.getElementById('modalCustomerPhone').innerText = found.customerPhone;
+            document.getElementById('modalCashierName').innerText = found.cashier;
+            document.getElementById('modalPaymentMethod').innerText = found.paymentMethodText;
+            document.getElementById('modalSubtotal').innerText = found.subtotal.toLocaleString('vi-VN') + '₫';
+            document.getElementById('modalDiscount').innerText = found.discount > 0 ? ('-' + found.discount.toLocaleString('vi-VN') + '₫') : '0₫';
+            document.getElementById('modalTotal').innerText = found.total.toLocaleString('vi-VN') + '₫';
+
+            var tbody = document.getElementById('modalItemsBody');
+            var itemsHtml = '';
+            found.items.forEach(function(it) {
+                var lineTotal = it.price * it.qty;
+                itemsHtml += `
+                    <tr>
+                        <td>
+                            <div class="fw-semibold text-dark">${it.name}</div>
+                            <div class="text-muted" style="font-size: 0.72rem;">Phân loại: ${it.variant}</div>
+                        </td>
+                        <td class="text-center">${it.qty}</td>
+                        <td class="text-end text-muted">${it.price.toLocaleString('vi-VN')}₫</td>
+                        <td class="text-end fw-bold text-dark">${lineTotal.toLocaleString('vi-VN')}₫</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = itemsHtml;
+
+            var modal = new bootstrap.Modal(document.getElementById('invoiceDetailModal'));
+            modal.show();
+        }
+
+        // Mở màn hình Tạo yêu cầu đổi / trả
+        function openCreateReturnRequest() {
+            if (!activeInvoice) return;
+            window.location.href = '@Url.Action("Returns", "Dashboard", new { area = "Employee" })?code=' + encodeURIComponent(activeInvoice.code);
+        }
+
+        // In lại hóa đơn
+        function printReceiptDirectly() {
+            window.print();
+        }
+
+        // Xuất danh sách
+        function exportInvoicesList() {
+            alert('✅ ĐÃ XUẤT DANH SÁCH HÓA ĐƠN:\n\nĐã tải về tệp bảng kê hóa đơn ca làm việc (' + currentFilteredList.length + ' hóa đơn) định dạng Excel/CSV.');
+        }
+
+        // Chuyển trang (Mô phỏng)
+        function changePage(delta) {
+            alert('Chức năng phân trang đã sẵn sàng khi danh sách vượt quá 10 đơn.');
+        }
+
+        // Khởi tạo
+        window.addEventListener('DOMContentLoaded', function() {
+            applyFilters();
+        });
+    </script>
+}
+

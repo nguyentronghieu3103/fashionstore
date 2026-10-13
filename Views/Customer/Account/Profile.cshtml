@@ -1,0 +1,118 @@
+@* Views/Account/Profile.cshtml *@
+@{
+    Layout = "_StoreLayout";
+    ViewData["Title"] = "Hồ sơ cá nhân - LIGHT LIFE";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/lightlife-account.css" asp-append-version="true" />
+}
+
+<div class="ll-account-page">
+    <div class="ll-container">
+        <!-- BREADCRUMB -->
+        <nav class="ll-account-breadcrumb" aria-label="Đường dẫn trang">
+            <a href="/">Trang chủ</a>
+            <span class="ll-account-breadcrumb__sep">/</span>
+            <a href="/Account/Profile">Tài khoản</a>
+            <span class="ll-account-breadcrumb__sep">/</span>
+            <span class="ll-account-breadcrumb__current" aria-current="page">Hồ sơ cá nhân</span>
+        </nav>
+
+        <div class="ll-account-layout">
+            <!-- CỘT 1: SIDEBAR TÀI KHOẢN (280px) -->
+            <aside class="ll-account-sidebar" aria-label="Menu tài khoản cá nhân">
+                <div class="ll-account-user-card">
+                    <div class="ll-account-user-avatar" id="accountUserAvatar">T</div>
+                    <div class="ll-account-user-info">
+                        <span class="ll-account-user-name" id="accountUserName">Nguyễn Thu Trang</span>
+                        <span class="ll-account-user-email" id="accountUserEmail">thutrang@lightlife.vn</span>
+                        <span class="ll-account-user-tag">Khách hàng</span>
+                    </div>
+                </div>
+
+                <nav>
+                    <ul class="ll-account-nav-list">
+                        <li class="ll-account-nav-item active">
+                            <a href="/Account/Profile"><i class="fa-regular fa-user"></i> Hồ sơ cá nhân</a>
+                        </li>
+                        <li class="ll-account-nav-item">
+                            <a href="/Account/Addresses"><i class="fa-solid fa-location-dot"></i> Sổ địa chỉ</a>
+                        </li>
+                        <li class="ll-account-nav-item">
+                            <a href="/Account/Orders"><i class="fa-solid fa-box-open"></i> Đơn hàng của tôi</a>
+                        </li>
+                        <li class="ll-account-nav-item">
+                            <a href="/Account/ChangePassword"><i class="fa-solid fa-key"></i> Đổi mật khẩu</a>
+                        </li>
+                        <li class="ll-account-nav-item ll-account-nav-item--logout">
+                            <a href="javascript:void(0)" onclick="LightLifeAuth.logout();">
+                                <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- CỘT 2: NỘI DUNG HỒ SƠ CÁ NHÂN -->
+            <main class="ll-account-content-card">
+                <div class="ll-account-header">
+                    <div>
+                        <h1 class="ll-account-title">
+                            <i class="fa-regular fa-id-card" style="color: var(--color-brand);"></i>
+                            Hồ sơ cá nhân
+                        </h1>
+                        <p class="ll-account-desc">
+                            Quản lý thông tin định danh cá nhân và số điện thoại liên lạc để nhận thông báo đơn hàng.
+                        </p>
+                    </div>
+                </div>
+
+                <form id="profileForm" novalidate style="max-width: 600px;">
+                    <!-- Họ và tên -->
+                    <div class="ll-form-group">
+                        <label class="ll-form-label" for="profileFullName">
+                            Họ và tên <span class="req">*</span>
+                        </label>
+                        <input type="text" id="profileFullName" class="ll-form-input" placeholder="Nhập họ và tên đầy đủ" required />
+                    </div>
+
+                    <!-- Email (Readonly kèm nhãn xác minh) -->
+                    <div class="ll-form-group">
+                        <label class="ll-form-label" for="profileEmail">
+                            <span>Địa chỉ Email</span>
+                            <span class="ll-verified-badge ll-verified-badge--success" id="emailVerifiedBadge">
+                                <i class="fa-solid fa-circle-check"></i> Đã xác minh
+                            </span>
+                        </label>
+                        <input type="email" id="profileEmail" class="ll-form-input" readonly />
+                        <div class="ll-readonly-note">
+                            <i class="fa-solid fa-circle-info"></i>
+                            Email là định danh tài khoản để nhận biên lai đơn hàng và đăng nhập. Vui lòng liên hệ CSKH nếu cần cập nhật email.
+                        </div>
+                    </div>
+
+                    <!-- Số điện thoại -->
+                    <div class="ll-form-group">
+                        <label class="ll-form-label" for="profilePhone">
+                            Số điện thoại nhận hàng <span class="req">*</span>
+                        </label>
+                        <input type="tel" id="profilePhone" class="ll-form-input" placeholder="0908 123 456" required />
+                    </div>
+
+                    <!-- Nút Lưu -->
+                    <div style="margin-top: 2rem;">
+                        <button type="submit" class="ll-btn-save" id="profileSubmitBtn">
+                            <i class="fa-solid fa-check"></i> Lưu thay đổi
+                        </button>
+                    </div>
+                </form>
+            </main>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/lightlife-account.js" asp-append-version="true"></script>
+}
+

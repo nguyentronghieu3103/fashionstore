@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng ký tài khoản - LIGHT LIFE FASHION STUDIO</title>
+    
+    <!-- FontAwesome 6.5.1 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <!-- LIGHT LIFE Storefront & Auth Design System CSS (Thuần CSS3, Không Bootstrap, Không Tailwind, Không Font Serif) -->
+    <link rel="stylesheet" href="wwwroot/css/lightlife-storefront.css" />
+    <link rel="stylesheet" href="wwwroot/css/lightlife-auth.css" />
+</head>
+<body class="ll-auth-body">
+    <div class="ll-auth-card">
+        <!-- CỘT 1: ẢNH EDITORIAL THỜI TRANG (DESKTOP) -->
+        <div class="ll-auth-visual ll-auth-visual--register">
+            <div>
+                <a href="storefront-home.html" class="ll-auth-brand" title="Về trang chủ LIGHT LIFE">
+                    <img src="wwwroot/images/logo.png" alt="LIGHT LIFE Logo" class="ll-auth-brand__img" />
+                    <div>
+                        <span class="ll-auth-brand__title">LIGHT LIFE</span>
+                        <span class="ll-auth-brand__sub">FASHION STUDIO</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="ll-auth-quote">
+                <p class="ll-auth-quote__text">
+                    "Sự đơn giản là chìa khóa của mọi vẻ đẹp thanh lịch đích thực."
+                </p>
+                <span class="ll-auth-quote__author">— Coco Chanel</span>
+            </div>
+
+            <div>
+                <a href="storefront-home.html" class="ll-auth-back-link">
+                    <i class="fa-solid fa-arrow-left"></i> Quay lại cửa hàng
+                </a>
+            </div>
+        </div>
+
+        <!-- CỘT 2: BIỂU MẪU ĐĂNG KÝ KHÁCH HÀNG -->
+        <div class="ll-auth-form-wrap">
+            <div>
+                <!-- Logo hiển thị trên Mobile -->
+                <a href="storefront-home.html" class="ll-auth-mobile-brand">
+                    <img src="wwwroot/images/logo.png" alt="LIGHT LIFE Logo" />
+                    <span class="fw-bold fs-5">LIGHT LIFE</span>
+                </a>
+
+                <div class="ll-auth-header">
+                    <h1 class="ll-auth-header__title">Tạo Tài Khoản</h1>
+                    <p class="ll-auth-header__subtitle">
+                        Đăng ký tài khoản khách hàng để nhận thông tin ưu đãi và theo dõi đơn hàng dễ dàng.
+                    </p>
+                </div>
+
+                <!-- Banner thông báo lỗi / thành công chung -->
+                <div class="ll-auth-alert" id="authAlert" role="alert">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span id="authAlertText">Thông báo lỗi đăng ký.</span>
+                </div>
+
+                <!-- Biểu mẫu đăng ký khách hàng (Chỉ khách hàng, không chọn role) -->
+                <form id="registerForm" novalidate>
+                    <!-- 1. Họ và tên -->
+                    <div class="ll-form-group">
+                        <label for="regFullName" class="ll-form-label">Họ và tên của bạn *</label>
+                        <div class="ll-input-wrapper">
+                            <span class="ll-input-icon"><i class="fa-regular fa-user"></i></span>
+                            <input type="text" 
+                                   id="regFullName" 
+                                   name="fullName"
+                                   class="ll-input-field" 
+                                   placeholder="VD: Nguyễn Thu Trang" 
+                                   autocomplete="name" 
+                                   required />
+                        </div>
+                        <span class="ll-field-error" id="regFullNameError"></span>
+                    </div>
+
+                    <!-- 2. Email đăng ký -->
+                    <div class="ll-form-group">
+                        <label for="regEmail" class="ll-form-label">Địa chỉ Email *</label>
+                        <div class="ll-input-wrapper">
+                            <span class="ll-input-icon"><i class="fa-regular fa-envelope"></i></span>
+                            <input type="email" 
+                                   id="regEmail" 
+                                   name="email"
+                                   class="ll-input-field" 
+                                   placeholder="VD: thutrang@example.com" 
+                                   autocomplete="email" 
+                                   required />
+                        </div>
+                        <span class="ll-field-error" id="regEmailError"></span>
+                    </div>
+
+                    <!-- 3. Mật khẩu -->
+                    <div class="ll-form-group">
+                        <label for="regPassword" class="ll-form-label">Mật khẩu *</label>
+                        <div class="ll-input-wrapper">
+                            <span class="ll-input-icon"><i class="fa-solid fa-lock"></i></span>
+                            <input type="password" 
+                                   id="regPassword" 
+                                   name="password"
+                                   class="ll-input-field ll-input-field--has-toggle" 
+                                   placeholder="Tối thiểu 8 ký tự" 
+                                   autocomplete="new-password" 
+                                   required />
+                            <button type="button" 
+                                    class="ll-password-toggle-btn" 
+                                    data-target="regPassword" 
+                                    aria-label="Hiện mật khẩu">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="ll-password-hint">Gợi ý: Mật khẩu nên gồm ít nhất 8 ký tự, kết hợp chữ và số.</div>
+                        <span class="ll-field-error" id="regPasswordError"></span>
+                    </div>
+
+                    <!-- 4. Xác nhận mật khẩu -->
+                    <div class="ll-form-group">
+                        <label for="regConfirmPassword" class="ll-form-label">Xác nhận lại mật khẩu *</label>
+                        <div class="ll-input-wrapper">
+                            <span class="ll-input-icon"><i class="fa-solid fa-shield-halved"></i></span>
+                            <input type="password" 
+                                   id="regConfirmPassword" 
+                                   name="confirmPassword"
+                                   class="ll-input-field ll-input-field--has-toggle" 
+                                   placeholder="Nhập lại mật khẩu vừa nhập" 
+                                   autocomplete="new-password" 
+                                   required />
+                            <button type="button" 
+                                    class="ll-password-toggle-btn" 
+                                    data-target="regConfirmPassword" 
+                                    aria-label="Hiện mật khẩu">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
+                        <span class="ll-field-error" id="regConfirmPasswordError"></span>
+                    </div>
+
+                    <!-- 5. Đồng ý điều khoản & chính sách -->
+                    <label class="ll-checkbox-group">
+                        <input type="checkbox" id="regTerms" name="acceptTerms" class="ll-checkbox-input" required />
+                        <span>
+                            Tôi đã đọc và đồng ý với <a href="storefront-home.html#policies" target="_blank">Điều khoản sử dụng</a> và <a href="storefront-home.html#policies" target="_blank">Chính sách bảo mật</a> của LIGHT LIFE.
+                        </span>
+                    </label>
+
+                    <!-- 6. Nút Đăng ký chính -->
+                    <button type="submit" class="ll-auth-submit-btn" id="regSubmitBtn">
+                        <i class="fa-solid fa-user-plus"></i> Đăng ký tài khoản
+                    </button>
+                </form>
+
+                <!-- Phân cách hoặc -->
+                <div class="ll-auth-divider">
+                    <span>hoặc đăng ký nhanh với</span>
+                </div>
+
+                <!-- 7. Nút Đăng ký bằng Google -->
+                <button type="button" class="ll-google-btn" id="googleAuthBtn" title="Đăng ký tài khoản nhanh qua Google">
+                    <svg width="20" height="20" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+                        <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+                        <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.14-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.98 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+                        <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                    </svg>
+                    <span>Đăng ký bằng Google</span>
+                </button>
+            </div>
+
+            <!-- Chân form: Liên kết Đăng nhập -->
+            <footer class="ll-auth-footer">
+                <span>Đã có tài khoản khách hàng? </span>
+                <a href="storefront-login.html">Đăng nhập ngay</a>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Core Scripts -->
+    <script src="wwwroot/js/lightlife-storefront.js"></script>
+    <script src="wwwroot/js/lightlife-auth.js"></script>
+</body>
+</html>
+

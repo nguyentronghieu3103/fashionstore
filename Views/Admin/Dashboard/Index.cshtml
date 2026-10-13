@@ -1,0 +1,481 @@
+@{
+    ViewData["Title"] = "Dashboard Admin";
+}
+
+@section Styles {
+    <style>
+        /* Card KPI tối giản */
+        .kpi-box {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.25rem 1.4rem;
+        }
+        .kpi-label {
+            font-size: 0.82rem;
+            color: #6b7280;
+            font-weight: 500;
+            margin-bottom: 0.35rem;
+        }
+        .kpi-value {
+            font-size: 1.55rem;
+            font-weight: 700;
+            color: #111827;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        /* Khối biểu đồ */
+        .chart-box {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.25rem 1.4rem;
+            height: 100%;
+        }
+
+        .period-btn {
+            border: 1px solid #e5e7eb;
+            background: #ffffff;
+            color: #4b5563;
+            font-size: 0.8rem;
+            padding: 0.3rem 0.85rem;
+            border-radius: 6px;
+            transition: all 0.15s;
+        }
+        .period-btn:hover {
+            background: #f3f4f6;
+            color: #111827;
+        }
+        .period-btn.active {
+            background: #18181b;
+            color: #ffffff;
+            border-color: #18181b;
+        }
+
+        /* Bảng công việc duyệt tinh gọn */
+        .approvals-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .approvals-table thead th {
+            background: #fafafa;
+            color: #6b7280;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.85rem 1.25rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .approvals-table tbody td {
+            padding: 1rem 1.25rem;
+            vertical-align: middle;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #f3f4f6;
+            color: #1f2937;
+        }
+        .approvals-table tbody tr:hover {
+            background-color: #fafafa;
+        }
+    </style>
+}
+
+<div class="container-fluid p-0">
+
+    <!-- 1. 5 Thẻ Chỉ Số (KPI) Tối Giản -->
+    <div class="row g-3 mb-4">
+        <!-- Doanh thu -->
+        <div class="col-xl col-md-6">
+            <div class="kpi-box">
+                <div class="kpi-label">Doanh thu</div>
+                <h4 class="kpi-value text-dark" id="kpiRevenue">128.450.000 ₫</h4>
+            </div>
+        </div>
+
+        <!-- Đơn hàng -->
+        <div class="col-xl col-md-6">
+            <div class="kpi-box">
+                <div class="kpi-label">Đơn hàng</div>
+                <h4 class="kpi-value text-dark" id="kpiInvoices">342</h4>
+            </div>
+        </div>
+
+        <!-- Giá trị TB -->
+        <div class="col-xl col-md-6">
+            <div class="kpi-box">
+                <div class="kpi-label">Giá trị trung bình</div>
+                <h4 class="kpi-value text-dark" id="kpiAOV">375.500 ₫</h4>
+            </div>
+        </div>
+
+        <!-- Chờ duyệt -->
+        <div class="col-xl col-md-6">
+            <a asp-area="Admin" asp-controller="Returns" asp-action="Index" class="text-decoration-none">
+                <div class="kpi-box">
+                    <div class="kpi-label">Chờ duyệt đổi trả</div>
+                    <h4 class="kpi-value text-dark" id="kpiApprovals">4</h4>
+                </div>
+            </a>
+        </div>
+
+        <!-- Chờ đối soát -->
+        <div class="col-xl col-md-6">
+            <a asp-area="Admin" asp-controller="Shifts" asp-action="Index" class="text-decoration-none">
+                <div class="kpi-box">
+                    <div class="kpi-label">Chờ đối soát ca</div>
+                    <h4 class="kpi-value text-dark" id="kpiShifts">1</h4>
+                </div>
+            </a>
+        </div>
+    </div>
+
+
+    <!-- 2. Biểu Đồ: Doanh thu (Trái) & Phương thức thanh toán CK / COD (Phải) -->
+    <div class="row g-3 mb-4">
+        <!-- Bên trái: Biểu đồ doanh thu với các nút chuyển thời gian ở góc trên -->
+        <div class="col-lg-8">
+            <div class="chart-box d-flex flex-column">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                    <h6 class="fw-bold mb-0 text-dark">Doanh thu</h6>
+                    
+                    <!-- Nút đổi thời gian trên góc biểu đồ -->
+                    <div class="d-flex gap-1" id="periodBtnGroup">
+                        <button type="button" class="period-btn" onclick="changePeriod('today', this)">Hôm nay</button>
+                        <button type="button" class="period-btn active" onclick="changePeriod('7days', this)">7 ngày</button>
+                        <button type="button" class="period-btn" onclick="changePeriod('month', this)">Tháng này</button>
+                        <button type="button" class="period-btn" onclick="changePeriod('year', this)">Năm nay</button>
+                    </div>
+                </div>
+
+                <div class="flex-grow-1" style="min-height: 280px; position: relative;">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bên phải: 2 Phương thức thanh toán (Chuyển khoản & COD) -->
+        <div class="col-lg-4">
+            <div class="chart-box d-flex flex-column">
+                <div class="mb-3">
+                    <h6 class="fw-bold mb-0 text-dark">Phương thức thanh toán</h6>
+                </div>
+
+                <div style="height: 190px; position: relative;" class="d-flex justify-content-center align-items-center">
+                    <canvas id="paymentChart"></canvas>
+                </div>
+
+                <div class="row text-center g-2 mt-3 pt-2 border-top">
+                    <div class="col-6">
+                        <div class="p-2 rounded bg-light border">
+                            <div class="fw-bold text-dark">65%</div>
+                            <div class="text-muted small" style="font-size: 0.78rem;">Chuyển khoản (CK)</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-2 rounded bg-light border">
+                            <div class="fw-bold text-dark">35%</div>
+                            <div class="text-muted small" style="font-size: 0.78rem;">COD</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 3. Công Việc Cần Duyệt (Đơn giản, khẩn cấp có tam giác đỏ, bấm Chi tiết mới ra) -->
+    <div class="approvals-card mb-4" id="approvals">
+        <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+            <h6 class="fw-bold mb-0 text-dark">Công việc cần duyệt</h6>
+            <span class="text-muted small" id="pendingCountText">4 yêu cầu</span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table approvals-table mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th>Tên công việc</th>
+                        <th>Người tạo</th>
+                        <th>Thời gian</th>
+                        <th class="text-end">Chi tiết</th>
+                    </tr>
+                </thead>
+                <tbody id="approvalsList">
+                    <!-- CV 1: Khẩn cấp (tam giác đỏ) -->
+                    <tr id="job-1">
+                        <td>
+                            <i class="fa-solid fa-triangle-exclamation text-danger me-2" title="Khẩn cấp"></i>
+                            <span class="fw-semibold">Đổi trả & hoàn tiền - Khách Nguyễn Phương Thảo</span>
+                        </td>
+                        <td>Nguyễn Thu Trang</td>
+                        <td class="text-muted small">14:20 Hôm nay</td>
+                        <td class="text-end">
+                            <button type="button" class="btn btn-outline-dark btn-sm px-3" onclick="showJobDetail('job-1', 'Đổi trả & hoàn tiền', 'Nguyễn Thu Trang', '14:20 Hôm nay', 'Khách VIP Phương Thảo yêu cầu đổi size và hoàn 20% do đường may cổ áo Tweed lỗi.', '1.850.000 ₫', true)">
+                                Chi tiết
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- CV 2: Khẩn cấp (tam giác đỏ) -->
+                    <tr id="job-2">
+                        <td>
+                            <i class="fa-solid fa-triangle-exclamation text-danger me-2" title="Khẩn cấp"></i>
+                            <span class="fw-semibold">Đối soát ca sáng - Quầy 01 lệch tiền</span>
+                        </td>
+                        <td>Trần Thùy Linh</td>
+                        <td class="text-muted small">13:05 Hôm nay</td>
+                        <td class="text-end">
+                            <button type="button" class="btn btn-outline-dark btn-sm px-3" onclick="showJobDetail('job-2', 'Đối soát ca sáng', 'Trần Thùy Linh', '13:05 Hôm nay', 'Tiền thực tế trong két ít hơn sổ sách kế toán do thối nhầm khách vãng lai.', '-50.000 ₫', true)">
+                                Chi tiết
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- CV 3: Bình thường -->
+                    <tr id="job-3">
+                        <td>
+                            <span>Nhập kho vải lụa Mulberry</span>
+                        </td>
+                        <td>Lê Minh Kho</td>
+                        <td class="text-muted small">11:15 Hôm nay</td>
+                        <td class="text-end">
+                            <button type="button" class="btn btn-outline-dark btn-sm px-3" onclick="showJobDetail('job-3', 'Nhập kho vải lụa', 'Lê Minh Kho', '11:15 Hôm nay', 'Nhập 40 cây vải lụa Mulberry chính phẩm từ NCC Dệt May Phương Nam.', '24.000.000 ₫', false)">
+                                Chi tiết
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- CV 4: Bình thường -->
+                    <tr id="job-4">
+                        <td>
+                            <span>Kiểm kê định kỳ tháng 10</span>
+                        </td>
+                        <td>Phạm Tuấn Kho</td>
+                        <td class="text-muted small">09:40 Hôm nay</td>
+                        <td class="text-end">
+                            <button type="button" class="btn btn-outline-dark btn-sm px-3" onclick="showJobDetail('job-4', 'Kiểm kê định kỳ', 'Phạm Tuấn Kho', '09:40 Hôm nay', 'Cân đối tồn kho thực tế: Thừa 1 Blazer L, Thiếu 1 Áo sơ mi Silk M.', 'Lệch 2 món', false)">
+                                Chi tiết
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal Chi Tiết Công Việc (Bấm Chi tiết mới hiện ra thông tin + Nút Duyệt / Từ chối) -->
+<div class="modal fade" id="jobDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-3 border-0 shadow">
+            <div class="modal-header border-bottom p-3">
+                <h6 class="modal-title fw-bold text-dark" id="modalJobTitle">Chi tiết công việc</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-3">
+                <div id="modalJobUrgentBadge" class="mb-3 d-none">
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">
+                        <i class="fa-solid fa-triangle-exclamation me-1"></i> Khẩn cấp
+                    </span>
+                </div>
+                <div class="mb-2">
+                    <small class="text-muted d-block">Người tạo & thời gian:</small>
+                    <span class="fw-semibold text-dark" id="modalJobCreator">--</span> • <span class="text-muted small" id="modalJobTime">--</span>
+                </div>
+                <div class="mb-2">
+                    <small class="text-muted d-block">Giá trị / Số lượng:</small>
+                    <span class="fw-bold text-dark" id="modalJobValue">--</span>
+                </div>
+                <div class="mb-2">
+                    <small class="text-muted d-block">Nội dung chi tiết:</small>
+                    <div class="p-2 bg-light rounded text-dark small" id="modalJobDesc">--</div>
+                </div>
+            </div>
+            <div class="modal-footer border-top p-3 d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-light btn-sm px-3" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-outline-danger btn-sm px-3" onclick="rejectCurrentJob()">Từ chối</button>
+                <button type="button" class="btn btn-dark btn-sm px-3" onclick="approveCurrentJob()">Duyệt</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var revChart = null;
+        var payChart = null;
+
+        var periodData = {
+            'today': {
+                labels: ['08h', '10h', '12h', '14h', '16h', '18h', '20h'],
+                data: [4.2, 8.5, 6.1, 11.4, 9.3, 14.2, 8.1],
+                rev: '61.800.000 ₫',
+                inv: '112',
+                aov: '551.700 ₫'
+            },
+            '7days': {
+                labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+                data: [14.2, 16.8, 15.4, 19.2, 22.5, 28.1, 12.2],
+                rev: '128.450.000 ₫',
+                inv: '342',
+                aov: '375.500 ₫'
+            },
+            'month': {
+                labels: ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Tuần 4'],
+                data: [112, 138, 125, 145],
+                rev: '520.000.000 ₫',
+                inv: '1.410',
+                aov: '368.800 ₫'
+            },
+            'year': {
+                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                data: [1450, 1820, 1690, 2100],
+                rev: '7.060.000.000 ₫',
+                inv: '19.240',
+                aov: '366.900 ₫'
+            }
+        };
+
+        function initCharts() {
+            // Biểu đồ doanh thu
+            var ctxR = document.getElementById('revenueChart');
+            if (ctxR) {
+                var cur = periodData['7days'];
+                revChart = new Chart(ctxR, {
+                    type: 'line',
+                    data: {
+                        labels: cur.labels,
+                        datasets: [{
+                            data: cur.data,
+                            borderColor: '#18181b',
+                            backgroundColor: 'rgba(24, 24, 27, 0.04)',
+                            tension: 0.3,
+                            fill: true,
+                            pointBackgroundColor: '#18181b',
+                            pointRadius: 3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                grid: { color: '#f3f4f6' },
+                                ticks: {
+                                    callback: function(v) { return v + ' tr'; }
+                                }
+                            },
+                            x: {
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Biểu đồ thanh toán: 2 phương thức CK & COD
+            var ctxP = document.getElementById('paymentChart');
+            if (ctxP) {
+                payChart = new Chart(ctxP, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Chuyển khoản (CK)', 'COD'],
+                        datasets: [{
+                            data: [65, 35],
+                            backgroundColor: ['#18181b', '#c5a880'],
+                            borderWidth: 2,
+                            borderColor: '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { boxWidth: 12, font: { size: 12 } }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function changePeriod(key, btn) {
+            document.querySelectorAll('#periodBtnGroup .period-btn').forEach(function(b) {
+                b.classList.remove('active');
+            });
+            if (btn) btn.classList.add('active');
+
+            var d = periodData[key];
+            if (!d) return;
+
+            document.getElementById('kpiRevenue').innerText = d.rev;
+            document.getElementById('kpiInvoices').innerText = d.inv;
+            document.getElementById('kpiAOV').innerText = d.aov;
+
+            if (revChart) {
+                revChart.data.labels = d.labels;
+                revChart.data.datasets[0].data = d.data;
+                revChart.update();
+            }
+        }
+
+        // Xử lý modal chi tiết công việc
+        var activeJobRowId = '';
+
+        function showJobDetail(rowId, title, creator, time, desc, val, isUrgent) {
+            activeJobRowId = rowId;
+            document.getElementById('modalJobTitle').innerText = title;
+            document.getElementById('modalJobCreator').innerText = creator;
+            document.getElementById('modalJobTime').innerText = time;
+            document.getElementById('modalJobDesc').innerText = desc;
+            document.getElementById('modalJobValue').innerText = val;
+
+            var badge = document.getElementById('modalJobUrgentBadge');
+            if (isUrgent) {
+                badge.classList.remove('d-none');
+            } else {
+                badge.classList.add('d-none');
+            }
+
+            var modal = new bootstrap.Modal(document.getElementById('jobDetailModal'));
+            modal.show();
+        }
+
+        function approveCurrentJob() {
+            if (activeJobRowId) {
+                var row = document.getElementById(activeJobRowId);
+                if (row) row.remove();
+                updateJobCount();
+            }
+            bootstrap.Modal.getInstance(document.getElementById('jobDetailModal')).hide();
+        }
+
+        function rejectCurrentJob() {
+            if (activeJobRowId) {
+                var row = document.getElementById(activeJobRowId);
+                if (row) row.remove();
+                updateJobCount();
+            }
+            bootstrap.Modal.getInstance(document.getElementById('jobDetailModal')).hide();
+        }
+
+        function updateJobCount() {
+            var count = document.querySelectorAll('#approvalsList tr').length;
+            document.getElementById('kpiApprovals').innerText = count;
+            document.getElementById('pendingCountText').innerText = count + ' yêu cầu';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initCharts();
+        });
+    </script>
+}
+

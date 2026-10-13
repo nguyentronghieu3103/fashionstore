@@ -1,0 +1,627 @@
+/* ==========================================================================
+   LIGHT LIFE FASHION STUDIO - PRODUCTS LIST CATALOG STYLES
+   Công nghệ: CSS3 Thuần (Không Tailwind, Không Serif, Responsive 375px)
+   ========================================================================== */
+
+/* 1. BREADCRUMB */
+.ll-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 18px 0;
+  font-size: 14px;
+  color: var(--color-text-sub);
+}
+
+.ll-breadcrumb-link {
+  color: var(--color-text-sub);
+  text-decoration: none;
+  transition: var(--transition);
+}
+.ll-breadcrumb-link:hover {
+  color: var(--color-brand);
+}
+
+.ll-breadcrumb-separator {
+  color: #C4B9AC;
+  font-size: 11px;
+}
+
+.ll-breadcrumb-current {
+  color: var(--color-text-main);
+  font-weight: 600;
+}
+
+/* 2. CATALOG HEADER & TOOLBAR */
+.ll-catalog-header {
+  margin-bottom: 24px;
+}
+
+.ll-catalog-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.ll-catalog-heading-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ll-catalog-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-text-main);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.ll-catalog-counter {
+  font-size: 14px;
+  color: var(--color-text-sub);
+  font-variant-numeric: tabular-nums;
+}
+
+.ll-catalog-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Sort Select Control */
+.ll-sort-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 2px 12px;
+  height: 44px; /* Tối thiểu 44px */
+}
+
+.ll-sort-label {
+  font-size: 13px;
+  color: var(--color-text-sub);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ll-sort-select {
+  border: none;
+  background: transparent;
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-main);
+  outline: none;
+  cursor: pointer;
+  height: 100%;
+}
+
+/* Nút mở bộ lọc mobile */
+.ll-mobile-filter-btn {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-main);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.ll-mobile-filter-btn:hover {
+  border-color: var(--color-brand);
+  color: var(--color-brand);
+}
+
+.ll-filter-badge {
+  background-color: var(--color-brand);
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: 700;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 3. ACTIVE FILTER CHIPS (Chip bộ lọc đang áp dụng & Xóa tất cả) */
+.ll-active-filters-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 14px 0;
+  min-height: 52px;
+}
+
+.ll-active-filters-bar.empty {
+  display: none;
+}
+
+.ll-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 12px;
+  background-color: var(--color-surface);
+  border: 1px solid #D5C8BA;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  color: var(--color-text-main);
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.ll-filter-chip:hover {
+  background-color: #F8F3ED;
+  border-color: var(--color-brand);
+  color: var(--color-brand);
+}
+
+.ll-chip-remove {
+  font-size: 11px;
+  color: var(--color-text-sub);
+  margin-left: 2px;
+}
+.ll-filter-chip:hover .ll-chip-remove {
+  color: var(--color-brand);
+}
+
+.ll-clear-all-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-brand);
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.ll-clear-all-btn:hover {
+  color: var(--color-brand-hover);
+}
+
+/* 4. CATALOG MAIN LAYOUT (Sidebar 250px + Product Grid) */
+.ll-catalog-layout {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+  padding-bottom: 70px;
+}
+
+/* SIDEBAR FILTER (250px) */
+.ll-catalog-sidebar {
+  width: 250px;
+  flex-shrink: 0;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 96px;
+}
+
+.ll-filter-group {
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+.ll-filter-group:last-child {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+.ll-filter-heading {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-text-main);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Danh mục bộ lọc */
+.ll-filter-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ll-filter-item-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--color-text-main);
+  cursor: pointer;
+  padding: 4px 0;
+  transition: var(--transition);
+  min-height: 32px;
+}
+.ll-filter-item-label:hover {
+  color: var(--color-brand);
+}
+
+.ll-filter-radio-box,
+.ll-filter-check-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ll-filter-radio-box input[type="radio"],
+.ll-filter-check-box input[type="checkbox"] {
+  accent-color: var(--color-brand);
+  width: 17px;
+  height: 17px;
+  cursor: pointer;
+  margin: 0;
+}
+
+.ll-filter-count {
+  font-size: 12px;
+  color: var(--color-text-sub);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Color Swatches Grid */
+.ll-swatches-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ll-color-swatch-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  padding: 0;
+  cursor: pointer;
+  position: relative;
+  transition: var(--transition);
+}
+.ll-color-swatch-btn:hover {
+  transform: scale(1.1);
+}
+.ll-color-swatch-btn.active {
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-brand);
+}
+
+/* Size Buttons Grid */
+.ll-sizes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.ll-size-btn {
+  height: 40px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-main);
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ll-size-btn:hover {
+  border-color: var(--color-brand);
+  color: var(--color-brand);
+  background-color: #FAF6F1;
+}
+.ll-size-btn.active {
+  background-color: var(--color-brand);
+  color: #FFFFFF;
+  border-color: var(--color-brand);
+}
+
+/* MAIN CONTENT AREA */
+.ll-catalog-main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Grid Sản phẩm trong Catalog (3 Cột Desktop, 2 Cột Mobile) */
+.ll-catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+/* Color swatches displayed on product card */
+.ll-product-swatches {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.ll-mini-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(32, 28, 26, 0.15);
+  display: inline-block;
+}
+
+/* 5. LOADING, EMPTY & ERROR STATES */
+.ll-catalog-loading {
+  display: none;
+  text-align: center;
+  padding: 80px 20px;
+}
+.ll-catalog-loading.show {
+  display: block;
+}
+
+.ll-loading-spinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-brand);
+  border-radius: 50%;
+  animation: llSpinner 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes llSpinner {
+  to { transform: rotate(360deg); }
+}
+
+.ll-empty-state {
+  display: none;
+  text-align: center;
+  padding: 70px 20px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+.ll-empty-state.show {
+  display: block;
+}
+
+.ll-empty-text {
+  font-size: 15px;
+  color: var(--color-text-sub);
+  margin-bottom: 16px;
+}
+
+.ll-error-state {
+  display: none;
+  text-align: center;
+  padding: 60px 20px;
+  background-color: var(--color-surface);
+  border: 1px solid #FCD3D0;
+  border-radius: var(--radius);
+}
+.ll-error-state.show {
+  display: block;
+}
+
+.ll-error-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-error);
+  margin-bottom: 6px;
+}
+
+.ll-error-desc {
+  font-size: 14px;
+  color: var(--color-text-sub);
+  margin-bottom: 16px;
+}
+
+/* 6. PHÂN TRANG (Pagination) */
+.ll-pagination-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border);
+}
+
+.ll-pagination-info {
+  font-size: 14px;
+  color: var(--color-text-sub);
+  font-variant-numeric: tabular-nums;
+}
+
+.ll-pagination-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ll-page-btn {
+  min-width: 44px;
+  height: 44px;
+  padding: 0 12px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-main);
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ll-page-btn:hover:not(:disabled) {
+  border-color: var(--color-brand);
+  color: var(--color-brand);
+  background-color: #FAF5EE;
+}
+.ll-page-btn.active {
+  background-color: var(--color-brand);
+  color: #FFFFFF;
+  border-color: var(--color-brand);
+}
+.ll-page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* 7. MOBILE FILTER DRAWER */
+.ll-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(32, 28, 26, 0.45);
+  backdrop-filter: blur(3px);
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+.ll-drawer-backdrop.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.ll-filter-drawer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 340px;
+  max-width: 86vw;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+  z-index: 2100;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.ll-filter-drawer.open {
+  transform: translateX(0);
+}
+
+.ll-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.ll-drawer-title {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.ll-drawer-close {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: var(--color-text-sub);
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ll-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.ll-drawer-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--color-border);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  background-color: var(--color-surface);
+}
+
+/* 8. RESPONSIVE QUERIES */
+@media (max-width: 1024px) {
+  .ll-catalog-sidebar {
+    display: none; /* Ẩn sidebar desktop trên tablet/mobile, dùng drawer */
+  }
+  .ll-mobile-filter-btn {
+    display: inline-flex;
+  }
+  .ll-catalog-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .ll-catalog-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 cột mobile theo yêu cầu */
+    gap: 16px;
+  }
+  .ll-catalog-title {
+    font-size: 24px;
+  }
+  .ll-pagination-wrap {
+    flex-direction: column;
+    text-align: center;
+    gap: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ll-catalog-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .ll-catalog-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .ll-sort-wrap {
+    flex: 1;
+  }
+  .ll-sort-select {
+    width: 100%;
+  }
+}
+

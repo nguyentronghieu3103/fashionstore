@@ -1,0 +1,199 @@
+@{
+    ViewData["Title"] = "Kiểm kê & Điều chỉnh";
+}
+
+@section Styles {
+    <style>
+        .page-container { max-width: 1260px; margin: 0 auto; }
+        .wh-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+            padding: 1.25rem 1.4rem;
+            margin-bottom: 1.25rem;
+        }
+        .clean-table th {
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: #6b7280;
+            background: #fafafa;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 0.75rem 0.85rem;
+            font-weight: 600;
+        }
+        .clean-table td {
+            font-size: 0.86rem;
+            padding: 0.8rem 0.85rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .locked-row {
+            background-color: #fffbeb !important;
+        }
+    </style>
+}
+
+<div class="page-container">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+        <div>
+            <h4 class="fw-bold mb-0 text-dark">Kiểm kê & Điều chỉnh tồn kho</h4>
+            <div class="text-muted small mt-1">
+                Lập phiếu đếm thực tế để đối chiếu phần mềm. Sản phẩm đang kiểm kê sẽ bị <strong class="text-warning">khóa bán</strong> tạm thời.
+            </div>
+        </div>
+        <button type="button" class="btn btn-dark btn-sm rounded-pill px-3 py-2 fw-semibold" onclick="toggleAuditForm()">
+            <i class="fa-solid fa-clipboard-check me-1"></i>Tạo đợt kiểm kê mới
+        </button>
+    </div>
+
+    <!-- KHUNG TẠO PHIẾU KIỂM KÊ -->
+    <div class="wh-card mb-3 d-none border-2 border-dark" id="boxCreateAuditForm">
+        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+            <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                <i class="fa-solid fa-list-check text-success"></i> Phiếu kiểm kê kho
+            </h6>
+            <button type="button" class="btn-close" onclick="toggleAuditForm()"></button>
+        </div>
+
+        <div class="p-3 bg-light rounded-3 border mb-3">
+            <div class="row g-3">
+                <div class="col-12 col-md-4">
+                    <label class="form-label small fw-bold text-dark mb-1">Tên đợt kiểm kê (*):</label>
+                    <input type="text" class="form-control form-control-sm" placeholder="VD: Kiểm kê định kỳ tháng 10" />
+                </div>
+                <div class="col-6 col-md-4">
+                    <label class="form-label small fw-bold text-dark mb-1">Khu vực / Kệ kiểm:</label>
+                    <select class="form-select form-select-sm">
+                        <option value="">Tất cả</option>
+                        <option value="k1">Kệ A - Áo Sơ Mi</option>
+                        <option value="k2">Kệ B - Quần Âu</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-4">
+                    <label class="form-label small fw-bold text-dark mb-1">Người phụ trách đếm:</label>
+                    <input type="text" class="form-control form-control-sm bg-white" value="Lê Minh Nhật" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <div class="alert alert-warning py-2 small mb-2 d-flex align-items-center gap-2">
+                <i class="fa-solid fa-lock"></i>
+                Khi thêm mã hàng vào danh sách này, tồn kho sẽ bị khóa tạm thời để đếm, không cho phép bán trên POS.
+            </div>
+            
+            <div class="table-responsive border rounded">
+                <table class="table clean-table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Mã SKU</th>
+                            <th>Tên sản phẩm</th>
+                            <th class="text-center">Tồn hệ thống <i class="fa-solid fa-eye-slash text-muted small ms-1" title="Chỉ quản lý xem"></i></th>
+                            <th class="text-center" style="width: 140px;">Thực đếm (*)</th>
+                            <th class="text-center">Chênh lệch</th>
+                            <th class="text-center">Lý do điều chỉnh</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="locked-row">
+                            <td><span class="font-monospace fw-bold text-dark">BLZ-BE-M</span></td>
+                            <td>Áo Blazer Linen - Be/M</td>
+                            <td class="text-center text-muted fw-bold">8</td>
+                            <td class="text-center">
+                                <input type="number" class="form-control form-control-sm text-center fw-bold" value="8" min="0" oninput="calcDiff(this, 8)" />
+                            </td>
+                            <td class="text-center"><span class="badge bg-light text-dark diff-badge">0</span></td>
+                            <td><input type="text" class="form-control form-control-sm diff-reason" placeholder="Nếu lệch..." disabled /></td>
+                        </tr>
+                        <tr class="locked-row">
+                            <td><span class="font-monospace fw-bold text-dark">TWD-BLK-M</span></td>
+                            <td>Áo Dạ Tweed - Đen/M</td>
+                            <td class="text-center text-muted fw-bold">2</td>
+                            <td class="text-center">
+                                <input type="number" class="form-control form-control-sm text-center fw-bold text-danger" value="1" min="0" oninput="calcDiff(this, 2)" />
+                            </td>
+                            <td class="text-center"><span class="badge bg-danger-subtle text-danger diff-badge">-1</span></td>
+                            <td><input type="text" class="form-control form-control-sm diff-reason" placeholder="Kiểm tra lại kệ sau..." /></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="d-flex justify-content-end gap-2">
+            <button class="btn btn-outline-secondary rounded-pill px-3" onclick="toggleAuditForm()">Lưu nháp</button>
+            <button class="btn btn-dark rounded-pill px-4" onclick="submitAudit()">Gửi Quản lý duyệt cân đối</button>
+        </div>
+    </div>
+
+    <!-- DANH SÁCH LỊCH SỬ -->
+    <div class="wh-card">
+        <h6 class="fw-bold text-dark mb-3">Danh sách đợt kiểm kê</h6>
+        <div class="table-responsive">
+            <table class="table clean-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Mã đợt</th>
+                        <th>Tên đợt kiểm kê</th>
+                        <th>Thời gian</th>
+                        <th>Số lượng SKU</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end">Chi tiết</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="font-monospace fw-bold text-dark">PKK-2026-005</span></td>
+                        <td>Kiểm kê Áo khoác & Blazer</td>
+                        <td>10/10/2026</td>
+                        <td>50 mã</td>
+                        <td><span class="badge bg-warning-subtle text-warning-emphasis border">Đang kiểm & Khóa</span></td>
+                        <td class="text-end">
+                            <button type="button" class="btn btn-sm btn-outline-dark rounded-pill px-3" onclick="toggleAuditForm()">Tiếp tục</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleAuditForm() {
+            var el = document.getElementById('boxCreateAuditForm');
+            el.classList.toggle('d-none');
+        }
+        function calcDiff(inputEl, sysVal) {
+            var val = parseInt(inputEl.value) || 0;
+            var diff = val - sysVal;
+            var tr = inputEl.closest('tr');
+            var badge = tr.querySelector('.diff-badge');
+            var reason = tr.querySelector('.diff-reason');
+            
+            badge.innerText = diff > 0 ? '+' + diff : diff;
+            if (diff === 0) {
+                badge.className = 'badge bg-light text-dark diff-badge border';
+                inputEl.classList.remove('text-danger', 'text-success');
+                reason.disabled = true;
+            } else if (diff < 0) {
+                badge.className = 'badge bg-danger-subtle text-danger diff-badge border border-danger-subtle';
+                inputEl.classList.add('text-danger');
+                inputEl.classList.remove('text-success');
+                reason.disabled = false;
+            } else {
+                badge.className = 'badge bg-success-subtle text-success diff-badge border border-success-subtle';
+                inputEl.classList.add('text-success');
+                inputEl.classList.remove('text-danger');
+                reason.disabled = false;
+            }
+        }
+        function submitAudit() {
+            alert('Đã gửi đợt kiểm kê cho quản lý. Các mặt hàng đang khóa sẽ tự động mở khóa sau khi quản lý duyệt phiếu cân đối.');
+            toggleAuditForm();
+        }
+    </script>
+}
+

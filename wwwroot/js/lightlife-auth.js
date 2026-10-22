@@ -432,20 +432,20 @@ document.addEventListener('DOMContentLoaded', () => {
   if (loginForm) loginForm.addEventListener('submit', handleLoginSubmit);
 
   // Đăng ký
-  const registerForm = document.getElementById('registerForm');
-  if (registerForm) registerForm.addEventListener('submit', handleRegisterSubmit);
+  // const registerForm = document.getElementById('registerForm');
+  // if (registerForm) registerForm.addEventListener('submit', handleRegisterSubmit);
 
   // Quên mật khẩu
-  const forgotForm = document.getElementById('forgotForm');
-  if (forgotForm) forgotForm.addEventListener('submit', handleForgotPasswordSubmit);
+  // const forgotForm = document.getElementById('forgotForm');
+  // if (forgotForm) forgotForm.addEventListener('submit', handleForgotPasswordSubmit);
 
   // Đặt lại mật khẩu
-  const resetForm = document.getElementById('resetPasswordForm');
-  if (resetForm) resetForm.addEventListener('submit', handleResetPasswordSubmit);
+  // const resetForm = document.getElementById('resetPasswordForm');
+  // if (resetForm) resetForm.addEventListener('submit', handleResetPasswordSubmit);
 
   // Nút Google Auth
-  const googleBtn = document.getElementById('googleAuthBtn');
-  if (googleBtn) googleBtn.addEventListener('click', handleGoogleAuth);
+  // const googleBtn = document.getElementById('googleAuthBtn');
+  // if (googleBtn) googleBtn.addEventListener('click', handleGoogleAuth);
 });
 
 // Xuất ra window cho các lệnh gọi inline

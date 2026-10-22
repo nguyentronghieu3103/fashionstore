@@ -4,6 +4,88 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>50508087-ff47-4203-955a-0ed61443bfd6</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="bin\**" />
+    <Compile Remove="obj\**" />
+    <Content Remove="bin\**" />
+    <Content Remove="obj\**" />
+    <EmbeddedResource Remove="bin\**" />
+    <EmbeddedResource Remove="obj\**" />
+    <None Remove="bin\**" />
+    <None Remove="obj\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include=".agents\skills\ui-ux\references\layouts\app-kanban.html" />
+    <Content Include=".agents\skills\ui-ux\references\tokens.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.13" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.30" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\Administration\" />
+    <Folder Include="Services\Catalog\" />
+    <Folder Include="Services\Inventory\" />
+    <Folder Include="Services\Sales\" />
+    <Folder Include="wwwroot\uploads\products\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include=".agents\skills\ui-ux\references\brand-tokens.md" />
+    <None Include=".agents\skills\ui-ux\references\budgets.md" />
+    <None Include=".agents\skills\ui-ux\references\checklist.md" />
+    <None Include=".agents\skills\ui-ux\references\components\accordion.md" />
+    <None Include=".agents\skills\ui-ux\references\components\avatar.md" />
+    <None Include=".agents\skills\ui-ux\references\components\banner.md" />
+    <None Include=".agents\skills\ui-ux\references\components\breadcrumb.md" />
+    <None Include=".agents\skills\ui-ux\references\components\button.md" />
+    <None Include=".agents\skills\ui-ux\references\components\card.md" />
+    <None Include=".agents\skills\ui-ux\references\components\charts.md" />
+    <None Include=".agents\skills\ui-ux\references\components\chat.md" />
+    <None Include=".agents\skills\ui-ux\references\components\choice-controls.md" />
+    <None Include=".agents\skills\ui-ux\references\components\comment-thread.md" />
+    <None Include=".agents\skills\ui-ux\references\components\description-list.md" />
+    <None Include=".agents\skills\ui-ux\references\components\empty-state.md" />
+    <None Include=".agents\skills\ui-ux\references\components\file-upload.md" />
+    <None Include=".agents\skills\ui-ux\references\components\inline-edit.md" />
+    <None Include=".agents\skills\ui-ux\references\components\input.md" />
+    <None Include=".agents\skills\ui-ux\references\components\list-row.md" />
+    <None Include=".agents\skills\ui-ux\references\components\loading.md" />
+    <None Include=".agents\skills\ui-ux\references\components\logo.md" />
+    <None Include=".agents\skills\ui-ux\references\components\otp-input.md" />
+    <None Include=".agents\skills\ui-ux\references\components\quantity-input.md" />
+    <None Include=".agents\skills\ui-ux\references\components\range-slider.md" />
+    <None Include=".agents\skills\ui-ux\references\components\small-controls.md" />
+    <None Include=".agents\skills\ui-ux\references\components\sortable-header.md" />
+    <None Include=".agents\skills\ui-ux\references\components\tag-input.md" />
+    <None Include=".agents\skills\ui-ux\references\components\timeline.md" />
+    <None Include=".agents\skills\ui-ux\references\components\tree.md" />
+    <None Include=".agents\skills\ui-ux\references\design-process.md" />
+    <None Include=".agents\skills\ui-ux\references\layouts\app.md" />
+    <None Include=".agents\skills\ui-ux\references\layouts\form.md" />
+    <None Include=".agents\skills\ui-ux\references\layouts\overlay.md" />
+    <None Include=".agents\skills\ui-ux\references\layouts\pricing.md" />
+    <None Include=".agents\skills\ui-ux\references\locked-rules.md" />
+    <None Include=".agents\skills\ui-ux\references\principles.md" />
+    <None Include=".agents\skills\ui-ux\references\refactor.md" />
+    <None Include=".agents\skills\ui-ux\references\responsive.md" />
+    <None Include=".agents\skills\ui-ux\references\review.md" />
+    <None Include=".agents\skills\ui-ux\references\rules-color.md" />
+    <None Include=".agents\skills\ui-ux\references\rules-form.md" />
+    <None Include=".agents\skills\ui-ux\references\rules-state.md" />
+    <None Include=".agents\skills\ui-ux\references\rules-type.md" />
+    <None Include=".agents\skills\ui-ux\references\styles.md" />
+    <None Include=".agents\skills\ui-ux\references\system.md" />
+    <None Include=".agents\skills\ui-ux\references\tailwind-v4-traps.md" />
+    <None Include=".agents\skills\ui-ux\scripts\lint-skill.mjs" />
+    <None Include=".agents\skills\ui-ux\scripts\probe.mjs" />
+    <None Include=".agents\skills\ui-ux\SKILL.md" />
+  </ItemGroup>
 
 </Project>

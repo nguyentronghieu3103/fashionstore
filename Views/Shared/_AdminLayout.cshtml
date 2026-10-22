@@ -1,3 +1,18 @@
+@using System.Security.Claims
+@{
+    // 1. Đọc tên thật và quyền hạn của Admin từ Cookie Claims
+    var adminFullName = User.FindFirst("FullName")?.Value 
+                        ?? User.Identity?.Name 
+                        ?? "Quản trị viên";
+
+    // 2. Tự động sinh chữ cái viết hoa cho Avatar (VD: "Hiếu Nguyễn" -> "HN", "Admin" -> "AD")
+    var nameParts = adminFullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+    var adminInitials = nameParts.Length >= 2 
+        ? $"{nameParts[0][0]}{nameParts[^1][0]}".ToUpper() 
+        : (adminFullName.Length > 0 ? adminFullName.Trim()[0].ToString().ToUpper() : "A");
+
+    var adminRole = User.IsInRole("Admin") ? "Admin" : (User.IsInRole("Employee") ? "Quản lý" : "Nhân viên");
+}
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -25,7 +40,7 @@
             overflow-x: hidden;
         }
 
-        /* Sidebar Styling - Gọn 6 mục */
+        /* Sidebar Styling */
         .admin-sidebar {
             width: var(--sidebar-width);
             min-height: 100vh;
@@ -191,7 +206,7 @@
     <!-- Mobile Backdrop -->
     <div id="sidebarBackdrop" class="sidebar-backdrop" onclick="toggleSidebar()"></div>
 
-    <!-- Sidebar: Tối đa 6 mục chính -->
+    <!-- Sidebar: 6 mục chính -->
     <aside id="adminSidebar" class="admin-sidebar">
         <!-- Logo -->
         <div class="admin-sidebar-header">
@@ -201,7 +216,7 @@
             </a>
         </div>
 
-        <!-- 6 Mục Menu chính -->
+        <!-- Menu chính -->
         <nav class="sidebar-menu">
             <!-- 1. Dashboard -->
             <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")">
@@ -219,7 +234,7 @@
                 </div>
             </a>
 
-            <!-- 3. Nhà cung cấp [A05] -->
+            <!-- 3. Nhà cung cấp -->
             <a asp-area="Admin" asp-controller="Suppliers" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Suppliers" ? "active" : "")">
                 <div class="d-flex align-items-center">
                     <span class="sidebar-icon"><i class="fa-solid fa-truck-ramp-box"></i></span>
@@ -235,7 +250,7 @@
                 </div>
             </a>
 
-            <!-- 4. Duyệt đổi trả -->
+            <!-- 5. Duyệt đổi trả -->
             <a asp-area="Admin" asp-controller="Returns" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Returns" ? "active" : "")">
                 <div class="d-flex align-items-center">
                     <span class="sidebar-icon"><i class="fa-solid fa-file-circle-check"></i></span>
@@ -243,7 +258,7 @@
                 </div>
             </a>
 
-            <!-- 5. Phân ca & Soát ca -->
+            <!-- 6. Phân ca & Soát ca -->
             <a asp-area="Admin" asp-controller="Shifts" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Shifts" ? "active" : "")">
                 <div class="d-flex align-items-center">
                     <span class="sidebar-icon"><i class="fa-solid fa-calendar-check"></i></span>
@@ -251,7 +266,7 @@
                 </div>
             </a>
 
-            <!-- 6. Báo cáo -->
+            <!-- 7. Báo cáo -->
             <a asp-area="Admin" asp-controller="Reports" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Reports" ? "active" : "")">
                 <div class="d-flex align-items-center">
                     <span class="sidebar-icon"><i class="fa-solid fa-chart-pie"></i></span>
@@ -259,20 +274,19 @@
                 </div>
             </a>
 
-            <!-- 6. Tài khoản & Phân quyền (A10) -->
+            <!-- 8. Tài khoản & Phân quyền -->
             <a asp-area="Admin" asp-controller="Accounts" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Accounts" ? "active" : "")">
                 <div class="d-flex align-items-center">
                     <span class="sidebar-icon"><i class="fa-solid fa-user-shield"></i></span>
                     <span>Tài khoản & Vai trò</span>
                 </div>
             </a>
-
         </nav>
     </aside>
 
     <!-- Main Content Wrapper -->
     <div class="admin-main-wrapper">
-        <!-- Header Topbar Gộp (Bên trái: Xin chào Admin & Giờ thực, Bên phải: Xem shop, Thông báo, Tài khoản) -->
+        <!-- Header Topbar Gộp -->
         <header class="admin-topbar">
             <!-- Bên trái: Toggle mobile + Chào mừng & Giờ thực -->
             <div class="d-flex align-items-center gap-3">
@@ -280,7 +294,8 @@
                     <i class="fa-solid fa-bars"></i>
                 </button>
                 <div>
-                    <h5 class="fw-bold mb-0 text-dark">Xin chào Admin</h5>
+                    <!-- HIỂN THỊ TÊN THẬT CỦA ADMIN -->
+                    <h5 class="fw-bold mb-0 text-dark">Xin chào, @adminFullName</h5>
                     <div class="text-muted small" id="liveClockDisplay">--:--:-- - --/--/----</div>
                 </div>
             </div>
@@ -293,48 +308,35 @@
                     <span>Xem cửa hàng</span>
                 </a>
 
-                <!-- Chuông Thông báo -->
+                <!-- Chuông Thông báo: Đã kết nối API thật -->
                 <div class="dropdown">
                     <button class="btn-topbar-circle" type="button" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Thông báo công việc">
                         <i class="fa-regular fa-bell"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" style="font-size: 0.65rem; padding: 3px 5px;">
-                            4
+                        <!-- Số đỏ thông báo động (Mặc định ẩn, có số thật mới hiện) -->
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" id="headerNotifBadge" style="font-size: 0.65rem; padding: 3px 5px; display: none;">
+                            0
                         </span>
                     </button>
                     <div class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 p-0 mt-2" aria-labelledby="notifDropdown" style="width: 320px; max-width: 90vw;">
                         <div class="p-3 bg-dark text-white rounded-top-3 d-flex justify-content-between align-items-center">
                             <span class="fw-bold small">Thông báo công việc</span>
-                            <span class="badge bg-danger">4 chờ duyệt</span>
+                            <span class="badge bg-danger" id="headerNotifSummaryBadge" style="display: none;">0 mới</span>
                         </div>
-                        <div class="list-group list-group-flush small" style="max-height: 250px; overflow-y: auto;">
-                            <a asp-area="Admin" asp-controller="Returns" asp-action="Index" class="list-group-item list-group-item-action py-2">
-                                <div class="fw-semibold text-dark">Đổi trả [DT-2026-089]</div>
-                                <div class="text-muted text-truncate" style="font-size: 0.75rem;">Yêu cầu hoàn tiền 1.850.000₫</div>
-                            </a>
-                            <a asp-area="Admin" asp-controller="Shifts" asp-action="Index" class="list-group-item list-group-item-action py-2">
-                                <div class="fw-semibold text-dark">Lệch ca làm [CA-0142]</div>
-                                <div class="text-muted text-truncate" style="font-size: 0.75rem;">Lệch két ca sáng -50.000₫</div>
-                            </a>
-                            <a asp-area="Admin" asp-controller="Suppliers" asp-action="Index" class="list-group-item list-group-item-action py-2">
-                                <div class="fw-semibold text-dark">Nhập vải lụa [NK-031]</div>
-                                <div class="text-muted text-truncate" style="font-size: 0.75rem;">Phiếu nhập 40 cây vải</div>
-                            </a>
-                            <a asp-area="Admin" asp-controller="Products" asp-action="Index" class="list-group-item list-group-item-action py-2">
-                                <div class="fw-semibold text-dark">Kiểm kê kho [KK-10]</div>
-                                <div class="text-muted text-truncate" style="font-size: 0.75rem;">Cân đối tồn kho tháng 10</div>
-                            </a>
+                        <div class="list-group list-group-flush small" id="headerNotifList" style="max-height: 250px; overflow-y: auto;">
+                            <!-- Danh sách thông báo thật sẽ nạp vào đây -->
+                            <div class="p-3 text-center text-muted" id="headerNotifEmptyText">Đang tải thông báo...</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Tài khoản Admin: Nhấn vào là chuyển thẳng tới Hồ sơ cá nhân -->
+                <!-- Tài khoản Admin: Avatar chữ cái đầu & Tên thật -->
                 <a asp-area="Admin" asp-controller="Profile" asp-action="Index" class="btn p-0 border-0 d-flex align-items-center gap-2 text-decoration-none" title="Xem hồ sơ cá nhân">
-                    <div class="admin-avatar-sm">AD</div>
-                    <span class="fw-semibold text-dark small d-none d-md-inline">Admin</span>
+                    <div class="admin-avatar-sm">@adminInitials</div>
+                    <span class="fw-semibold text-dark small d-none d-md-inline">@adminFullName</span>
                 </a>
 
-                <!-- Nút Đăng xuất sát bên phải Admin -->
-                <a asp-area="" asp-controller="Account" asp-action="Login" class="btn btn-outline-danger btn-sm d-flex align-items-center gap-1 rounded-3 px-2 py-1" style="height: 36px;" title="Đăng xuất">
+                <!-- Nút Đăng xuất: Trỏ đúng về /Account/Logout để xóa Cookie an toàn -->
+                <a href="/Account/Logout" class="btn btn-outline-danger btn-sm d-flex align-items-center gap-1 rounded-3 px-2 py-1" style="height: 36px;" title="Đăng xuất">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
                     <span class="small d-none d-sm-inline">Đăng xuất</span>
                 </a>
@@ -376,8 +378,74 @@
         }
         setInterval(updateLiveClock, 1000);
         updateLiveClock();
+
+        // TẢI THÔNG BÁO THẬT TỪ API BACKEND (DASHBOARDCONTROLLER)
+        async function loadAdminHeaderNotifications() {
+            try {
+                const res = await fetch('/api/admin/header/notifications', { credentials: 'same-origin' });
+                if (!res.ok) return;
+                const data = await res.json();
+
+                const badge = document.getElementById('headerNotifBadge');
+                const summaryBadge = document.getElementById('headerNotifSummaryBadge');
+                const listEl = document.getElementById('headerNotifList');
+
+                const total = data.unreadCount || 0;
+
+                // 1. Cập nhật con số đỏ trên quả chuông
+                if (badge) {
+                    if (total > 0) {
+                        badge.textContent = total > 99 ? '99+' : total;
+                        badge.style.display = 'inline-block';
+                    } else {
+                        badge.style.display = 'none'; // Không có thông báo thì ẩn số đỏ đi
+                    }
+                }
+
+                if (summaryBadge) {
+                    if (total > 0) {
+                        summaryBadge.textContent = `${total} chờ duyệt`;
+                        summaryBadge.style.display = 'inline-block';
+                    } else {
+                        summaryBadge.style.display = 'none';
+                    }
+                }
+
+                // 2. Render danh sách thông báo bên trong dropdown
+                if (listEl) {
+                    if (data.items && data.items.length > 0) {
+                        listEl.innerHTML = data.items.map(item => `
+                            <a href="${item.targetPath}" class="list-group-item list-group-item-action py-2 ${item.isUnread ? 'bg-light' : ''}">
+                                <div class="fw-semibold text-dark">${escapeHtml(item.title)}</div>
+                                <div class="text-muted text-truncate" style="font-size: 0.75rem;">${escapeHtml(item.message)}</div>
+                                <div class="text-muted" style="font-size: 0.65rem; text-align: right;">${item.createdAt}</div>
+                            </a>
+                        `).join('');
+                    } else if (data.pendingOrdersCount > 0) {
+                        listEl.innerHTML = `
+                            <a href="/Admin/Orders" class="list-group-item list-group-item-action py-2 bg-light">
+                                <div class="fw-semibold text-danger"><i class="fa-solid fa-box-open me-1"></i> Đơn hàng mới</div>
+                                <div class="text-muted" style="font-size: 0.75rem;">Có ${data.pendingOrdersCount} đơn hàng đang chờ bạn duyệt!</div>
+                            </a>
+                        `;
+                    } else {
+                        listEl.innerHTML = '<div class="p-3 text-center text-muted" style="font-size: 0.8rem;">Không có thông báo mới nào.</div>';
+                    }
+                }
+            } catch (e) {
+                console.warn('Lỗi nạp thông báo Admin:', e);
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAdminHeaderNotifications();
+        });
     </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
-

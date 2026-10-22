@@ -18,8 +18,8 @@ const ACCOUNT_CONFIG = {
     updateProfile: '/api/customer/profile',
     getAddresses: '/api/customer/addresses',
     saveAddress: '/api/customer/addresses',
-    deleteAddress: '/api/customer/addresses/',
-    setDefaultAddress: '/api/customer/addresses/default/',
+    deleteAddress: '/api/customer/addresses/',       
+    setDefaultAddress: '/api/customer/addresses/',
     changePassword: '/api/customer/change-password',
     loginUrl: '/Account/Login'
   },
@@ -34,28 +34,7 @@ const ACCOUNT_CONFIG = {
     memberSince: '15/01/2026'
   },
 
-  mockAddresses: [
-    {
-      id: 1,
-      recipientName: 'Nguyễn Thu Trang',
-      phone: '0908 123 456',
-      province: 'TP. Hồ Chí Minh',
-      district: 'Quận Bình Thạnh',
-      ward: 'Phường 22',
-      detailAddress: 'Phòng 1204, Tòa Park 3, Vinhomes Central Park, 208 Nguyễn Hữu Cảnh',
-      isDefault: true
-    },
-    {
-      id: 2,
-      recipientName: 'Nguyễn Thu Trang (Văn phòng)',
-      phone: '0908 123 456',
-      province: 'TP. Hồ Chí Minh',
-      district: 'Quận 1',
-      ward: 'Phường Bến Nghé',
-      detailAddress: 'Tầng 8, Tòa nhà Bitexco Financial, 2 Hải Triều',
-      isDefault: false
-    }
-  ]
+  mockAddresses: []
 };
 
 // 2. BIẾN TRẠNG THÁI CLIENT-SIDE
@@ -206,235 +185,380 @@ async function handleSaveProfile(e) {
 }
 
 /* ==========================================================================
-   MODULE 2: SỔ ĐỊA CHỈ NHẬN HÀNG (ADDRESSES)
+   MODULE 2: SỔ ĐỊA CHỈ NHẬN HÀNG (ADDRESSES) - ĐÃ KẾT NỐI DATABASE & OPEN API
    ========================================================================== */
+
+// 2.1. Khởi tạo trang Sổ địa chỉ
 async function initAddressesPage() {
-  accountState.addresses = JSON.parse(JSON.stringify(ACCOUNT_CONFIG.mockAddresses));
+    accountState.addresses = [];
 
-  try {
-    const res = await fetch(ACCOUNT_CONFIG.endpoints.getAddresses, { credentials: 'same-origin' });
-    if (res.ok) {
-      accountState.addresses = await res.json();
+    // Nạp danh mục Tỉnh/TP từ API hành chính
+    await initAdministrativeApi();
+
+    // Tải danh sách địa chỉ từ SQL Server qua API C#
+    await reloadAddressesFromServer();
+
+    // Đăng ký sự kiện Submit Form & Click ngoài Modal
+    setupAddressModalEvents();
+}
+
+// 2.2. Hàm tải dữ liệu thực tế từ Database
+async function reloadAddressesFromServer() {
+    try {
+        const res = await fetch(ACCOUNT_CONFIG.endpoints.getAddresses, {
+            credentials: 'same-origin'
+        });
+
+        if (res.ok) {
+            accountState.addresses = await res.json();
+        } else {
+            accountState.addresses = [];
+        }
+    } catch (e) {
+        console.warn('[LIGHT LIFE] Không kết nối được API địa chỉ, danh sách rỗng.');
+        accountState.addresses = [];
     }
-  } catch (e) {
-    console.info('[LIGHT LIFE] Dùng dữ liệu demo sổ địa chỉ.');
-  }
 
-  renderAddressList();
-  setupAddressModalEvents();
+    renderAddressList();
 }
 
-// Render danh sách thẻ địa chỉ
+// 2.3. Hiển thị danh sách thẻ địa chỉ hoặc Empty State
 function renderAddressList() {
-  const container = document.getElementById('addressGridContainer');
-  const emptyState = document.getElementById('addressEmptyState');
-  if (!container) return;
+    const container = document.getElementById('addressGridContainer');
+    const emptyState = document.getElementById('addressEmptyState');
+    if (!container) return;
 
-  if (accountState.addresses.length === 0) {
-    container.style.display = 'none';
-    if (emptyState) emptyState.style.display = 'block';
-    return;
-  }
+    // Nếu rỗng -> Hiển thị Empty State
+    if (!accountState.addresses || accountState.addresses.length === 0) {
+        container.style.display = 'none';
+        if (emptyState) emptyState.style.display = 'block';
+        return;
+    }
 
-  if (emptyState) emptyState.style.display = 'none';
-  container.style.display = 'grid';
+    if (emptyState) emptyState.style.display = 'none';
+    container.style.display = 'grid';
 
-  container.innerHTML = accountState.addresses.map(addr => `
-    <article class="ll-address-card ${addr.isDefault ? 'is-default' : ''}" data-address-id="${addr.id}">
-      <div>
-        <div class="ll-address-card__header">
-          <div>
-            <h3 class="ll-address-card__name">${addr.recipientName}</h3>
-            <div class="ll-address-card__phone"><i class="fa-solid fa-phone me-1"></i> ${addr.phone}</div>
-          </div>
-          ${addr.isDefault ? '<span class="ll-badge-default"><i class="fa-solid fa-check"></i> Mặc định</span>' : ''}
-        </div>
-        <div class="ll-address-card__body">
-          <p style="margin: 0;">${addr.detailAddress}</p>
-          <p style="margin: 0.25rem 0 0 0; color: var(--color-text-sub); font-size: 0.8125rem;">
-            ${addr.ward}, ${addr.district}, ${addr.province}
-          </p>
-        </div>
-      </div>
-      <div class="ll-address-card__actions">
+    container.innerHTML = accountState.addresses.map(addr => {
+        // Ghép chuỗi: Nếu không có quận/huyện thì không bị dư dấu phẩy
+        const districtPart = addr.district ? `, ${addr.district}` : '';
+        const fullAddress = `${addr.detailAddress}, ${addr.ward}${districtPart}, ${addr.province}`;
+
+        return `
+      <article class="ll-address-card ${addr.isDefault ? 'is-default' : ''}" data-address-id="${addr.id}">
         <div>
-          ${!addr.isDefault ? `
-            <button type="button" class="ll-address-action-btn ll-address-action-btn--set-default" onclick="handleSetDefaultAddress(${addr.id})">
-              <i class="fa-regular fa-star"></i> Thiết lập mặc định
-            </button>
-          ` : '<span style="font-size: 0.8125rem; color: var(--color-success); font-weight: 600;"><i class="fa-solid fa-circle-check"></i> Địa chỉ giao hàng chính</span>'}
+          <div class="ll-address-card__header">
+            <div>
+              <h3 class="ll-address-card__name">${escapeHtml(addr.receiverName || addr.recipientName)}</h3>
+              <div class="ll-address-card__phone"><i class="fa-solid fa-phone me-1"></i> ${escapeHtml(addr.phone)}</div>
+            </div>
+            ${addr.isDefault ? '<span class="ll-badge-default"><i class="fa-solid fa-check"></i> Mặc định</span>' : ''}
+          </div>
+          <div class="ll-address-card__body">
+              <p style="margin: 0; font-size: 0.875rem; color: #333; line-height: 1.5; font-weight: 500;">
+                <i class="fa-solid fa-location-dot" style="color: var(--color-brand, #5c1d24); margin-right: 6px;"></i>
+                ${escapeHtml(addr.addressLine || `${addr.detailAddress || ''}, ${addr.ward || ''}, ${addr.province || ''}`)}
+              </p>
         </div>
-        <div style="display: flex; gap: 0.25rem;">
-          <button type="button" class="ll-address-action-btn" onclick="openEditAddressModal(${addr.id})">
-            <i class="fa-solid fa-pen-to-square"></i> Sửa
-          </button>
-          ${!addr.isDefault ? `
-            <button type="button" class="ll-address-action-btn ll-address-action-btn--delete" onclick="openDeleteAddressConfirm(${addr.id})">
-              <i class="fa-regular fa-trash-can"></i> Xóa
-            </button>
-          ` : ''}
         </div>
-      </div>
-    </article>
-  `).join('');
+        <div class="ll-address-card__actions">
+          <div>
+            ${!addr.isDefault ? `
+              <button type="button" class="ll-address-action-btn ll-address-action-btn--set-default" onclick="handleSetDefaultAddress(${addr.id})">
+                <i class="fa-regular fa-star"></i> Thiết lập mặc định
+              </button>
+            ` : '<span style="font-size: 0.8125rem; color: var(--color-success); font-weight: 600;"><i class="fa-solid fa-circle-check"></i> Địa chỉ giao hàng chính</span>'}
+          </div>
+          <div style="display: flex; gap: 0.25rem;">
+            <button type="button" class="ll-address-action-btn" onclick="openEditAddressModal(${addr.id})">
+              <i class="fa-solid fa-pen-to-square"></i> Sửa
+            </button>
+            ${!addr.isDefault ? `
+              <button type="button" class="ll-address-action-btn ll-address-action-btn--delete" onclick="openDeleteAddressConfirm(${addr.id})">
+                <i class="fa-regular fa-trash-can"></i> Xóa
+              </button>
+            ` : ''}
+          </div>
+        </div>
+      </article>
+    `;
+    }).join('');
 }
 
-// Mở Modal Thêm mới Địa chỉ
+// 2.4. Tích hợp Open API Hành chính 2 cấp (Tỉnh/TP -> Phường/Xã)
+let administrativeProvinces = [];
+
+async function initAdministrativeApi() {
+    const provinceSelect = document.getElementById('addrProvince');
+    const wardSelect = document.getElementById('addrWard');
+    if (!provinceSelect || !wardSelect) return;
+
+    try {
+        const res = await fetch('https://provinces.open-api.vn/api/v2/p/');
+        if (!res.ok) return;
+        administrativeProvinces = await res.json();
+
+        // Nạp Tỉnh/TP vào dropdown
+        provinceSelect.innerHTML = '<option value="">-- Chọn Tỉnh / TP --</option>';
+        administrativeProvinces.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p.name;
+            opt.dataset.code = p.code;
+            opt.textContent = p.name;
+            provinceSelect.appendChild(opt);
+        });
+
+        // Khi thay đổi Tỉnh -> Nạp Xã/Phường tương ứng
+        provinceSelect.addEventListener('change', async function () {
+            await loadWardsByProvince(this.value);
+        });
+    } catch (e) {
+        console.warn('[LIGHT LIFE] Không tải được danh mục hành chính từ Open API.', e);
+    }
+}
+
+// Hàm phụ trợ tải xã/phường theo Tỉnh
+async function loadWardsByProvince(provinceName, selectedWard = '') {
+    const wardSelect = document.getElementById('addrWard');
+    if (!wardSelect) return;
+
+    const provinceObj = administrativeProvinces.find(p => p.name === provinceName);
+    wardSelect.innerHTML = '<option value="">-- Chọn Phường / Xã --</option>';
+    wardSelect.disabled = true;
+
+    if (!provinceObj) return;
+
+    try {
+        wardSelect.innerHTML = '<option value="">Đang tải danh sách xã/phường...</option>';
+        const res = await fetch(`https://provinces.open-api.vn/api/v2/p/${provinceObj.code}?depth=2`);
+        const data = await res.json();
+
+        wardSelect.innerHTML = '<option value="">-- Chọn Phường / Xã --</option>';
+        if (data.wards && data.wards.length > 0) {
+            data.wards.forEach(w => {
+                const opt = document.createElement('option');
+                opt.value = w.name;
+                opt.textContent = w.name;
+                if (selectedWard && w.name === selectedWard) opt.selected = true;
+                wardSelect.appendChild(opt);
+            });
+            wardSelect.disabled = false;
+        }
+    } catch (e) {
+        wardSelect.disabled = false;
+        wardSelect.innerHTML = '<option value="">-- Vui lòng chọn hoặc nhập --</option>';
+    }
+}
+
+// 2.5. Mở Modal Thêm mới
 function openAddAddressModal() {
-  accountState.editingAddressId = null;
-  const modal = document.getElementById('addressModal');
-  const title = document.getElementById('addressModalTitle');
-  const form = document.getElementById('addressForm');
+    accountState.editingAddressId = null;
+    const modal = document.getElementById('addressModal');
+    const title = document.getElementById('addressModalTitle');
+    const form = document.getElementById('addressForm');
 
-  if (title) title.textContent = 'Thêm địa chỉ nhận hàng mới';
-  if (form) form.reset();
+    if (title) title.textContent = 'Thêm địa chỉ nhận hàng mới';
+    if (form) form.reset();
 
-  const isDefaultCheck = document.getElementById('addrIsDefault');
-  if (isDefaultCheck) {
-    // Nếu chưa có địa chỉ nào, tự tick mặc định
-    isDefaultCheck.checked = accountState.addresses.length === 0;
-  }
+    const wardSelect = document.getElementById('addrWard');
+    if (wardSelect) {
+        wardSelect.innerHTML = '<option value="">-- Chọn Phường / Xã --</option>';
+        wardSelect.disabled = true;
+    }
 
-  if (modal) modal.classList.add('show');
+    const isDefaultCheck = document.getElementById('addrIsDefault');
+    if (isDefaultCheck) {
+        // Nếu chưa có địa chỉ nào thì tự động tick Mặc định
+        isDefaultCheck.checked = accountState.addresses.length === 0;
+    }
+
+    if (modal) modal.classList.add('show');
 }
 
-// Mở Modal Sửa Địa chỉ
-function openEditAddressModal(id) {
-  const addr = accountState.addresses.find(a => a.id === id);
-  if (!addr) return;
+// 2.6. Mở Modal Sửa
+async function openEditAddressModal(id) {
+    const addr = accountState.addresses.find(a => a.id === id);
+    if (!addr) return;
 
-  accountState.editingAddressId = id;
-  const modal = document.getElementById('addressModal');
-  const title = document.getElementById('addressModalTitle');
+    accountState.editingAddressId = id;
+    const modal = document.getElementById('addressModal');
+    const title = document.getElementById('addressModalTitle');
 
-  if (title) title.textContent = 'Chỉnh sửa địa chỉ nhận hàng';
+    if (title) title.textContent = 'Chỉnh sửa địa chỉ nhận hàng';
 
-  const nameInput = document.getElementById('addrRecipientName');
-  const phoneInput = document.getElementById('addrPhone');
-  const provinceInput = document.getElementById('addrProvince');
-  const districtInput = document.getElementById('addrDistrict');
-  const wardInput = document.getElementById('addrWard');
-  const detailInput = document.getElementById('addrDetail');
-  const defaultCheck = document.getElementById('addrIsDefault');
+    const nameInput = document.getElementById('addrRecipientName');
+    const phoneInput = document.getElementById('addrPhone');
+    const provinceSelect = document.getElementById('addrProvince');
+    const districtInput = document.getElementById('addrDistrict');
+    const detailInput = document.getElementById('addrDetail');
+    const defaultCheck = document.getElementById('addrIsDefault');
 
-  if (nameInput) nameInput.value = addr.recipientName;
-  if (phoneInput) phoneInput.value = addr.phone;
-  if (provinceInput) provinceInput.value = addr.province;
-  if (districtInput) districtInput.value = addr.district;
-  if (wardInput) wardInput.value = addr.ward;
-  if (detailInput) detailInput.value = addr.detailAddress;
-  if (defaultCheck) defaultCheck.checked = addr.isDefault;
+    if (nameInput) nameInput.value = addr.recipientName;
+    if (phoneInput) phoneInput.value = addr.phone;
+    if (provinceSelect) provinceSelect.value = addr.province;
+    if (districtInput) districtInput.value = addr.district || '';
+    if (detailInput) detailInput.value = addr.detailAddress;
+    if (defaultCheck) defaultCheck.checked = addr.isDefault;
 
-  if (modal) modal.classList.add('show');
+    // Nạp danh sách xã/phường của tỉnh này và chọn sẵn xã hiện tại
+    if (addr.province) {
+        await loadWardsByProvince(addr.province, addr.ward);
+    }
+
+    if (modal) modal.classList.add('show');
 }
 
 function closeAddressModal() {
-  const modal = document.getElementById('addressModal');
-  if (modal) modal.classList.remove('show');
+    const modal = document.getElementById('addressModal');
+    if (modal) modal.classList.remove('show');
 }
 
-// Lưu địa chỉ (Thêm hoặc Cập nhật)
+// 2.7. Lưu địa chỉ vào SQL Server (POST /api/customer/addresses)
 async function handleSaveAddress(e) {
-  e.preventDefault();
+    e.preventDefault();
 
-  const recipientName = document.getElementById('addrRecipientName').value.trim();
-  const phone = document.getElementById('addrPhone').value.trim();
-  const province = document.getElementById('addrProvince').value.trim();
-  const district = document.getElementById('addrDistrict').value.trim();
-  const ward = document.getElementById('addrWard').value.trim();
-  const detailAddress = document.getElementById('addrDetail').value.trim();
-  const isDefault = document.getElementById('addrIsDefault').checked;
+    const recipientName = document.getElementById('addrRecipientName').value.trim();
+    const phone = document.getElementById('addrPhone').value.trim();
+    const province = document.getElementById('addrProvince').value.trim();
+    const district = document.getElementById('addrDistrict').value.trim(); // Cho phép rỗng
+    const ward = document.getElementById('addrWard').value.trim();
+    const detailAddress = document.getElementById('addrDetail').value.trim();
+    const isDefault = document.getElementById('addrIsDefault').checked;
 
-  if (!recipientName || !phone || !province || !district || !ward || !detailAddress) {
-    showAccountToast('Vui lòng điền đầy đủ các thông tin bắt buộc!', 'error');
-    return;
-  }
-
-  const submitBtn = document.getElementById('saveAddressBtn');
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang lưu...';
-  }
-
-  setTimeout(() => {
-    if (isDefault) {
-      // Bỏ mặc định các địa chỉ cũ
-      accountState.addresses.forEach(a => a.isDefault = false);
+    // ĐÃ BỎ KIỂM TRA !district (cho phép bỏ trống Quận/Huyện)
+    if (!recipientName || !phone || !province || !ward || !detailAddress) {
+        showAccountToast('Vui lòng điền đầy đủ các thông tin bắt buộc (*)!', 'error');
+        return;
     }
 
-    if (accountState.editingAddressId) {
-      // Cập nhật
-      const index = accountState.addresses.findIndex(a => a.id === accountState.editingAddressId);
-      if (index !== -1) {
-        accountState.addresses[index] = {
-          id: accountState.editingAddressId,
-          recipientName, phone, province, district, ward, detailAddress, isDefault
-        };
-      }
-      showAccountToast('Đã cập nhật thông tin địa chỉ!', 'success');
-    } else {
-      // Thêm mới
-      const newId = Date.now();
-      accountState.addresses.unshift({
-        id: newId,
-        recipientName, phone, province, district, ward, detailAddress,
-        isDefault: isDefault || accountState.addresses.length === 0
-      });
-      showAccountToast('Đã thêm địa chỉ mới vào sổ địa chỉ!', 'success');
-    }
-
+    const submitBtn = document.getElementById('saveAddressBtn');
     if (submitBtn) {
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = 'Lưu địa chỉ';
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang lưu...';
     }
 
-    closeAddressModal();
-    renderAddressList();
-  }, 450);
+    const payload = {
+        id: accountState.editingAddressId, // null nếu Thêm mới, có số nếu Sửa
+        receiverName: recipientName,
+        phone,
+        province,
+        district: district || null,
+        ward,
+        detailAddress,
+        isDefault
+    };
+
+    try {
+        const res = await fetch(ACCOUNT_CONFIG.endpoints.saveAddress, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            credentials: 'same-origin'
+        });
+
+        const result = await res.json();
+        if (!res.ok) {
+            throw new Error(result.message || 'Lưu địa chỉ thất bại.');
+        }
+
+        closeAddressModal();
+        await reloadAddressesFromServer(); // Nạp lại danh sách mới nhất từ Database
+
+        showAccountToast(
+            accountState.editingAddressId ? 'Đã cập nhật thông tin địa chỉ!' : 'Đã thêm địa chỉ mới vào sổ địa chỉ!',
+            'success'
+        );
+    } catch (err) {
+        showAccountToast(err.message || 'Có lỗi xảy ra khi lưu địa chỉ.', 'error');
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Lưu địa chỉ';
+        }
+    }
 }
 
-// Thiết lập địa chỉ mặc định
-function handleSetDefaultAddress(id) {
-  accountState.addresses.forEach(a => {
-    a.isDefault = (a.id === id);
-  });
-  renderAddressList();
-  showAccountToast('Đã đặt làm địa chỉ giao hàng mặc định!', 'success');
+// 2.8. Thiết lập địa chỉ mặc định trong SQL Server (PUT /api/customer/addresses/{id}/default)
+async function handleSetDefaultAddress(id) {
+    try {
+        const res = await fetch(`${ACCOUNT_CONFIG.endpoints.setDefaultAddress}${id}/default`, {
+            method: 'PUT',
+            credentials: 'same-origin'
+        });
+
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.message || 'Không thể thiết lập địa chỉ mặc định.');
+        }
+
+        await reloadAddressesFromServer();
+        showAccountToast('Đã đặt làm địa chỉ giao hàng mặc định!', 'success');
+    } catch (err) {
+        showAccountToast(err.message || 'Lỗi cập nhật địa chỉ mặc định.', 'error');
+    }
 }
 
-// Xác nhận Xóa địa chỉ
+// 2.9. Xóa địa chỉ khỏi SQL Server (DELETE /api/customer/addresses/{id})
 function openDeleteAddressConfirm(id) {
-  accountState.deletingAddressId = id;
-  const modal = document.getElementById('deleteAddressModal');
-  if (modal) modal.classList.add('show');
+    accountState.deletingAddressId = id;
+    const modal = document.getElementById('deleteAddressModal');
+    if (modal) modal.classList.add('show');
 }
 
 function closeDeleteAddressConfirm() {
-  accountState.deletingAddressId = null;
-  const modal = document.getElementById('deleteAddressModal');
-  if (modal) modal.classList.remove('show');
+    accountState.deletingAddressId = null;
+    const modal = document.getElementById('deleteAddressModal');
+    if (modal) modal.classList.remove('show');
 }
 
-function handleConfirmDeleteAddress() {
-  if (!accountState.deletingAddressId) return;
+async function handleConfirmDeleteAddress() {
+    if (!accountState.deletingAddressId) return;
 
-  accountState.addresses = accountState.addresses.filter(a => a.id !== accountState.deletingAddressId);
-  closeDeleteAddressConfirm();
-  renderAddressList();
-  showAccountToast('Đã xóa địa chỉ khỏi sổ địa chỉ!', 'success');
+    try {
+        const res = await fetch(`${ACCOUNT_CONFIG.endpoints.deleteAddress}${accountState.deletingAddressId}`, {
+            method: 'DELETE',
+            credentials: 'same-origin'
+        });
+
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.message || 'Không thể xóa địa chỉ.');
+        }
+
+        closeDeleteAddressConfirm();
+        await reloadAddressesFromServer();
+        showAccountToast('Đã xóa địa chỉ khỏi sổ địa chỉ!', 'success');
+    } catch (err) {
+        showAccountToast(err.message || 'Lỗi khi xóa địa chỉ.', 'error');
+    }
 }
 
+// 2.10. Bắt sự kiện form và click ngoài đóng modal
 function setupAddressModalEvents() {
-  const form = document.getElementById('addressForm');
-  if (form) form.addEventListener('submit', handleSaveAddress);
+    const form = document.getElementById('addressForm');
+    if (form) {
+        // Gỡ event cũ nếu có để tránh submit 2 lần
+        form.removeEventListener('submit', handleSaveAddress);
+        form.addEventListener('submit', handleSaveAddress);
+    }
 
-  window.addEventListener('click', (e) => {
-    const addrModal = document.getElementById('addressModal');
-    if (addrModal && e.target === addrModal) closeAddressModal();
+    window.addEventListener('click', (e) => {
+        const addrModal = document.getElementById('addressModal');
+        if (addrModal && e.target === addrModal) closeAddressModal();
 
-    const delModal = document.getElementById('deleteAddressModal');
-    if (delModal && e.target === delModal) closeDeleteAddressConfirm();
-  });
+        const delModal = document.getElementById('deleteAddressModal');
+        if (delModal && e.target === delModal) closeDeleteAddressConfirm();
+    });
+}
+
+// Hàm phụ trợ chống XSS
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 }
 
 /* ==========================================================================
@@ -494,8 +618,6 @@ function validatePasswordStrength() {
 }
 
 async function handleSavePassword(e) {
-  e.preventDefault();
-
   const currentPass = document.getElementById('currentPassword').value;
   const newPass = document.getElementById('newPassword').value;
   const confirmPass = document.getElementById('confirmPassword').value;
@@ -505,7 +627,7 @@ async function handleSavePassword(e) {
   const newError = document.getElementById('newPassError');
   const confirmError = document.getElementById('confirmPassError');
 
-  // Reset lỗi
+  // Reset lỗi cũ
   [currError, newError, confirmError].forEach(err => {
     if (err) {
       err.textContent = '';
@@ -547,40 +669,15 @@ async function handleSavePassword(e) {
     hasError = true;
   }
 
-  if (hasError) return;
+  // Nếu có lỗi ở Client -> Chặn submit để người dùng sửa ngay
+  if (hasError) {
+    e.preventDefault();
+    return;
+  }
 
+  // Nếu hợp lệ -> Cho phép Form POST gửi thẳng về C# Controller!
   if (submitBtn) {
-    submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
   }
-
-  try {
-    const res = await fetch(ACCOUNT_CONFIG.endpoints.changePassword, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ currentPassword: currentPass, newPassword: newPass }),
-      credentials: 'same-origin'
-    });
-  } catch (err) {
-    console.info('[LIGHT LIFE] Đổi mật khẩu giả lập thành công trên demo.');
-  }
-
-  setTimeout(() => {
-    document.getElementById('changePasswordForm').reset();
-    validatePasswordStrength();
-
-    if (submitBtn) {
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = '<i class="fa-solid fa-key"></i> Đổi mật khẩu';
-    }
-
-    showAccountToast('Đổi mật khẩu thành công! Tài khoản của bạn đã được bảo vệ.', 'success');
-
-    // Mở thông báo gợi ý nếu hệ thống yêu cầu đăng nhập lại
-    const reloginModal = document.getElementById('reloginNoticeModal');
-    if (reloginModal) {
-      reloginModal.classList.add('show');
-    }
-  }, 700);
 }
 

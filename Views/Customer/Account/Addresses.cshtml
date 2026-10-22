@@ -1,7 +1,17 @@
 @* Views/Account/Addresses.cshtml *@
+@using System.Security.Claims
 @{
     Layout = "_StoreLayout";
     ViewData["Title"] = "Sổ địa chỉ nhận hàng - LIGHT LIFE";
+
+    // Đọc thông tin người dùng từ Cookie Claims
+    var currentFullName = User.FindFirst("FullName")?.Value
+                          ?? User.Identity?.Name
+                          ?? "Khách hàng";
+    var avatarInitial = !string.IsNullOrWhiteSpace(currentFullName)
+                        ? currentFullName.Trim()[0].ToString().ToUpper()
+                        : "U";
+    var currentEmail = User.FindFirst(ClaimTypes.Email)?.Value ?? "";
 }
 
 @section Styles {
@@ -23,10 +33,11 @@
             <!-- CỘT 1: SIDEBAR TÀI KHOẢN (280px) -->
             <aside class="ll-account-sidebar" aria-label="Menu tài khoản cá nhân">
                 <div class="ll-account-user-card">
-                    <div class="ll-account-user-avatar" id="accountUserAvatar">T</div>
+                    <!-- Avatar và tên hiển thị theo Claim thật của người dùng -->
+                    <div class="ll-account-user-avatar" id="accountUserAvatar">@avatarInitial</div>
                     <div class="ll-account-user-info">
-                        <span class="ll-account-user-name" id="accountUserName">Nguyễn Thu Trang</span>
-                        <span class="ll-account-user-email" id="accountUserEmail">thutrang@lightlife.vn</span>
+                        <span class="ll-account-user-name" id="accountUserName">@currentFullName</span>
+                        <span class="ll-account-user-email" id="accountUserEmail">@currentEmail</span>
                         <span class="ll-account-user-tag">Khách hàng</span>
                     </div>
                 </div>
@@ -62,16 +73,13 @@
                             <i class="fa-solid fa-location-dot" style="color: var(--color-brand);"></i>
                             Sổ địa chỉ nhận hàng
                         </h1>
-                        <p class="ll-account-desc">
-                            Quản lý các địa chỉ giao hàng để tiện lựa chọn nhanh khi thanh toán đặt hàng.
-                        </p>
                     </div>
                     <button type="button" class="ll-btn-add-address" onclick="openAddAddressModal()">
                         <i class="fa-solid fa-plus"></i> Thêm địa chỉ mới
                     </button>
                 </div>
 
-                <!-- Lưới danh sách địa chỉ (Render bằng JS) -->
+                <!-- Lưới danh sách địa chỉ (Render bằng JS từ database) -->
                 <div class="ll-address-grid" id="addressGridContainer"></div>
 
                 <!-- Trạng thái trống (Empty State khi chưa có địa chỉ) -->
@@ -103,12 +111,15 @@
         </div>
 
         <form id="addressForm" novalidate>
+            <!-- Input ẩn chứa ID khi Sửa (null khi Thêm mới) -->
+            <input type="hidden" id="addrId" value="" />
+
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <div class="ll-form-group">
                     <label class="ll-form-label" for="addrRecipientName">
                         Họ và tên người nhận <span class="req">*</span>
                     </label>
-                    <input type="text" id="addrRecipientName" class="ll-form-input" placeholder="Ví dụ: Nguyễn Thu Trang" required />
+                    <input type="text" id="addrRecipientName" class="ll-form-input" placeholder="Ví dụ: Nguyễn Văn A" required />
                 </div>
                 <div class="ll-form-group">
                     <label class="ll-form-label" for="addrPhone">
@@ -118,24 +129,32 @@
                 </div>
             </div>
 
+            <!-- Tỉnh / Quận / Xã chuẩn 2 cấp sau sáp nhập -->
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem;">
                 <div class="ll-form-group">
                     <label class="ll-form-label" for="addrProvince">
                         Tỉnh / Thành <span class="req">*</span>
                     </label>
-                    <input type="text" id="addrProvince" class="ll-form-input" placeholder="TP. Hồ Chí Minh" required />
+                    <select id="addrProvince" class="ll-form-input" required>
+                        <option value="">-- Chọn Tỉnh / TP --</option>
+                    </select>
                 </div>
-                <div class="ll-form-group">
-                    <label class="ll-form-label" for="addrDistrict">
-                        Quận / Huyện <span class="req">*</span>
-                    </label>
-                    <input type="text" id="addrDistrict" class="ll-form-input" placeholder="Quận Bình Thạnh" required />
-                </div>
+
                 <div class="ll-form-group">
                     <label class="ll-form-label" for="addrWard">
                         Phường / Xã <span class="req">*</span>
                     </label>
-                    <input type="text" id="addrWard" class="ll-form-input" placeholder="Phường 22" required />
+                    <select id="addrWard" class="ll-form-input" required disabled>
+                        <option value="">-- Chọn Phường / Xã --</option>
+                    </select>
+                </div>
+
+                <div class="ll-form-group">
+                    <!-- BỎ DẤU SAO ĐỎ * VÀ BỎ required -->
+                    <label class="ll-form-label" for="addrDistrict">
+                        Quận / Huyện <span style="font-size: 0.8rem; font-weight: normal; color: #888;">(nếu có)</span>
+                    </label>
+                    <input type="text" id="addrDistrict" class="ll-form-input" placeholder="Để trống nếu không có" />
                 </div>
             </div>
 
@@ -143,7 +162,7 @@
                 <label class="ll-form-label" for="addrDetail">
                     Địa chỉ chi tiết (Số nhà, tên đường, tòa nhà...) <span class="req">*</span>
                 </label>
-                <textarea id="addrDetail" class="ll-form-textarea" placeholder="Ví dụ: Phòng 1204, Tòa Park 3, Vinhomes Central Park, 208 Nguyễn Hữu Cảnh" required></textarea>
+                <textarea id="addrDetail" class="ll-form-textarea" placeholder="Ví dụ: Số 12 Nguyễn Tất Thành" required></textarea>
             </div>
 
             <div class="ll-form-group">
@@ -189,4 +208,3 @@
 @section Scripts {
     <script src="~/js/lightlife-account.js" asp-append-version="true"></script>
 }
-

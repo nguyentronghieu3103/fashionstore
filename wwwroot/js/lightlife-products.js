@@ -399,16 +399,11 @@ function renderCatalog() {
 
           <div class="ll-product-footer">
             <span class="ll-product-price">${item.price.toLocaleString('vi-VN')} đ</span>
-            <div class="ll-product-rating">
-              <i class="fa-solid fa-star"></i>
-              <span>${item.rating} (${item.reviews})</span>
-            </div>
           </div>
           <div class="ll-card-action-bar">
-            <button type="button" class="ll-btn ll-btn-secondary" style="width: 100%; min-height: 44px;" 
-                    onclick="if (window.LightLifeCart) LightLifeCart.addItem(${item.id}, '${item.name.replace(/'/g, "\\'")}')">
-              <i class="fa-solid fa-bag-shopping"></i> Thêm vào giỏ
-            </button>
+            <a href="/Products/Detail/${item.id}" class="ll-btn ll-btn-secondary" style="width: 100%; min-height: 44px;">
+              <i class="fa-regular fa-eye"></i> Xem chi tiết sản phẩm
+            </a>
           </div>
         </div>
       </article>

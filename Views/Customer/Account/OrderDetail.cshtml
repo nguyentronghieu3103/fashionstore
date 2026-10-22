@@ -1,3 +1,16 @@
+@using System.Security.Claims
+@{
+    Layout = "_StoreLayout";
+    ViewData["Title"] = "Chi tiết đơn hàng - LIGHT LIFE";
+
+    var currentFullName = User.FindFirst("FullName")?.Value
+                          ?? User.Identity?.Name
+                          ?? "Khách hàng";
+    var avatarInitial = !string.IsNullOrWhiteSpace(currentFullName)
+                        ? currentFullName.Trim()[0].ToString().ToUpper()
+                        : "U";
+    var currentEmail = User.FindFirst(ClaimTypes.Email)?.Value ?? "";
+}
 @* Views/Account/OrderDetail.cshtml *@
 @{
     Layout = "_StoreLayout";
@@ -28,10 +41,10 @@
             <!-- CỘT 1: SIDEBAR TÀI KHOẢN (280px) -->
             <aside class="ll-account-sidebar" aria-label="Menu tài khoản cá nhân">
                 <div class="ll-account-user-card">
-                    <div class="ll-account-user-avatar" id="accountUserAvatar">T</div>
+                    <div class="ll-account-user-avatar" id="accountUserAvatar">@avatarInitial</div>
                     <div class="ll-account-user-info">
-                        <span class="ll-account-user-name" id="accountUserName">Nguyễn Thu Trang</span>
-                        <span class="ll-account-user-email" id="accountUserEmail">thutrang@lightlife.vn</span>
+                        <span class="ll-account-user-name" id="accountUserName">@currentFullName</span>
+                        <span class="ll-account-user-email" id="accountUserEmail">@currentEmail</span>
                         <span class="ll-account-user-tag">Khách hàng</span>
                     </div>
                 </div>

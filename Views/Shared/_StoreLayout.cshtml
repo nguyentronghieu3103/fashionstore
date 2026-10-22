@@ -69,19 +69,43 @@
                         <i class="fa-solid fa-bag-shopping" style="font-size: 18px;"></i>
                         <span class="ll-cart-badge" id="llCartBadge">0</span>
                     </a>
+                    @{
+                        // Kiểm tra xem người dùng đã đăng nhập chưa ngay tại Server
+                        bool isAuthenticated = User.Identity != null && User.Identity.IsAuthenticated;
 
+                        // Lấy Họ tên và Email từ chiếc vòng tay Cookie
+                        string currentFullName = isAuthenticated
+                            ? (User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "Khách hàng")
+                            : "Khách hàng";
+
+                        string currentEmail = isAuthenticated
+                            ? (User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? "")
+                            : "";
+
+                        // Lấy chữ cái đầu tiên của tên để làm Avatar chữ (VD: "Hiểu Nguyễn" -> "H")
+                        string avatarInitial = !string.IsNullOrWhiteSpace(currentFullName)
+                            ? currentFullName.Trim()[0].ToString().ToUpper()
+                            : "U";
+                    }
                     <!-- Tài khoản: Chưa đăng nhập hiện nút Đăng nhập; Đã đăng nhập hiện Avatar/Tên + Dropdown -->
                     <div class="ll-auth-area">
-                        <!-- Trạng thái CHƯA ĐĂNG NHẬP -->
-                        <a href="/Account/Login" class="ll-btn ll-btn-primary ll-btn-sm" id="llLoginBtn">
+                        <!-- 1. Gắn biến isAuthenticated vào style: Đã đăng nhập thì ẩn nút Đăng nhập đi -->
+                        <a href="/Account/Login"
+                           class="ll-btn ll-btn-primary ll-btn-sm"
+                           id="llLoginBtn"
+                           style="@(isAuthenticated ? "display: none;" : "display: inline-flex;")">
                             <i class="fa-solid fa-arrow-right-to-bracket"></i> Đăng nhập
                         </a>
 
-                        <!-- Trạng thái ĐÃ ĐĂNG NHẬP (Mặc định ẩn, bật qua auth hook) -->
-                        <div class="ll-user-wrapper" id="llUserWrapper" style="display: none;">
+                        <!-- 2. Gắn biến isAuthenticated vào style: Đã đăng nhập thì bật khung User lên ngay -->
+                        <div class="ll-user-wrapper"
+                             id="llUserWrapper"
+                             style="@(isAuthenticated ? "display: block;" : "display: none;")">
                             <button type="button" class="ll-user-btn" onclick="LightLifeAuth.toggleDropdown();" aria-expanded="false" aria-label="Menu tài khoản">
-                                <div class="ll-user-avatar" id="llUserAvatar">K</div>
-                                <span class="ll-user-name" id="llUserName">Khách hàng</span>
+                                <!-- 3. Thay chữ "K" cứng bằng @avatarInitial -->
+                                <div class="ll-user-avatar" id="llUserAvatar">@avatarInitial</div>
+                                <!-- 4. Thay chữ "Khách hàng" cứng bằng @currentFullName -->
+                                <span class="ll-user-name" id="llUserName">@currentFullName</span>
                                 <i class="fa-solid fa-angle-down" style="font-size: 11px; color: var(--color-text-sub);"></i>
                             </button>
 
@@ -179,12 +203,6 @@
                         <li><a href="#policies" class="ll-footer-link"><i class="fa-solid fa-angle-right" style="font-size: 11px;"></i> Cam kết dịch vụ khách hàng</a></li>
                     </ul>
                 </div>
-            </div>
-
-            <!-- Dòng bản quyền -->
-            <div class="ll-footer-bottom">
-                <span>&copy; 2026 LIGHT LIFE FASHION STUDIO. Bản quyền đã được bảo lưu.</span>
-                <span>Thiết kế tiêu chuẩn UI/UX Khách hàng.</span>
             </div>
         </div>
     </footer>

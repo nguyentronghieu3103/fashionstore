@@ -1,0 +1,163 @@
+﻿@model fashionstore.Models.Dtos.VerifyOtpRequestDto
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Xác thực mã OTP - LIGHT LIFE";
+    var email = Model?.Email ?? "";
+    var returnUrl = Model?.ReturnUrl ?? "/";
+}
+
+<div class="ll-auth-card">
+    <!-- CỘT 1: ẢNH EDITORIAL THỜI TRANG (DESKTOP) - ĐỒNG BỘ THƯƠNG HIỆU -->
+    <div class="ll-auth-visual ll-auth-visual--register">
+        <div>
+            <a href="/" class="ll-auth-brand" title="Về trang chủ LIGHT LIFE">
+                <img src="~/images/logo.png" alt="LIGHT LIFE Logo" class="ll-auth-brand__img" />
+                <div>
+                    <span class="ll-auth-brand__title">LIGHT LIFE</span>
+                    <span class="ll-auth-brand__sub">FASHION STUDIO</span>
+                </div>
+            </a>
+        </div>
+
+        <div class="ll-auth-quote">
+            <p class="ll-auth-quote__text">
+                "Phong cách là một cách đơn giản để nói lên những điều phức tạp."
+            </p>
+            <span class="ll-auth-quote__author">— Giorgio Armani</span>
+        </div>
+
+        <div>
+            <a href="/Account/Register?returnUrl=@Uri.EscapeDataString(returnUrl)" class="ll-auth-back-link">
+                <i class="fa-solid fa-arrow-left"></i> Quay lại sửa thông tin
+            </a>
+        </div>
+    </div>
+
+    <!-- CỘT 2: BIỂU MẪU XÁC THỰC MÃ OTP -->
+    <div class="ll-auth-form-wrap">
+        <div>
+            <!-- Logo hiển thị trên Mobile khi ảnh bên trái ẩn đi -->
+            <a href="/" class="ll-auth-mobile-brand">
+                <img src="~/images/logo.png" alt="LIGHT LIFE Logo" />
+                <span class="fw-bold fs-5">LIGHT LIFE</span>
+            </a>
+
+            <!-- Tiêu đề & Icon xác thực -->
+            <div class="ll-auth-header" style="text-align: center; margin-bottom: 24px;">
+                <div style="width: 60px; height: 60px; background: #fdf2f2; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(92, 29, 36, 0.08);">
+                    <i class="fa-solid fa-envelope-circle-check" style="font-size: 26px; color: #5c1d24;"></i>
+                </div>
+                <h1 class="ll-auth-header__title" style="font-size: 24px; margin-bottom: 8px;">Xác Thực Tài Khoản</h1>
+                <p style="color: #6b7280; font-size: 14px; margin: 0; line-height: 1.5;">
+                    Mã xác nhận 6 chữ số đã được gửi tới hòm thư:<br />
+                    <strong style="color: #5c1d24; word-break: break-all;">@email</strong>
+                </p>
+            </div>
+
+            <!-- Banner thông báo lỗi nếu nhập sai mã hoặc hết hạn -->
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="ll-auth-alert show ll-auth-alert--error" role="alert" style="display: flex; margin-bottom: 20px;">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <div asp-validation-summary="All" style="display: inline-block;"></div>
+                </div>
+            }
+
+            <!-- Form gửi mã OTP -->
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div style="background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; display: flex; align-items: center;">
+                    <i class="fa-solid fa-circle-check me-2" style="font-size: 18px; color: #059669; margin-right: 8px;"></i>
+                    <span>@TempData["SuccessMessage"]</span>
+                </div>
+            }
+            <form asp-controller="Account" asp-action="VerifyOtp" method="post" id="verifyOtpForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Email" value="@email" />
+                <input type="hidden" asp-for="ReturnUrl" value="@returnUrl" />
+
+                <!-- Ô nhập 6 số OTP tối ưu cho mọi kích thước màn hình -->
+                <div class="ll-form-group" style="margin-bottom: 20px;">
+                    <label asp-for="OtpCode" class="ll-form-label" style="text-align: center; display: block; font-weight: 600; margin-bottom: 8px;">
+                        Nhập mã xác thực 6 chữ số *
+                    </label>
+                    <div class="ll-input-wrapper">
+                        <input asp-for="OtpCode"
+                               class="ll-input-field"
+                               placeholder="· · · · · ·"
+                               maxlength="6"
+                               inputmode="numeric"
+                               pattern="[0-9]*"
+                               autocomplete="one-time-code"
+                               autofocus
+                               required
+                               style="text-align: center; font-size: 28px; letter-spacing: 12px; font-weight: 700; height: 56px; border-radius: 8px; color: #1f2937; border: 1.5px solid #d1d5db;" />
+                    </div>
+                    <span asp-validation-for="OtpCode" class="ll-field-error show" style="text-align: center;"></span>
+                </div>
+
+                <!-- Đồng hồ đếm ngược 5 phút & Trạng thái hiệu lực -->
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; font-size: 13px; color: #6b7280; padding: 0 4px;">
+                    <span><i class="fa-regular fa-clock me-1"></i> Mã hết hạn sau: <strong id="countdownText" style="color: #5c1d24;">05:00</strong></span>
+                    <a href="/Account/Register?returnUrl=@Uri.EscapeDataString(returnUrl)" style="color: #5c1d24; text-decoration: none; font-weight: 600;">
+                        Đổi email khác
+                    </a>
+                </div>
+
+                <!-- Nút xác nhận chính -->
+                <button type="submit" class="ll-auth-submit-btn" id="verifySubmitBtn" style="width: 100%; height: 50px; font-size: 16px; border-radius: 8px;">
+                    <i class="fa-solid fa-circle-check"></i> Xác nhận & Hoàn tất
+                </button>
+            </form>
+        </div>
+
+        <!-- Chân form: Gửi lại mã nếu không nhận được thư -->
+        <footer class="ll-auth-footer" style="margin-top: 28px; text-align: center; font-size: 14px;">
+            <span>Chưa nhận được mã? </span>
+            <form asp-controller="Account" asp-action="ResendOtp" method="post" style="display: inline;">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="email" value="@email" />
+                <input type="hidden" name="returnUrl" value="@returnUrl" />
+                <button type="submit" style="background: none; border: none; color: #5c1d24; font-weight: 700; cursor: pointer; padding: 0; text-decoration: underline; font-size: 14px;">
+                    Gửi lại mã mới
+                </button>
+            </form>
+        </footer>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            let timeLeft = 300; // 5 phút = 300 giây
+            const display = document.getElementById('countdownText');
+            const submitBtn = document.getElementById('verifySubmitBtn');
+            const otpInput = document.querySelector('input[name="OtpCode"]');
+
+            if (!display) return;
+
+            const timer = setInterval(function () {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                display.textContent = (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+
+                // KHI HẾT 5 PHÚT:
+                if (--timeLeft < 0) {
+                    clearInterval(timer);
+                    display.textContent = 'Mã đã hết hạn!';
+                    display.style.color = '#dc2626'; // Đổi sang màu đỏ cảnh báo
+
+                    // Khóa ô nhập và nút xác nhận lại
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.style.opacity = '0.5';
+                        submitBtn.style.cursor = 'not-allowed';
+                    }
+                    if (otpInput) {
+                        otpInput.disabled = true;
+                    }
+                }
+            }, 1000);
+        })();
+    </script>
+}

@@ -308,16 +308,11 @@ function renderProductCards(containerId, products) {
         </h3>
         <div class="ll-product-footer">
           <span class="ll-product-price">${formatCurrencyVND(product.price)}</span>
-          <div class="ll-product-rating">
-            <i class="fa-solid fa-star"></i>
-            <span>${product.rating} (${product.reviewsCount})</span>
-          </div>
         </div>
         <div class="ll-card-action-bar">
-          <button type="button" class="ll-btn ll-btn-secondary" style="width: 100%; min-height: 44px;" 
-                  onclick="LightLifeCart.addItem(${product.id}, '${product.name.replace(/'/g, "\\'")}')">
-            <i class="fa-solid fa-bag-shopping"></i> Thêm vào giỏ
-          </button>
+          <a href="${STORE_CONFIG.routes.productDetailPrefix}${product.id}" class="ll-btn ll-btn-secondary" style="width: 100%; min-height: 44px;">
+            <i class="fa-regular fa-eye"></i> Xem chi tiết sản phẩm
+          </a>
         </div>
       </div>
     </article>

@@ -1,3 +1,4 @@
+@model fashionstore.Models.Dtos.RegisterRequestDto
 @* Views/Account/Register.cshtml *@
 @{
     Layout = "_AuthLayout";
@@ -6,7 +7,7 @@
 }
 
 <div class="ll-auth-card">
-    <!-- CỘT 1: ẢNH EDITORIAL THỜI TRANG (DESKTOP) -->
+    <!-- CỘT 1: ẢNH EDITORIAL THỜI TRANG (DESKTOP) - GIỮ NGUYÊN 100% -->
     <div class="ll-auth-visual ll-auth-visual--register">
         <div>
             <a href="/" class="ll-auth-brand" title="Về trang chủ LIGHT LIFE">
@@ -43,104 +44,97 @@
 
             <div class="ll-auth-header">
                 <h1 class="ll-auth-header__title">Tạo Tài Khoản</h1>
-                <p class="ll-auth-header__subtitle">
-                    Đăng ký tài khoản khách hàng để nhận thông tin ưu đãi và theo dõi đơn hàng dễ dàng.
-                </p>
             </div>
 
-            <!-- Banner thông báo lỗi / thành công chung -->
-            <div class="ll-auth-alert" id="authAlert" role="alert">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-                <span id="authAlertText">Thông báo lỗi đăng ký.</span>
-            </div>
+            <!-- Banner thông báo lỗi tự động hiện lên khi có lỗi từ Server -->
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="ll-auth-alert show ll-auth-alert--error" role="alert" style="display: flex;">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <div asp-validation-summary="All" style="display: inline-block;"></div>
+                </div>
+            }
 
-            <!-- Biểu mẫu đăng ký khách hàng (Tuyệt đối không chọn role nhân viên/admin) -->
-            <form id="registerForm" novalidate>
+            <!-- Biểu mẫu đăng ký chuẩn Form POST của MVC -->
+            <form asp-controller="Account" asp-action="Register" method="post" id="registerForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="ReturnUrl" value="@returnUrl" />
+
                 <!-- 1. Họ và tên -->
                 <div class="ll-form-group">
-                    <label for="regFullName" class="ll-form-label">Họ và tên của bạn *</label>
+                    <label asp-for="FullName" class="ll-form-label">Họ và tên của bạn *</label>
                     <div class="ll-input-wrapper">
                         <span class="ll-input-icon"><i class="fa-regular fa-user"></i></span>
-                        <input type="text" 
-                               id="regFullName" 
-                               name="fullName"
-                               class="ll-input-field" 
-                               placeholder="VD: Nguyễn Thu Trang" 
-                               autocomplete="name" 
+                        <input asp-for="FullName"
+                               id="regFullName"
+                               class="ll-input-field"
+                               placeholder="VD: Nguyễn Thu Trang"
+                               autocomplete="name"
                                required />
                     </div>
-                    <span class="ll-field-error" id="regFullNameError"></span>
+                    <span asp-validation-for="FullName" class="ll-field-error show"></span>
                 </div>
 
                 <!-- 2. Email đăng ký -->
                 <div class="ll-form-group">
-                    <label for="regEmail" class="ll-form-label">Địa chỉ Email *</label>
+                    <label asp-for="Email" class="ll-form-label">Địa chỉ Email *</label>
                     <div class="ll-input-wrapper">
                         <span class="ll-input-icon"><i class="fa-regular fa-envelope"></i></span>
-                        <input type="email" 
-                               id="regEmail" 
-                               name="email"
-                               class="ll-input-field" 
-                               placeholder="VD: thutrang@example.com" 
-                               autocomplete="email" 
+                        <input asp-for="Email"
+                               type="email"
+                               id="regEmail"
+                               class="ll-input-field"
+                               placeholder="VD: thutrang@example.com"
+                               autocomplete="email"
                                required />
                     </div>
-                    <span class="ll-field-error" id="regEmailError"></span>
+                    <span asp-validation-for="Email" class="ll-field-error show"></span>
                 </div>
 
                 <!-- 3. Mật khẩu -->
                 <div class="ll-form-group">
-                    <label for="regPassword" class="ll-form-label">Mật khẩu *</label>
+                    <label asp-for="Password" class="ll-form-label">Mật khẩu *</label>
                     <div class="ll-input-wrapper">
                         <span class="ll-input-icon"><i class="fa-solid fa-lock"></i></span>
-                        <input type="password" 
-                               id="regPassword" 
-                               name="password"
-                               class="ll-input-field ll-input-field--has-toggle" 
-                               placeholder="Tối thiểu 8 ký tự" 
-                               autocomplete="new-password" 
+                        <input asp-for="Password"
+                               type="password"
+                               id="regPassword"
+                               class="ll-input-field ll-input-field--has-toggle"
+                               placeholder="Tối thiểu 8 ký tự"
+                               autocomplete="new-password"
                                required />
-                        <button type="button" 
-                                class="ll-password-toggle-btn" 
-                                data-target="regPassword" 
+                        <button type="button"
+                                class="ll-password-toggle-btn"
+                                data-target="regPassword"
                                 aria-label="Hiện mật khẩu">
                             <i class="fa-regular fa-eye"></i>
                         </button>
                     </div>
                     <div class="ll-password-hint">Gợi ý: Mật khẩu nên gồm ít nhất 8 ký tự, kết hợp chữ và số.</div>
-                    <span class="ll-field-error" id="regPasswordError"></span>
+                    <span asp-validation-for="Password" class="ll-field-error show"></span>
                 </div>
 
                 <!-- 4. Xác nhận mật khẩu -->
                 <div class="ll-form-group">
-                    <label for="regConfirmPassword" class="ll-form-label">Xác nhận lại mật khẩu *</label>
+                    <label asp-for="ConfirmPassword" class="ll-form-label">Xác nhận lại mật khẩu *</label>
                     <div class="ll-input-wrapper">
                         <span class="ll-input-icon"><i class="fa-solid fa-shield-halved"></i></span>
-                        <input type="password" 
-                               id="regConfirmPassword" 
-                               name="confirmPassword"
-                               class="ll-input-field ll-input-field--has-toggle" 
-                               placeholder="Nhập lại mật khẩu vừa nhập" 
-                               autocomplete="new-password" 
+                        <input asp-for="ConfirmPassword"
+                               type="password"
+                               id="regConfirmPassword"
+                               class="ll-input-field ll-input-field--has-toggle"
+                               placeholder="Nhập lại mật khẩu vừa nhập"
+                               autocomplete="new-password"
                                required />
-                        <button type="button" 
-                                class="ll-password-toggle-btn" 
-                                data-target="regConfirmPassword" 
+                        <button type="button"
+                                class="ll-password-toggle-btn"
+                                data-target="regConfirmPassword"
                                 aria-label="Hiện mật khẩu">
                             <i class="fa-regular fa-eye"></i>
                         </button>
                     </div>
-                    <span class="ll-field-error" id="regConfirmPasswordError"></span>
+                    <span asp-validation-for="ConfirmPassword" class="ll-field-error show"></span>
                 </div>
-
-                <!-- 5. Đồng ý điều khoản & chính sách -->
-                <label class="ll-checkbox-group">
-                    <input type="checkbox" id="regTerms" name="acceptTerms" class="ll-checkbox-input" required />
-                    <span>
-                        Tôi đã đọc và đồng ý với <a href="#policies" target="_blank">Điều khoản sử dụng</a> và <a href="#policies" target="_blank">Chính sách bảo mật</a> của LIGHT LIFE.
-                    </span>
-                </label>
-
                 <!-- 6. Nút Đăng ký chính -->
                 <button type="submit" class="ll-auth-submit-btn" id="regSubmitBtn">
                     <i class="fa-solid fa-user-plus"></i> Đăng ký tài khoản
@@ -152,16 +146,19 @@
                 <span>hoặc đăng ký nhanh với</span>
             </div>
 
-            <!-- 7. Nút Đăng ký bằng Google -->
-            <button type="button" class="ll-google-btn" id="googleAuthBtn" title="Đăng ký tài khoản nhanh qua Google">
-                <svg width="20" height="20" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
-                    <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
-                    <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.14-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.98 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
-                    <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
-                </svg>
-                <span>Đăng ký bằng Google</span>
-            </button>
+            <!-- 7. Nút Đăng ký bằng Google (Nối thẳng vào pipeline OAuth bạn đã hoàn thành!) -->
+            <form asp-controller="Account" asp-action="ExternalLogin" asp-route-returnUrl="@returnUrl" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="ll-google-btn" title="Đăng ký tài khoản nhanh qua Google">
+                    <svg width="20" height="20" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z" />
+                        <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z" />
+                        <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.14-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.98 0 12s.45 3.82 1.25 5.42l4.03-3.15z" />
+                        <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z" />
+                    </svg>
+                    <span>Đăng ký bằng Google</span>
+                </button>
+            </form>
         </div>
 
         <!-- Chân form: Liên kết Đăng nhập -->
@@ -171,4 +168,3 @@
         </footer>
     </div>
 </div>
-

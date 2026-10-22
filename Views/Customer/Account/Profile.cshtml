@@ -1,3 +1,13 @@
+@model fashionstore.Models.Entities.AspNetUser
+@{
+    // Lấy chữ cái đầu của tên làm Avatar (VD: "Hiếu Nguyễn" -> "H")
+    string avatarInitial = !string.IsNullOrWhiteSpace(Model?.FullName)
+        ? Model.FullName.Trim()[0].ToString().ToUpper()
+        : "U";
+
+    // Lấy số điện thoại từ bảng Customers (hoặc bảng AspNetUsers)
+    string phone = Model?.Customer?.Phone ?? Model?.PhoneNumber ?? "";
+}
 @* Views/Account/Profile.cshtml *@
 @{
     Layout = "_StoreLayout";
@@ -23,10 +33,10 @@
             <!-- CỘT 1: SIDEBAR TÀI KHOẢN (280px) -->
             <aside class="ll-account-sidebar" aria-label="Menu tài khoản cá nhân">
                 <div class="ll-account-user-card">
-                    <div class="ll-account-user-avatar" id="accountUserAvatar">T</div>
+                    <div class="ll-account-user-avatar" id="accountUserAvatar">@avatarInitial</div>
                     <div class="ll-account-user-info">
-                        <span class="ll-account-user-name" id="accountUserName">Nguyễn Thu Trang</span>
-                        <span class="ll-account-user-email" id="accountUserEmail">thutrang@lightlife.vn</span>
+                        <span class="ll-account-user-name" id="accountUserName">@Model?.FullName</span>
+                        <span class="ll-account-user-email" id="accountUserEmail">@Model?.Email</span>
                         <span class="ll-account-user-tag">Khách hàng</span>
                     </div>
                 </div>
@@ -74,7 +84,7 @@
                         <label class="ll-form-label" for="profileFullName">
                             Họ và tên <span class="req">*</span>
                         </label>
-                        <input type="text" id="profileFullName" class="ll-form-input" placeholder="Nhập họ và tên đầy đủ" required />
+                        <input type="text" id="profileFullName" class="ll-form-input" placeholder="Nhập họ và tên đầy đủ" value="@Model?            .FullName" required />
                     </div>
 
                     <!-- Email (Readonly kèm nhãn xác minh) -->
@@ -85,7 +95,7 @@
                                 <i class="fa-solid fa-circle-check"></i> Đã xác minh
                             </span>
                         </label>
-                        <input type="email" id="profileEmail" class="ll-form-input" readonly />
+                        <input type="email" id="profileEmail" class="ll-form-input" value="@Model?.Email" readonly />
                         <div class="ll-readonly-note">
                             <i class="fa-solid fa-circle-info"></i>
                             Email là định danh tài khoản để nhận biên lai đơn hàng và đăng nhập. Vui lòng liên hệ CSKH nếu cần cập nhật email.
@@ -97,7 +107,7 @@
                         <label class="ll-form-label" for="profilePhone">
                             Số điện thoại nhận hàng <span class="req">*</span>
                         </label>
-                        <input type="tel" id="profilePhone" class="ll-form-input" placeholder="0908 123 456" required />
+                        <input type="tel" id="profilePhone" class="ll-form-input" placeholder="0908 123 456" value="@phone" required />
                     </div>
 
                     <!-- Nút Lưu -->
